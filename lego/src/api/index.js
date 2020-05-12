@@ -1,4 +1,4 @@
-import http from "./http"
+import http from "./http";
 
 const apiUrl = "";
-export default {}
+export default {};
