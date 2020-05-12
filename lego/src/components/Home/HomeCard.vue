@@ -4,30 +4,48 @@
       Title
     </div>
     <div class="home-card-imgs">
-      <!-- <img src="../../assets/logo.png" alt="" class="home-card-img" /> -->
       <div class="slideshow-container">
         <div :class="`mySlides${idx} fade`">
-          <img src="../../assets/logo.png" style="width:100%" />
+          <img
+            src="../../assets/logo.png"
+            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
+          />
         </div>
 
         <div :class="`mySlides${idx} fade`">
-          <img src="../../assets/git.png" style="width:100%" />
+          <img
+            src="../../assets/git.png"
+            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
+          />
         </div>
 
         <div :class="`mySlides${idx} fade`">
-          <img src="../../assets/JS.png" style="width:100%" />
+          <img
+            src="../../assets/JS.png"
+            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
+          />
         </div>
 
         <div :class="`mySlides${idx} fade`">
-          <img src="../../assets/logo.png" style="width:100%" />
+          <img
+            src="../../assets/logo.png"
+            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
+          />
         </div>
 
         <div :class="`mySlides${idx} fade`">
-          <img src="../../assets/git.png" style="width:100%" />
+          <img
+            src="../../assets/git.png"
+            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
+          />
         </div>
 
         <div :class="`mySlides${idx} fade`">
-          <img src="../../assets/JS.png" style="width:100%" />
+          <img
+            src="../../assets/JS.png"
+            style="width:100%"
+            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
+          />
         </div>
 
         <a class="prev" @click="plusSlides(-1)">&#10094;</a>
@@ -39,12 +57,12 @@
       :style="styleFlag ? matrixStyle[1] : instaStyle[1]"
     >
       <div :style="styleFlag ? matrixStyle[0] : instaStyle[0]">
-        <span class="dot" @click="currentSlide(1)"></span>
-        <span class="dot" @click="currentSlide(2)"></span>
-        <span class="dot" @click="currentSlide(3)"></span>
-        <span class="dot" @click="currentSlide(4)"></span>
-        <span class="dot" @click="currentSlide(5)"></span>
-        <span class="dot" @click="currentSlide(6)"></span>
+        <span :class="`dot${idx}`" @click="currentSlide(1)"></span>
+        <span :class="`dot${idx}`" @click="currentSlide(2)"></span>
+        <span :class="`dot${idx}`" @click="currentSlide(3)"></span>
+        <span :class="`dot${idx}`" @click="currentSlide(4)"></span>
+        <span :class="`dot${idx}`" @click="currentSlide(5)"></span>
+        <span :class="`dot${idx}`" @click="currentSlide(6)"></span>
       </div>
       <div :style="styleFlag ? matrixStyle[2] : instaStyle[2]">
         <div class="home-card-footer-director">
@@ -91,6 +109,10 @@ export default {
         {
           width: "100%",
           display: "flex"
+        },
+        {
+          width: "100%",
+          height: "250px"
         }
       ],
       instaStyle: [
@@ -106,6 +128,10 @@ export default {
         {
           width: "100%",
           display: "flex"
+        },
+        {
+          width: "100%"
+          // height: "500px"
         }
       ]
     };
@@ -114,7 +140,7 @@ export default {
     var i;
     var n = 1;
     var slides = document.getElementsByClassName(`mySlides${this.idx}`);
-    var dots = document.getElementsByClassName("dot");
+    var dots = document.getElementsByClassName(`dot${this.idx}`);
     if (n > slides.length) {
       this.slideIndex = 1;
     }
@@ -148,7 +174,7 @@ export default {
     showSlides(n) {
       var i;
       var slides = document.getElementsByClassName(`mySlides${this.idx}`);
-      var dots = document.getElementsByClassName("dot");
+      var dots = document.getElementsByClassName(`dot${this.idx}`);
       if (n > slides.length) {
         this.slideIndex = 1;
       }
@@ -179,10 +205,10 @@ export default {
   border-top: 5px solid gold;
   border-bottom: 5px solid gold;
 }
-.home-card-img {
+/* .home-card-img {
   height: 100%;
   width: 100%;
-}
+} */
 /* .home-card-footer {
   padding: 10px;
   display: flex;
@@ -238,7 +264,16 @@ img {
   background-color: rgba(0, 0, 0, 0.8);
 }
 /* The dots/bullets/indicators */
-.dot {
+.dot1,
+.dot2,
+.dot3,
+.dot4,
+.dot5,
+.dot6,
+.dot7,
+.dot8,
+.dot9,
+.dot10 {
   cursor: pointer;
   height: 10px;
   width: 10px;
