@@ -1,6 +1,6 @@
 <template>
-  <v-app>
-    <route-view />
+  <v-app id="app">
+    <route-view id="router" />
     <go-top />
   </v-app>
 </template>
@@ -22,3 +22,5 @@ export default {
   })
 };
 </script>
+
+<style></style>
