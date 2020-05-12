@@ -1,11 +1,14 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
-import MyPage from "../views/MyPage.vue"
+import MyPage from "../views/MyPage.vue";
+import Login from "../views/base/Login.vue";
+import Register from "../views/base/Register.vue";
 
 Vue.use(VueRouter);
 
-const routes = [{
+const routes = [
+  {
     path: "/",
     name: "Home",
     component: Home
@@ -14,6 +17,16 @@ const routes = [{
     path: "/mypage",
     name: "MyPage",
     component: MyPage
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: Login
+  },
+  {
+    path: "/register",
+    name: "Register",
+    component: Register
   }
   // {
   //   path: "/about",

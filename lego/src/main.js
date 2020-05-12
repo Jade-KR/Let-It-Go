@@ -4,6 +4,7 @@ import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
 import infiniteScroll from "vue-infinite-scroll";
+import "./plugins/vee-validate";
 
 Vue.config.productionTip = false;
 Vue.use(infiniteScroll);
