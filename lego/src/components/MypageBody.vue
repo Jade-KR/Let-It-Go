@@ -3,18 +3,42 @@
     <div class="container" v-for="i in images.length / 3" :key="i">
       <div class="row">
         <div class="item">
-          <div class="img_box">
-            <img :src="images[i*3 -3]" alt />
+          <div class="body_img_box">
+            <img class="body_img" :src="images[i*3 -3]" alt />
+            <div class="body_img_hover">
+              <div class="body_img_info">
+                <i class="fas fa-heart"></i>
+                <span>0</span>
+                <i class="fas fa-comment"></i>
+                <span>0</span>
+              </div>
+            </div>
           </div>
         </div>
         <div class="item">
-          <div class="img_box">
-            <img :src="images[i*3 -2]" alt />
+          <div class="body_img_box">
+            <img class="body_img" :src="images[i*3 -2]" alt />
+            <div class="body_img_hover">
+              <div class="body_img_info">
+                <i class="fas fa-heart"></i>
+                <span>0</span>
+                <i class="fas fa-comment"></i>
+                <span>0</span>
+              </div>
+            </div>
           </div>
         </div>
         <div class="item">
-          <div class="img_box">
-            <img :src="images[i*3 -1]" alt />
+          <div class="body_img_box">
+            <img class="body_img" :src="images[i*3 -1]" alt />
+            <div class="body_img_hover">
+              <div class="body_img_info">
+                <i class="fas fa-heart"></i>
+                <span>0</span>
+                <i class="fas fa-comment"></i>
+                <span>0</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -52,20 +76,63 @@ export default {
   justify-content: space-around;
   border-style: none;
   height: 100%;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
 }
 .item {
   width: 260px;
   height: 250px;
 }
-.img_box {
+.body_img_box {
   width: 100%;
   height: 100%;
-  border-radius: 180%;
+  background: black;
+  position: relative;
 }
-.img_box > img {
+.body_img_box > img {
   width: 100%;
   height: 100%;
-  border-radius: 180%;
+  /* border-radius: 180%; */
+}
+.body_img_hover {
+  transition: 0.5s ease;
+  opacity: 0;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.body_img {
+  opacity: 1;
+  cursor: pointer;
+  transition: 0.5s ease;
+}
+.body_img_box:hover .body_img {
+  opacity: 0.5;
+  cursor: pointer;
+}
+.body_img_box:hover .body_img_hover {
+  opacity: 1;
+  cursor: pointer;
+}
+.body_img_info {
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+.body_img_info > i {
+  font-size: 25px;
+  color: white;
+}
+.body_img_info > span {
+  margin-left: 10px;
+  font-size: 25px;
+  color: white;
+  margin-right: 20px;
 }
 </style>

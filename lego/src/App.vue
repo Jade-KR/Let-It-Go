@@ -3,7 +3,7 @@
     <div class="nav">
       <Nav></Nav>
     </div>
-    <route-view />
+    <route-view :key="$route.fullPath" />
     <go-top />
   </div>
 </template>

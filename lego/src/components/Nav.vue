@@ -2,7 +2,7 @@
   <div>
     <div class="nav">
       <div class="nav_left">
-        <div class="logo_box">
+        <div class="logo_box" @click="goHome">
           <img src="../assets/logo.png" alt />
         </div>
       </div>
@@ -18,8 +18,8 @@
           <i class="fas fa-user-alt" @click="goMypage"></i>
         </div>
         <div class="icons_box" v-else>
-          <button>로그인</button>
-          <button>회원가입</button>
+          <button @click="goLogin">로그인</button>
+          <button @click="goSignUp">회원가입</button>
         </div>
       </div>
     </div>
@@ -35,10 +35,16 @@ export default {
   },
   methods: {
     goMypage() {
-      this.$router.push("MyPage");
+      this.$router.push("/MyPage");
     },
     goHome() {
       this.$router.push("/");
+    },
+    goLogin() {
+      this.$router.push("/login");
+    },
+    goSignUp() {
+      this.$router.push("/register");
     }
   }
 };
@@ -60,6 +66,9 @@ export default {
   left: 20px;
   width: 250px;
   height: 90px;
+}
+.logo_box:hover {
+  cursor: pointer;
 }
 .logo_box > img {
   width: 90%;
