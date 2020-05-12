@@ -1,8 +1,7 @@
 <template>
-  <v-app id="app">
-    <route-view id="router" />
-    <go-top />
-  </v-app>
+  <div id="app">
+    <router-view />
+  </div>
 </template>
 
 <script>
