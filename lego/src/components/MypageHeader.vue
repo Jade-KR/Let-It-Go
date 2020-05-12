@@ -3,13 +3,16 @@
     <div class="container">
       <div class="my_photo">
         <div class="photo_box">
-          <img src alt="photo" />
+          <img
+            src="https://images.unsplash.com/photo-1472457974886-0ebcd59440cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
+            alt="photo"
+          />
         </div>
       </div>
       <div class="my_info">
         <div class="info_top">
           <span class="user_id">Jade</span>
-          <span>
+          <span class="user_setting">
             <i class="fas fa-cog"></i>
           </span>
         </div>
@@ -60,6 +63,7 @@ export default {
   height: auto;
   margin-bottom: 20px;
   display: flex;
+  align-items: baseline;
 }
 .info_middle {
   display: flex;
@@ -77,11 +81,24 @@ export default {
 .photo_box {
   border-style: none;
   height: 90%;
+  width: 100%;
+  align-items: center;
+}
+.photo_box > img {
+  width: 90%;
+  height: 100%;
 }
 .user_id {
   font-size: 30px;
+  margin-right: 10px;
 }
 .summary {
   margin-right: 20px;
+}
+.user_setting:hover {
+  cursor: pointer;
+}
+.user_setting > i {
+  font-size: 25px;
 }
 </style>

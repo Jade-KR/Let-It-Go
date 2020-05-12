@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <div class="nav">
+      <Nav></Nav>
+    </div>
     <route-view />
     <go-top />
   </div>
@@ -8,13 +11,15 @@
 <script>
 import RouteView from "@/components/RouteView";
 import GoTop from "@/components/GoTop";
+import Nav from "@/components/Nav";
 
 export default {
   name: "App",
 
   components: {
     RouteView,
-    GoTop
+    GoTop,
+    Nav
   },
 
   data: () => ({
@@ -23,4 +28,11 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.nav {
+  width: 100%;
+  height: 100%;
+  padding-bottom: 10px;
+  border-bottom: rgb(255, 213, 26) solid 4px;
+}
+</style>
