@@ -7,8 +7,8 @@
       <hr />
       <div class="body_menu_bar">
         <button class="menu" v-for="i in menus.length" :key="i">
-          <i :class="menuIcons[i-1]"></i>
-          {{menus[i-1]}}
+          <i :class="menus[i-1].icon"></i>
+          {{menus[i-1].title}}
         </button>
       </div>
       <div class="body">
@@ -28,13 +28,12 @@ export default {
   },
   data() {
     return {
-      menus: ["설계도", "부품", "좋아요", "기타", "등등"],
-      menuIcons: [
-        "fas fa-scroll",
-        "fas fa-cubes",
-        "fas fa-heart",
-        "fas fa-heart",
-        "fas fa-heart"
+      menus: [
+        { title: "설계도", icon: "fas fa-scroll" },
+        { title: "부품", icon: "fas fa-cubes" },
+        { title: "좋아요", icon: "fas fa-heart" },
+        { title: "기타", icon: "fas fa-scroll" },
+        { title: "등등", icon: "fas fa-scroll" }
       ]
     };
   }

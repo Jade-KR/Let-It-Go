@@ -12,13 +12,13 @@
       <div class="my_info">
         <div class="info_top">
           <span class="user_id">Jade</span>
-          <span class="user_setting">
+          <span class="user_setting" @click="test">
             <i class="fas fa-cog"></i>
           </span>
         </div>
         <div class="info_middle">
           <div v-for="i in summaryItems.length" :key="i" class="summary">
-            <span>{{ summaryItems[i - 1] }}</span>
+            <span>{{ summaryItems[i - 1].title }} {{summaryItems[i - 1].cnt}}</span>
           </div>
         </div>
         <div class="info_bottom">{{ comment }}</div>
@@ -31,10 +31,20 @@
 export default {
   data() {
     return {
-      summaryItems: ["설계도 0", "팔로우 0", "팔로잉 0"],
+      summaryItems: [
+        { title: "설계도", cnt: "0" },
+        { title: "팔로우", cnt: "0" },
+        { title: "팔로잉", cnt: "0" }
+      ],
       comment:
-        "새로운 회계연도가 개시될 때까지 예산안이 의결되지 못한 때에는 정부는 국회에서 예산안이 의결될 때까지 다음의 목적을 위한 경비는 전년도 예산에 준하여 집행할 수 있다.연소자의 근로는 특별한 보호를 받는다. 체포·구속·압수 또는 수색을 할 때에는 적법한 절차에 따라 검사의 신청에 의하여 법관이 발부한 영장을 제시하여야 한다. 다만, 현행범인인 경우와 장기 3년 이상의 형에 해당하는 죄를 범하고 도피 또는 증거인멸의 염려가 있을 때에는 사후에 영장을 청구할 수 있다"
+        "새로운 회계연도가 개시될 때까지 예산안이 의결되지 못한 때에는 정부는 국회에서 예산안이 의결될 때까지 다음의 목적을 위한 경비는 전년도 예산에 준하여 집행할 수 있다.연소자의 근로는 특별한 보호를 받는다. 체포·구속·압수 또는 수색을 할 때에는 적법한 절차에 따라 검사의 신청에 의하여 법관이 발부한 영장을 제시하여야 한다. 다만, 현행범인인 경우와 장기 3년 이상의 형에 해당하는 죄를 범하고 도피 또는 증거인멸의 염려가 있을 때에는 사후에 영장을 청구할 수 있다",
+      dialog: false
     };
+  },
+  methods: {
+    test() {
+      alert("모달아 나와라");
+    }
   }
 };
 </script>
@@ -82,11 +92,14 @@ export default {
   border-style: none;
   height: 90%;
   width: 100%;
+  display: flex;
   align-items: center;
+  justify-content: center;
 }
 .photo_box > img {
-  width: 90%;
+  width: 70%;
   height: 100%;
+  border-radius: 180%;
 }
 .user_id {
   font-size: 30px;
