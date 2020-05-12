@@ -15,10 +15,10 @@
         </div>
         <div class="info_middle">
           <div v-for="i in summaryItems.length" :key="i" class="summary">
-            <span>{{summaryItems[i-1]}}</span>
+            <span>{{ summaryItems[i - 1] }}</span>
           </div>
         </div>
-        <div class="info_bottom">{{comment}}</div>
+        <div class="info_bottom">{{ comment }}</div>
       </div>
     </div>
   </div>
