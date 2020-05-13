@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container">
+    <div class="whole_box">
       <div class="my_photo">
         <div class="photo_box">
           <img
@@ -12,9 +12,11 @@
       <div class="my_info">
         <div class="info_top">
           <span class="user_id">Jade</span>
-          <span class="user_setting" @click="test">
-            <i class="fas fa-cog"></i>
-          </span>
+          <UserModal>
+            <span class="user_setting" slot="click">
+              <i class="fas fa-cog"></i>
+            </span>
+          </UserModal>
         </div>
         <div class="info_middle">
           <div v-for="i in summaryItems.length" :key="i" class="summary">
@@ -28,7 +30,11 @@
 </template>
 
 <script>
+import UserModal from "./UserModal";
 export default {
+  components: {
+    UserModal
+  },
   data() {
     return {
       summaryItems: [
@@ -41,21 +47,18 @@ export default {
       dialog: false
     };
   },
-  methods: {
-    test() {
-      alert("모달아 나와라");
-    }
-  }
+  methods: {}
 };
 </script>
 
 <style scoped>
-.container {
+.whole_box {
   display: flex;
   flex-flow: row nowrap;
   border-style: none;
   width: 100%;
   height: 200px;
+  margin-top: 30px;
 }
 .my_photo {
   border-style: none;
@@ -66,7 +69,7 @@ export default {
 .my_info {
   border-style: none;
   width: 70%;
-  height: 100%;
+  height: fit-content;
 }
 .info_top {
   border-style: none;
@@ -83,7 +86,7 @@ export default {
 }
 .info_bottom {
   border-style: none;
-  height: 90px;
+  height: 100px;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;

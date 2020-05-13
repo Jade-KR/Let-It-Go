@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container" v-for="i in images.length / 3" :key="i">
+    <div class="whole_box" v-for="i in images.length / 3" :key="i">
       <div class="row">
         <div class="item">
           <div class="body_img_box">
@@ -66,21 +66,23 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.whole_box {
   height: 100%;
   width: 100%;
 }
 .row {
   display: flex;
   flex-flow: row nowrap;
-  justify-content: space-around;
   border-style: none;
-  height: 100%;
-  margin-bottom: 15px;
+  height: fit-content;
+  margin-bottom: 30px;
+  justify-content: center;
 }
 .item {
   width: 260px;
   height: 250px;
+  margin-left: 15px;
+  margin-right: 15px;
 }
 .body_img_box {
   width: 100%;
