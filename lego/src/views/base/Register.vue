@@ -105,7 +105,7 @@ export default {
         email: "",
         nickname: ""
       },
-      randomNickname: [
+      randomNickNoun: [
         "뽀로로",
         "둘리",
         "도우너",
@@ -122,6 +122,30 @@ export default {
         "꼬부기",
         "이상해씨",
         "아구몬"
+      ],
+      randomNickAdj: [
+        "빛나는",
+        "멋있는",
+        "맛있는",
+        "시크한",
+        "아름다운",
+        "강렬한",
+        "강력한",
+        "상큼한",
+        "예쁜",
+        "귀여운",
+        "막막한"
+      ],
+      randomNickAdv: [
+        "빨갛게",
+        "노랗게",
+        "파랗게",
+        "검게",
+        "하얗게",
+        "둥글게",
+        "각지게",
+        "네모나게",
+        "붉게"
       ]
     };
   },
@@ -136,8 +160,19 @@ export default {
       router.push("/");
     },
     randomNick() {
-      const randomNum = Math.floor(Math.random() * this.randomNickname.length);
-      this.userInfo.nickname = this.randomNickname[randomNum];
+      const randomNumNoun = Math.floor(
+        Math.random() * this.randomNickNoun.length
+      );
+      const randomNumAdj = Math.floor(
+        Math.random() * this.randomNickAdj.length
+      );
+      const randomNumAdv = Math.floor(
+        Math.random() * this.randomNickAdv.length
+      );
+      this.userInfo.nickname =
+        this.randomNickAdv[randomNumAdv] +
+        this.randomNickAdj[randomNumAdj] +
+        this.randomNickNoun[randomNumNoun];
     }
   }
 };

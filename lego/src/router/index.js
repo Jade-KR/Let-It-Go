@@ -4,10 +4,12 @@ import Home from "../views/Home.vue";
 import MyPage from "../views/MyPage.vue";
 import Login from "../views/base/Login.vue";
 import Register from "../views/base/Register.vue";
-import UserSetting from "../views/UserSetting.vue";
+import Detail from "../views/Page/Detail.vue";
+
 Vue.use(VueRouter);
 
-const routes = [{
+const routes = [
+  {
     path: "/",
     name: "Home",
     component: Home
@@ -28,12 +30,10 @@ const routes = [{
     component: Register
   },
   {
-    path: "/UserSetting",
-    name: "UserSetting",
-    component: UserSetting,
-    props: true
-  },
-
+    path: "/detail",
+    name: "Detail",
+    component: Detail
+  }
   // {
   //   path: "/about",
   //   name: "About",

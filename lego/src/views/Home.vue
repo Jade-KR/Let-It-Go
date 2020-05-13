@@ -72,12 +72,12 @@ export default {
 
 <style scoped>
 #home-body {
-  /* border: 1px solid black; */
+  /* border: 1px solid rgba(0, 0, 0, 0); */
   box-sizing: border-box;
-  position: absolute;
-  top: 100px;
+  /* position: absolute;
+  top: 100px; */
   width: 100%;
-  background-color: rgb(245, 245, 245);
+  /* background-color: rgb(245, 245, 245); */
 }
 #home-show {
   width: 120px;
