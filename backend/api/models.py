@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
 class CustomUser(AbstractUser):
-    nick_name = models.CharField(max_length=50)
+    nickname = models.CharField(max_length=50)
     image = models.TextField(null=True)
     comment = models.CharField(max_length=100, null=True)
     age = models.IntegerField(null=True)
