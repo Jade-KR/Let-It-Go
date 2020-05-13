@@ -15,7 +15,7 @@
         <div class="icons_box" v-if="login">
           <i class="fas fa-home" @click="goHome"></i>
           <i class="fas fa-search"></i>
-          <i class="fas fa-user-alt" @click="goMypage"></i>
+          <i class="fas fa-user-alt" @click="goMyPage"></i>
         </div>
         <div class="icons_box" v-else>
           <button @click="goLogin">로그인</button>
@@ -34,7 +34,7 @@ export default {
     };
   },
   methods: {
-    goMypage() {
+    goMyPage() {
       this.$router.push("/MyPage");
     },
     goHome() {
@@ -55,8 +55,8 @@ export default {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin: 0;
-  padding: 0;
+  height: 100%;
+  border-bottom: rgb(255, 213, 26) solid 4px;
 }
 .nav_left {
   width: 100%;

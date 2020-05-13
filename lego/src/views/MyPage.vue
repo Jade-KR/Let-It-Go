@@ -2,29 +2,35 @@
   <div>
     <div class="container">
       <div class="header">
-        <MypageHeader></MypageHeader>
+        <MyPageHeader></MyPageHeader>
       </div>
       <hr />
       <div class="body_menu_bar">
-        <button class="menu" v-for="i in menus.length" :key="i">
-          <i :class="menus[i-1].icon"></i>
-          {{menus[i-1].title}}
+        <button
+          class="menu"
+          @click.prevent="menuState(idx, menus.length)"
+          :id="`menu${idx}`"
+          v-for="(menu,idx) in menus"
+          :key="`first${idx}`"
+        >
+          <i :class="menu.icon"></i>
+          {{menu.title}}
         </button>
       </div>
       <div class="body">
-        <MypageBody></MypageBody>
+        <MyPageBody></MyPageBody>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import MypageHeader from "@/components/MypageHeader.vue";
-import MypageBody from "@/components/MypageBody.vue";
+import MyPageHeader from "@/components/MyPage/MyPageHeader.vue";
+import MyPageBody from "@/components/MyPage/MyPageBody.vue";
 export default {
   components: {
-    MypageHeader,
-    MypageBody
+    MyPageHeader,
+    MyPageBody
   },
   data() {
     return {
@@ -34,8 +40,29 @@ export default {
         { title: "좋아요", icon: "fas fa-heart" },
         { title: "기타", icon: "fas fa-scroll" },
         { title: "등등", icon: "fas fa-scroll" }
-      ]
+      ],
+      currentState: 0
     };
+  },
+  mounted() {
+    let target = document.getElementById(`menu${this.currentState}`);
+    target.style.fontWeight = "bold";
+    target.style.color = "black";
+  },
+  methods: {
+    menuState(idx, n) {
+      this.currentState = idx;
+      for (let i = 0; i < n; i++) {
+        let target = document.getElementById(`menu${i}`);
+        if (i === idx) {
+          target.style.fontWeight = "bold";
+          target.style.color = "black";
+        } else {
+          target.style.fontWeight = "normal";
+          target.style.color = "rgb(160, 159, 159)";
+        }
+      }
+    }
   }
 };
 </script>
@@ -74,8 +101,7 @@ hr {
 }
 .menu:hover {
   color: black;
-  font-size: 18px;
-  font: x-large;
+  font-weight: bold;
 }
 .body {
   border-style: none;

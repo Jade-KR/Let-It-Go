@@ -12,9 +12,11 @@
       <div class="my_info">
         <div class="info_top">
           <span class="user_id">Jade</span>
-          <span class="user_setting" @click="test">
-            <i class="fas fa-cog"></i>
-          </span>
+          <UserModal>
+            <span class="user_setting" slot="click">
+              <i class="fas fa-cog"></i>
+            </span>
+          </UserModal>
         </div>
         <div class="info_middle">
           <div v-for="i in summaryItems.length" :key="i" class="summary">
@@ -28,7 +30,11 @@
 </template>
 
 <script>
+import UserModal from "./UserModal";
 export default {
+  components: {
+    UserModal
+  },
   data() {
     return {
       summaryItems: [
@@ -41,11 +47,7 @@ export default {
       dialog: false
     };
   },
-  methods: {
-    test() {
-      alert("모달아 나와라");
-    }
-  }
+  methods: {}
 };
 </script>
 
