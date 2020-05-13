@@ -4,69 +4,58 @@
       <div class="whole_box">
         <div class="left_menu_box">
           <div class="menu_box" v-for="(menu, idx) in menus" :key="menu">
-            <p :id="`menu${idx}`" @click="menuState(idx, menus.length)">{{menu}}</p>
+            <p
+              :id="`menu${idx}`"
+              @click="menuState(menu, idx)"
+              :style="btnFlag === menu ? btnStyle[0] : btnStyle[1]"
+            >{{menu}}</p>
           </div>
         </div>
-        <div class="right_body_box">
-          <div class="all_box">
-            <div class="form_box">
-              <div class="label_box">사진</div>
-              <div class="input_box">
-                <input type="text" />
-              </div>
-            </div>
-            <div class="form_box">
-              <div class="label_box">닉네임</div>
-              <div class="input_box">
-                <input type="text" />
-              </div>
-            </div>
-            <div class="form_box">
-              <div class="label_box">소개</div>
-              <div class="input_box">
-                <textarea name id cols="30" rows="3"></textarea>
-              </div>
-            </div>
-            <div class="form_box">
-              <div class="label_box">이메일</div>
-              <div class="input_box">
-                <input type="text" value="ijung1@naver.com" />
-              </div>
-            </div>
-            <div class="form_box">
-              <div class="label_box"></div>
-              <div class="input_box"></div>
-            </div>
-          </div>
-        </div>
+        <SetProfile v-if="currentState === 0"></SetProfile>
+        <SetPassword v-if="currentState === 1"></SetPassword>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import SetProfile from "../components/UserSetting/SetProfile";
+import SetPassword from "../components/UserSetting/SetPassword";
 export default {
-  props: { idx: Number },
+  props: { title: String, idx: Number },
+  components: {
+    SetProfile,
+    SetPassword
+  },
   data() {
     return {
       menus: ["프로필 편집", "비밀번호 변경", "분류기 설정"],
-      currentState: 0
+      currentState: 0,
+      btnFlag: "프로필 편집",
+      btnStyle: [
+        {
+          fontWeight: "bold"
+        },
+        {
+          fontWeight: "normal"
+        }
+      ]
     };
   },
   mounted() {
-    const i = this.idx;
-    const n = this.menus.length;
-    this.menuState(i, n);
+    this.menuState(this.title, this.idx);
   },
   methods: {
-    menuState(idx, n) {
+    menuState(title, idx) {
       this.currentState = idx;
-      for (let i = 0; i < n; i++) {
-        let target = document.getElementById(`menu${i}`);
-        i === idx
-          ? (target.style.fontWeight = "bold")
-          : (target.style.fontWeight = "normal");
-      }
+      this.btnFlag = title;
+      // this.currentState = idx;
+      // for (let i = 0; i < n; i++) {
+      //   let target = document.getElementById(`menu${i}`);
+      //   i === idx
+      //     ? (target.style.fontWeight = "bold")
+      //     : (target.style.fontWeight = "normal");
+      // }
     }
   }
 };
@@ -118,28 +107,5 @@ export default {
 }
 .menu_box:hover {
   cursor: pointer;
-}
-.all_box {
-  width: 100%;
-}
-.form_box {
-  display: flex;
-  width: 100%;
-}
-.label_box {
-  border: silver 1px solid;
-  width: 20%;
-  text-align: right;
-  padding-right: 20px;
-}
-.input_box {
-  border: silver 1px solid;
-  width: 80%;
-}
-input,
-textarea {
-  width: 100%;
-  background: rgb(240, 240, 240);
-  height: 100%;
 }
 </style>

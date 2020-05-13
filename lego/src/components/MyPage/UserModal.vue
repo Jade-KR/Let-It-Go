@@ -8,7 +8,12 @@
       </template>
 
       <v-card class="menu_box">
-        <div class="menu" v-for="(menu, idx) in menus" :key="`menu${idx}`" @click="goSetting(idx)">
+        <div
+          class="menu"
+          v-for="(menu, idx) in menus"
+          :key="`menu${idx}`"
+          @click="goSetting(menu, idx)"
+        >
           <p>{{menu}}</p>
         </div>
         <div class="menu">
@@ -31,8 +36,11 @@ export default {
     };
   },
   methods: {
-    goSetting(idx) {
-      this.$router.push({ name: "UserSetting", params: { idx: idx } });
+    goSetting(title, idx) {
+      this.$router.push({
+        name: "UserSetting",
+        params: { title: title, idx: idx }
+      });
     }
   }
 };

@@ -8,13 +8,13 @@
       <div class="body_menu_bar">
         <button
           class="menu"
-          @click.prevent="menuState(idx, menus.length)"
+          @click.prevent="menuState(menu.title, idx)"
           :id="`menu${idx}`"
           v-for="(menu,idx) in menus"
           :key="`first${idx}`"
+          :style="btnFlag === menu.title ? btnStyle[0] : btnStyle[1]"
         >
-          <i :class="menu.icon"></i>
-          {{menu.title}}
+          <i :class="menu.icon">{{menu.title}}</i>
         </button>
       </div>
       <div class="body">
@@ -41,27 +41,37 @@ export default {
         { title: "기타", icon: "fas fa-scroll" },
         { title: "등등", icon: "fas fa-scroll" }
       ],
-      currentState: 0
+      currentState: 0,
+      btnFlag: "설계도",
+      btnStyle: [
+        {
+          color: "black",
+          fontWeight: "bold"
+        },
+        {
+          fontSize: "17px"
+        }
+      ]
     };
   },
   mounted() {
-    let target = document.getElementById(`menu${this.currentState}`);
-    target.style.fontWeight = "bold";
-    target.style.color = "black";
+    this.menuState("설계도", 0);
   },
   methods: {
-    menuState(idx, n) {
+    menuState(title, idx) {
       this.currentState = idx;
-      for (let i = 0; i < n; i++) {
-        let target = document.getElementById(`menu${i}`);
-        if (i === idx) {
-          target.style.fontWeight = "bold";
-          target.style.color = "black";
-        } else {
-          target.style.fontWeight = "normal";
-          target.style.color = "rgb(160, 159, 159)";
-        }
-      }
+      this.btnFlag = title;
+      // this.currentState = idx;
+      // for (let i = 0; i < n; i++) {
+      //   let target = document.getElementById(`menu${i}`);
+      //   if (i === idx) {
+      //     target.style.fontWeight = "bold";
+      //     target.style.color = "black";
+      //   } else {
+      //     target.style.fontWeight = "normal";
+      //     target.style.color = "rgb(160, 159, 159)";
+      //   }
+      // }
     }
   }
 };
