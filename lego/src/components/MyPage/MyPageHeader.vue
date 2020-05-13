@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container">
+    <div class="whole_box">
       <div class="my_photo">
         <div class="photo_box">
           <img
@@ -52,12 +52,13 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.whole_box {
   display: flex;
   flex-flow: row nowrap;
   border-style: none;
   width: 100%;
   height: 200px;
+  margin-top: 30px;
 }
 .my_photo {
   border-style: none;
@@ -68,7 +69,7 @@ export default {
 .my_info {
   border-style: none;
   width: 70%;
-  height: 100%;
+  height: fit-content;
 }
 .info_top {
   border-style: none;
@@ -85,7 +86,7 @@ export default {
 }
 .info_bottom {
   border-style: none;
-  height: 90px;
+  height: 100px;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;

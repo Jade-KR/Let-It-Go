@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container">
+    <div class="whole_box">
       <div class="header">
         <MyPageHeader></MyPageHeader>
       </div>
@@ -69,11 +69,11 @@ export default {
 
 <style scoped>
 /* 큰 레이아웃 */
-.container {
+.whole_box {
   border-style: none;
   align-items: center;
   width: 60%;
-  height: 100%;
+  height: fit-content;
   margin: auto;
 }
 .header {
@@ -105,7 +105,7 @@ hr {
 }
 .body {
   border-style: none;
-  height: 100%;
+  height: fit-content%;
   width: 100%;
 }
 </style>

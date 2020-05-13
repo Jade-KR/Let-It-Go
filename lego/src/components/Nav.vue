@@ -55,8 +55,11 @@ export default {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  height: 100%;
+  height: fit-content;
   border-bottom: rgb(255, 213, 26) solid 4px;
+  position: fixed;
+  z-index: 1;
+  background: white;
 }
 .nav_left {
   width: 100%;

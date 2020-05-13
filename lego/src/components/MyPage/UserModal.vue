@@ -8,22 +8,12 @@
       </template>
 
       <v-card class="menu_box">
-        <div class="menu">
-          <p>프로필 편집</p>
+        <div class="menu" v-for="(menu, idx) in menus" :key="`menu${idx}`" @click="goSetting(idx)">
+          <p>{{menu}}</p>
         </div>
-        <hr />
-        <div class="menu">
-          <p>비밀번호 변경</p>
-        </div>
-        <hr />
-        <div class="menu">
-          <p>분류기 설정</p>
-        </div>
-        <hr />
         <div class="menu">
           <p>로그아웃</p>
         </div>
-        <hr />
         <div class="menu" @click="dialog=false">
           <p>취소</p>
         </div>
@@ -36,8 +26,14 @@
 export default {
   data() {
     return {
-      dialog: false
+      dialog: false,
+      menus: ["프로필 편집", "비밀번호 변경", "분류기 설정"]
     };
+  },
+  methods: {
+    goSetting(idx) {
+      this.$router.push({ name: "UserSetting", params: { idx: idx } });
+    }
   }
 };
 </script>

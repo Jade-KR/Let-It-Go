@@ -30,7 +30,8 @@ const routes = [{
   {
     path: "/UserSetting",
     name: "UserSetting",
-    component: UserSetting
+    component: UserSetting,
+    props: true
   },
 
   // {
