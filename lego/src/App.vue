@@ -1,11 +1,11 @@
 <template>
-  <div id="app">
+  <v-app id="app">
     <div class="nav">
       <Nav></Nav>
     </div>
     <route-view :key="$route.fullPath" />
     <go-top />
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -31,7 +31,7 @@ export default {
 <style scoped>
 .nav {
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   padding-bottom: 10px;
   border-bottom: rgb(255, 213, 26) solid 4px;
 }
