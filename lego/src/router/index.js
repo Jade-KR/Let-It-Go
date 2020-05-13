@@ -4,9 +4,12 @@ import Home from "../views/Home.vue";
 import MyPage from "../views/MyPage.vue";
 import Login from "../views/base/Login.vue";
 import Register from "../views/base/Register.vue";
+import Detail from "../views/Page/Detail.vue";
+
 Vue.use(VueRouter);
 
-const routes = [{
+const routes = [
+  {
     path: "/",
     name: "Home",
     component: Home
@@ -26,6 +29,11 @@ const routes = [{
     name: "Register",
     component: Register
   },
+  {
+    path: "/detail",
+    name: "Detail",
+    component: Detail
+  }
   // {
   //   path: "/about",
   //   name: "About",

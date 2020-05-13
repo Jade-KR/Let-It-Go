@@ -5,16 +5,23 @@
     </div>
     <div class="home-card-imgs">
       <div class="slideshow-container">
+        <div
+          class="go-detail-btn"
+          @click="goDetail()"
+          :style="styleFlag ? matrixStyle[4] : instaStyle[4]"
+        >
+          상세보기
+        </div>
         <div :class="`mySlides${idx} fade`">
           <img
-            src="../../assets/logo.png"
+            src="../../assets/git.png"
             :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
           />
         </div>
 
         <div :class="`mySlides${idx} fade`">
           <img
-            src="../../assets/git.png"
+            src="../../assets/logo.png"
             :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
           />
         </div>
@@ -35,7 +42,7 @@
 
         <div :class="`mySlides${idx} fade`">
           <img
-            src="../../assets/git.png"
+            src="../../assets/side_bg.png"
             :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
           />
         </div>
@@ -48,8 +55,8 @@
           />
         </div>
 
-        <a class="prev" @click="plusSlides(-1)">&#10094;</a>
-        <a class="next" @click="plusSlides(1)">&#10095;</a>
+        <a class="prev" @click.stop="plusSlides(-1)">&#10094;</a>
+        <a class="next" @click.stop="plusSlides(1)">&#10095;</a>
       </div>
     </div>
     <div
@@ -82,6 +89,8 @@
 </template>
 
 <script>
+import router from "../../router";
+
 export default {
   props: {
     idx: {
@@ -113,6 +122,9 @@ export default {
         {
           width: "100%",
           height: "250px"
+        },
+        {
+          left: "80%"
         }
       ],
       instaStyle: [
@@ -131,7 +143,9 @@ export default {
         },
         {
           width: "100%"
-          // height: "500px"
+        },
+        {
+          left: "87.7%"
         }
       ]
     };
@@ -157,6 +171,9 @@ export default {
     dots[this.slideIndex - 1].className += " active";
   },
   methods: {
+    goDetail() {
+      router.push("/detail");
+    },
     pushLike() {
       if (this.like === false) {
         this.like = true;
@@ -164,7 +181,6 @@ export default {
         this.like = false;
       }
     },
-
     plusSlides(n) {
       this.showSlides((this.slideIndex += n));
     },
@@ -222,20 +238,30 @@ export default {
   font-size: 25px;
   float: right;
 }
-
+.go-detail-btn {
+  position: absolute;
+  cursor: pointer;
+  background-color: rgba(255, 215, 0, 0.5);
+  color: black;
+  font-weight: 700;
+  padding: 5px;
+  text-align: center;
+  z-index: 10;
+}
 .mySlides {
   display: none;
 }
 img {
   vertical-align: middle;
 }
-/* Slideshow container */
 .slideshow-container {
-  max-width: 1000px;
+  /* max-width: 1000px; */
   position: relative;
   margin: auto;
+  /* height: 614px; */
+  /* overflow: hidden;
+  box-sizing: content-box; */
 }
-/* Next & previous buttons */
 .prev,
 .next {
   cursor: pointer;
@@ -253,17 +279,14 @@ img {
   font-size: 14px;
   padding: 3px;
 }
-/* Position the "next button" to the right */
 .next {
   right: 0;
   border-radius: 50%;
 }
-/* On hover, add a black background color with a little bit see-through */
 .prev:hover,
 .next:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
-/* The dots/bullets/indicators */
 .dot1,
 .dot2,
 .dot3,
@@ -287,7 +310,6 @@ img {
 .dot:hover {
   background-color: #717171;
 }
-/* Fading animation */
 .fade {
   -webkit-animation-name: fade;
   -webkit-animation-duration: 1.5s;
@@ -310,7 +332,6 @@ img {
     opacity: 1;
   }
 }
-/* On smaller screens, decrease text size */
 @media only screen and (max-width: 300px) {
   .prev,
   .next,
