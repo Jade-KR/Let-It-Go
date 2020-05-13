@@ -11,42 +11,42 @@ class CustomUser(AbstractUser):
     user_parts = models.TextField(null=True)
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followings')
 
-class Lego(models.Model):
+class Lego_set(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    lego_name = models.CharField(max_length=100, null=True)
-    lego_parts = models.TextField(null=True)
-    lego_image = models.TextField(null=True)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    set_name = models.CharField(max_length=100, null=True)
+    set_parts = models.TextField(null=True)
+    set_image = models.TextField(null=True)
     description = models.CharField(max_length=500, null=True)
-    tag = models.CharField(max_length=200, null=True)
-    reference = models.CharField(max_length=500, null=True)
-    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="like_legos", blank=True)
+    tags = models.CharField(max_length=200, null=True)
+    references = models.CharField(max_length=500, null=True)
+    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="like_sets", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     @property
     def tag_list(self):
-        return self.tag.split("|") if self.tag else []
+        return self.tags.split("|") if self.tags else []
     @property
     def reference_list(self):
-        return self.reference.split("|") if self.reference else []
+        return self.references.split("|") if self.references else []
 
     def __str__(self):
-        return self.lego_name
+        return self.set_name
 
 class Review(models.Model):
     id = models.IntegerField(primary_key=True)
-    lego = models.ForeignKey(Lego, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    set_id = models.ForeignKey(Lego_set, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
     score = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-    return self.content
+        return self.content
 
-class lego_part(models.Model):
+class Lego_part(models.Model):
     id = models.IntegerField(primary_key=True)
     part_name = models.CharField(max_length=100, null=True)
     part_image = models.TextField(null=True)
@@ -57,9 +57,9 @@ class lego_part(models.Model):
         return self.bricklink_ids.split("|") if self.bricklink_ids else []
 
     def __str__(self):
-    return self.part_name
+        return self.part_name
 
-class color(models.Model):
+class Color(models.Model):
     id = models.IntegerField(primary_key=True)
     color_name = models.CharField(max_length=100, null=True)
     color_rgb = models.TextField(null=True)
@@ -82,4 +82,4 @@ class color(models.Model):
         return self.official_descrs.split("|") if self.official_descrs else []
 
     def __str__(self):
-    return self.color_name
+        return self.color_name
