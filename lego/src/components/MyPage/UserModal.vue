@@ -14,13 +14,13 @@
           :key="`menu${idx}`"
           @click="goSetting(menu, idx)"
         >
-          <p>{{menu}}</p>
+          <p class="menu_name">{{menu}}</p>
         </div>
         <div class="menu">
-          <p>로그아웃</p>
+          <p class="menu_name">로그아웃</p>
         </div>
         <div class="menu" @click="dialog=false">
-          <p>취소</p>
+          <p class="menu_name">취소</p>
         </div>
       </v-card>
     </v-dialog>
@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       dialog: false,
-      menus: ["프로필 편집", "비밀번호 변경", "분류기 설정"]
+      menus: ["프로필 편집", "비밀번호 변경", "레고레일 설정"]
     };
   },
   methods: {
@@ -51,7 +51,7 @@ export default {
   height: 250px;
   display: flex;
   flex-flow: column nowrap;
-  border: rgb(255, 115, 0) 4px solid;
+  border: rgb(255, 140, 46) 4px solid;
 }
 .menu {
   width: 100%;
@@ -63,10 +63,15 @@ export default {
   background: green;
   transition: ease-in;
   transition-duration: 0.2s;
+  border-bottom: gold 1px solid;
 }
 .menu:hover {
   cursor: pointer;
-  background: rgb(0, 82, 0);
+  background: rgb(0, 112, 0);
+}
+.menu:hover .menu_name {
+  font-weight: bold;
+  border-bottom: gold 2px solid;
 }
 .menu > p {
   margin: 0;

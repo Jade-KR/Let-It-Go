@@ -3,7 +3,12 @@
     <div class="bg">
       <div class="whole_box">
         <div class="left_menu_box">
-          <div class="menu_box" v-for="(menu, idx) in menus" :key="menu">
+          <div
+            class="menu_box"
+            v-for="(menu, idx) in menus"
+            :key="menu"
+            :style="btnFlag === menu ? boxStyle[0] : boxStyle[1]"
+          >
             <p
               :id="`menu${idx}`"
               @click="menuState(menu, idx)"
@@ -13,6 +18,7 @@
         </div>
         <SetProfile v-if="currentState === 0"></SetProfile>
         <SetPassword v-if="currentState === 1"></SetPassword>
+        <SetLegoRail v-if="currentState === 2"></SetLegoRail>
       </div>
     </div>
   </div>
@@ -21,15 +27,17 @@
 <script>
 import SetProfile from "../components/UserSetting/SetProfile";
 import SetPassword from "../components/UserSetting/SetPassword";
+import SetLegoRail from "../components/UserSetting/SetLegoRail";
 export default {
   props: { title: String, idx: Number },
   components: {
     SetProfile,
-    SetPassword
+    SetPassword,
+    SetLegoRail
   },
   data() {
     return {
-      menus: ["프로필 편집", "비밀번호 변경", "분류기 설정"],
+      menus: ["프로필 편집", "비밀번호 변경", "레고레일 설정"],
       currentState: 0,
       btnFlag: "프로필 편집",
       btnStyle: [
@@ -39,7 +47,8 @@ export default {
         {
           fontWeight: "normal"
         }
-      ]
+      ],
+      boxStyle: [{ borderLeft: "3px solid black" }]
     };
   },
   mounted() {
@@ -68,11 +77,10 @@ export default {
   width: 100%;
   display: flex;
   justify-content: center;
-  background: white;
 }
 .whole_box {
   border: 1px silver solid;
-  width: 55%;
+  width: 60%;
   height: fit-content;
   display: flex;
   padding: 0;
@@ -80,12 +88,11 @@ export default {
   margin-top: 50px;
 }
 .left_menu_box {
-  border: 1px silver solid;
+  border-right: 1px silver solid;
   width: 25%;
   height: 500px;
 }
 .right_body_box {
-  border: 1px silver solid;
   width: 75%;
   height: fit-content;
 }
@@ -96,7 +103,8 @@ export default {
   height: 60px;
 }
 .menu_box:hover {
-  background: #e6e6e6;
+  background: #f8f8f8;
+  border-left: silver solid 3px;
 }
 .menu_box > p {
   margin: 0;
