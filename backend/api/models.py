@@ -10,9 +10,18 @@ class CustomUser(AbstractUser):
     gender = models.IntegerField(null=True)
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followings')
 
+class Theme(models.Model):
+    id = models.IntegerField(primary_key=True)
+    parent_id = models.IntegerField(null=True)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
 class LegoSet(models.Model):
     id = models.IntegerField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    theme_id = models.ForeignKey(Theme, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, null=True)
     images = models.TextField(null=True)
     description = models.CharField(max_length=500, null=True)
