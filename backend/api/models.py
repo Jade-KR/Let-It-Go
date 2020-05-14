@@ -5,17 +5,15 @@ from django.conf import settings
 class CustomUser(AbstractUser):
     nickname = models.CharField(max_length=50)
     image = models.TextField(null=True)
-    comment = models.CharField(max_length=100, null=True)
+    comment = models.CharField(max_length=300, null=True)
     age = models.IntegerField(null=True)
     gender = models.IntegerField(null=True)
-    parts = models.TextField(null=True)
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followings')
 
 class LegoSet(models.Model):
     id = models.IntegerField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, null=True)
-    parts = models.TextField(null=True)
     images = models.TextField(null=True)
     description = models.CharField(max_length=500, null=True)
     tags = models.CharField(max_length=200, null=True)
@@ -37,6 +35,21 @@ class LegoSet(models.Model):
     def __str__(self):
         return self.name
 
+class OfficialMapping(models.Model):
+    set_id = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
+    official_id = models.IntegerField()
+
+    def __str__(self):
+        return self.set_id
+
+class Category(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
+    part_count = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
 class Review(models.Model):
     id = models.IntegerField(primary_key=True)
     set_id = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
@@ -51,6 +64,7 @@ class Review(models.Model):
 
 class LegoPart(models.Model):
     id = models.IntegerField(primary_key=True)
+    category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, null=True)
     image = models.TextField(null=True)
     bricklink_ids = models.TextField(null=True)
@@ -86,3 +100,21 @@ class Color(models.Model):
 
     def __str__(self):
         return self.name
+
+class UserPart(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    part_id = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
+    color_id = models.ForeignKey(Color, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+
+    def __str__(self):
+        return self.part_id
+
+class SetPart(models.Model):
+    set_id = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
+    part_id = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
+    color_id = models.ForeignKey(Color, on_delete=models.CASCADE)
+    quantity = models.IntegerField(null=True)
+
+    def __str__(self):
+        return self.set_id
