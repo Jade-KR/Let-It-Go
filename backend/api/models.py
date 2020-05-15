@@ -20,10 +20,11 @@ class Theme(models.Model):
 
 class LegoSet(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    theme_id = models.ForeignKey(Theme, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, null=True)
-    images = models.TextField(null=True)
+    num_parts = models.IntegerField(null=True)
+    image = models.TextField(null=True)
     description = models.CharField(max_length=500, null=True)
     tags = models.CharField(max_length=200, null=True)
     references = models.CharField(max_length=500, null=True)
@@ -32,21 +33,21 @@ class LegoSet(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     @property
-    def tagList(self):
+    def tag_list(self):
         return self.tags.split("|") if self.tags else []
     @property
-    def referenceList(self):
+    def reference_list(self):
         return self.references.split("|") if self.references else []
     @property
-    def imageList(self):
+    def image_list(self):
         return self.images.split("|") if self.images else []
 
     def __str__(self):
         return self.name
 
 class OfficialMapping(models.Model):
-    set_id = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
-    official_id = models.IntegerField()
+    id = models.CharField(primary_key=True, max_length=50)
+    lego_set = models.ForeignKey(LegoSet, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.set_id
@@ -72,15 +73,20 @@ class Review(models.Model):
         return self.content
 
 class LegoPart(models.Model):
-    id = models.IntegerField(primary_key=True)
-    category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
+    id = models.CharField(primary_key=True, max_length=50)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=100, null=True)
     image = models.TextField(null=True)
     bricklink_ids = models.TextField(null=True)
+    official_ids = models.TextField(null=True)
 
     @property
-    def bricklinkIdList(self):
+    def bricklink_id_list(self):
         return self.bricklink_ids.split("|") if self.bricklink_ids else []
+
+    @property
+    def official_id_list(self):
+        return self.official_ids.split("|") if self.official_ids else []
 
     def __str__(self):
         return self.name
@@ -95,16 +101,16 @@ class Color(models.Model):
     official_descrs = models.TextField(null=True)
 
     @property
-    def bricklinkIdList(self):
+    def bricklink_id_list(self):
         return self.bricklink_ids.split("|") if self.bricklink_ids else []
     @property
-    def bricklinkDescrsList(self):
+    def bricklink_descrs_list(self):
         return self.bricklink_descrs.split("|") if self.bricklink_descrs else []
     @property
-    def officialIdList(self):
+    def official_id_list(self):
         return self.official_ids.split("|") if self.official_ids else []
     @property
-    def officialDescrsList(self):
+    def official_descrs_list(self):
         return self.official_descrs.split("|") if self.official_descrs else []
 
     def __str__(self):

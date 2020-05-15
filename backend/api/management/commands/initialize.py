@@ -39,184 +39,110 @@ class Command(BaseCommand):
         print("Loading color data")
         cur_file = Path(settings.BASE_DIR) / "crawling" / "data" / "color.p"
         with open(cur_file, 'rb') as f:
-            color_list = pickle.load(f)
+            color_list = pickle.load(f)["results"]
         print("complete")
         print("Loading part_categories data")
         cur_file = Path(settings.BASE_DIR) / "crawling" / "data" / "part_categories.p"
         with open(cur_file, 'rb') as f:
-            part_categories_list = pickle.load(f)
+            part_categories_list = pickle.load(f)["results"]
         print("complete")
         print("Loading theme data")
         cur_file = Path(settings.BASE_DIR) / "crawling" / "data" / "theme.p"
         with open(cur_file, 'rb') as f:
-            theme_categories_list = pickle.load(f)
+            theme_list = pickle.load(f)["results"]
         print("complete")
-
-
-        
-        # print("Reading part ")
-        # parts = []
-        # for i in range(1, 37):
-
-        #     cur_file = Path(settings.BASE_DIR) / "crawling" /  "data" / "part_{}".format(i)
-        #     try:
-        #         print(cur_file)
-        #         with open(cur_file, 'rb') as f:
-        #             data = pickle.load(f)
-        #             parts = parts + data["results"]
-        #     except:
-        #         print("error")
-        # cur_file = Path(settings.BASE_DIR) / "crawling" /  "data" / "part"
-        # with open(cur_file, 'wb') as f:
-        #     pickle.dump(parts, f)
-        # print(len(parts))
-        # # print(Path(settings.BASE_DIR))
-        # sets = []
-        # for i in range(1, 17):
-        #     cur_file = Path(settings.BASE_DIR) / "crawling" /  "data" / "temp" / "set_{}".format(i)
-        #     try:
-        #         print(cur_file)
-        #         with open(cur_file, 'rb') as f:
-        #             data = pickle.load(f)
-        #             sets = sets + data["results"]
-        #     except:
-        #         print("error")
-        # print(len(sets))
-        # cur_file = Path(settings.BASE_DIR) / "crawling" /  "data" / "set"
-        # with open(cur_file, 'wb') as f:
-        #     pickle.dump(sets, f)
-        # print(sets)
-        # # with open
-        print("[*] Loading data...")
-        # dataframe pkl 파일을 읽어오는 _load_dataframes함수를 실행합니다.
-        dataframes = self._load_dataframes()
-        store_images = pd.read_pickle('store_image.p')
-        store_review_count_df = dataframes["reviews"][["store", "user"]].groupby("store").count()
-        user_review_count_df = dataframes["reviews"][["store", "user"]].groupby("user").count()
-        store_review_count_df_index_set = set(store_review_count_df.index)
-        user_review_count_df_index_set = set(user_review_count_df.index)
-        # 데이터 중 빈 값들을 0.0으로 입력해 줍니다.
-        dataframes["stores"]["latitude"] = dataframes["stores"]["latitude"].fillna(0.0)
-        dataframes["stores"]["longitude"] = dataframes["stores"]["longitude"].fillna(0.0)
-        dataframes["menues"]["price"]=dataframes["menues"]["price"].fillna(0).astype(int)
         
         print("[*] Delete all data...")
         # DB에 저장된 정보를 모두 지워 초기화해 줍니다.
-        models.Store.objects.all().delete()
         models.CustomUser.objects.all().delete()
+        models.Theme.objects.all().delete()
+        models.LegoSet.objects.all().delete()
+        models.OfficialMapping.objects.all().delete()
+        models.Category.objects.all().delete()
         models.Review.objects.all().delete()
-        models.Menu.objects.all().delete()
-        models.StoreImage.objects.all().delete()
-        models.UserLikeStore.objects.all().delete()
-        models.Algorithm.objects.all().delete()
+        models.LegoPart.objects.all().delete()
+        models.Color.objects.all().delete()
+        models.UserPart.objects.all().delete()
+        models.SetPart.objects.all().delete()
         print("[+] Done")
-
-        print("[*] Initializing stores...")
-        # DB에 데이터를 작성합니다.
-
-        stores = dataframes["stores"]
-        # 데이터프레임에서 매장 정보를 가져옵니다.
-        stores_bulk = [
-            models.Store(
-                id=store.id,
-                store_name=store.store_name,
-                branch=store.branch,
-                area=store.area,
-                tel=store.tel,
-                address=store.address,
-                latitude=store.latitude,
-                longitude=store.longitude,
-                category=store.category,
-                review_count=store_review_count_df.loc[store.id] if store.id in store_review_count_df_index_set else 0,
-                tag=store.tag
+        print("[*] Initializing categories...")
+        categories_bulk = [
+            models.Category(
+                id=category["id"],
+                name=category["name"],
+                part_count=category["part_count"]
             )
-            for store in stores.itertuples()
+            for category in part_categories_list
         ]
-        # 벌크데이터 리스트를 만들고 모델에 입력합니다.
-        models.Store.objects.bulk_create(stores_bulk)
+        models.Category.objects.bulk_create(categories_bulk)
         print("[+] Done")
-
-        print("[*] Initializing users...")
-        # store와 거의 동일.
-        users = dataframes["users"]
-        users_bulk = [
-            models.CustomUser(
-                id=user.id,
-                username=user.id,
-                gender=user.gender,
-                age=user.age,
-                # 유저가 작성한 리뷰 갯수를 입력합니다.
-                # 머신러닝에서 DB 데이터를 활용하기 위해 미리 계산해 칼럼에 입력합니다.
-                review_count=user_review_count_df.loc[user.id] if user.id in user_review_count_df_index_set else 0
+        print("[*] Initializing colors...")
+        colors_bulk = [
+            models.Color(
+                id=color["id"],
+                name=color["name"],
+                rgb=color["rgb"],
+                bricklink_ids="|".join(map(str, color["external_ids"]["BrickLink"]["ext_ids"])) if color["external_ids"].get("BrickLink") and color["external_ids"]["BrickLink"].get("ext_ids") else "",
+                bricklink_descrs="|".join(color["external_ids"]["BrickLink"]["ext_descrs"][0]) if color["external_ids"].get("BrickLink") and color["external_ids"]["BrickLink"].get("ext_descrs") else "",
+                official_ids="|".join(map(str, color["external_ids"]["LEGO"]["ext_ids"])) if color["external_ids"].get("LEGO") and color["external_ids"]["LEGO"].get("ext_ids") else "",
+                official_descrs="|".join(color["external_ids"]["LEGO"]["ext_descrs"][0]) if color["external_ids"].get("LEGO") and color["external_ids"]["LEGO"].get("ext_descrs") else "",
             )
-            for user in users.itertuples()
+            for color in color_list
         ]
-        models.CustomUser.objects.bulk_create(users_bulk)
+        models.Color.objects.bulk_create(colors_bulk)
         print("[+] Done")
-
-        print("[*] Initializing menues...")
-        menues = dataframes["menues"]
-        menues_bulk = [
-            models.Menu(
-                id=menu.id,
-                store_id=menu.store,
-                menu_name=menu.menu_name,
-                price=menu.price,
+        print("[*] Initializing themes...")
+        themes_bulk = [
+            models.Theme(
+                id=theme["id"],
+                parent_id=theme["parent_id"],
+                name=theme["name"]
             )
-            for menu in menues.itertuples()
+            for theme in theme_list
         ]
-        models.Menu.objects.bulk_create(menues_bulk)
-        print("[+] Done")
-
-        print("[*] Initializing reviews...")
-        reviews = dataframes["reviews"]
-        reviews_bulk = [
-            models.Review(
-                store_id=review.store,
-                store_name=models.Store.objects.get(id=review.store).store_name,
-                user_id=review.user,
-                score=review.score,
-                content=review.content,
-                reg_time=review.reg_time,
-            )
-            for review in reviews.itertuples()
-        ]
-        models.Review.objects.bulk_create(reviews_bulk)
-        print("[+] Done")
-
-        print("[*] Initializing Algorithm...")
-        models.Algorithm.objects.create(alg_name="svdpp")
+        models.Theme.objects.bulk_create(themes_bulk)
         print("[+] Done")
         
-        print("[*] Initializing learning dataframe...")
-        userset = set()
-        for user in models.CustomUser.objects.filter(review_count__gte=10).values("id"):
-            userset.add(user['id'])
-        # 리뷰가 열개 이상인 매장
-        storeset = set()
-        for store in models.Store.objects.filter(review_count__gte=10).values("id"):
-            storeset.add(store['id'])
-        df = pd.DataFrame(models.Review.objects.all().values("user", "store", "score"))
-        df = df[df["user"].isin(userset) & df["store"].isin(storeset)]
-        
-        with open('learning_dataframe.p', 'wb') as f:
-            pickle.dump(df, f)
-
-        print("[+] Done")
-
-
-        print("[*] Initializing store_image...")
-        
-        store_image_bulk = [
-            models.StoreImage(
-                store_id=store_image.store_id,
-                url=store_image.url,
+        print("[*] Initializing sets...")
+        sets_bulk = [
+            models.LegoSet(
+                theme_id=legoset["theme_id"],
+                name=legoset["name"],
+                num_parts=legoset["num_parts"],
+                image=legoset["set_img_url"],
             )
-            for store_image in store_images.itertuples()
+            for legoset in set_list
         ]
-        models.StoreImage.objects.bulk_create(store_image_bulk)
+        models.LegoSet.objects.bulk_create(sets_bulk)
         print("[+] Done")
-        
+
+        print("[*] Initializing official mapping table...")
+        mapping_table = [
+            models.OfficialMapping(
+                id=v["set_num"],
+                lego_set_id=i
+            )
+            for i, v in enumerate(set_list, 1)
+        ]
+        models.OfficialMapping.objects.bulk_create(mapping_table)
+        print("[+] Done")
+        print(part_list[0])
+        return
+        print("[*] Initializing lego parts...")
+        lego_part_bulk = [
+            models.LegoPart(
+                id=part["part_num"],
+                name=part["name"],
+                category_id=part["part_cat_id"],
+                image=part["part_img_url"] if part["part_img_url"] else "",
+                bricklink_ids="|".join(part["BrickLink"]) if part["external_ids"].get("BrickLink") else "",
+                official_ids="|".join(part["LEOG"]) if part["external_ids"].get("LEGO") else ""
+            )
+            for part in part_list
+        ]
+        models.LegoPart.objects.bulk_create(lego_part_bulk)
+
+
 
     def handle(self, *args, **kwargs):
         # python manage.py initialize를 실행하면 가장 먼저 들어오는 부분
