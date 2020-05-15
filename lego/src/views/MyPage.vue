@@ -14,11 +14,14 @@
           :key="`first${idx}`"
           :style="btnFlag === menu.title ? btnStyle[0] : btnStyle[1]"
         >
-          <i :class="menu.icon">{{menu.title}}</i>
+          <i :class="menu.icon">&nbsp;{{menu.title}}</i>
         </button>
       </div>
       <div class="body">
-        <MyPageBody></MyPageBody>
+        <Instruction v-if="currentState === 0"></Instruction>
+        <Like v-if="currentState === 1"></Like>
+        <Parts v-if="currentState === 2"></Parts>
+        <Combination v-if="currentState === 3"></Combination>
       </div>
     </div>
   </div>
@@ -26,19 +29,25 @@
 
 <script>
 import MyPageHeader from "@/components/MyPage/MyPageHeader.vue";
-import MyPageBody from "@/components/MyPage/MyPageBody.vue";
+import Instruction from "@/components/MyPage/MyPageBody/Instruction.vue";
+import Like from "@/components/MyPage/MyPageBody/Like.vue";
+import Parts from "@/components/MyPage/MyPageBody/Parts.vue";
+import Combination from "@/components/MyPage/MyPageBody/Combination.vue";
 export default {
   components: {
     MyPageHeader,
-    MyPageBody
+    Instruction,
+    Like,
+    Parts,
+    Combination
   },
   data() {
     return {
       menus: [
         { title: "설계도", icon: "fas fa-scroll" },
-        { title: "부품", icon: "fas fa-cubes" },
         { title: "좋아요", icon: "fas fa-heart" },
-        { title: "기타", icon: "fas fa-scroll" },
+        { title: "부품", icon: "fas fa-cubes" },
+        { title: "조합", icon: "fas fa-puzzle-piece" },
         { title: "등등", icon: "fas fa-scroll" }
       ],
       currentState: 0,
@@ -115,7 +124,7 @@ hr {
 }
 .body {
   border-style: none;
-  height: fit-content%;
+  height: fit-content;
   width: 100%;
 }
 </style>
