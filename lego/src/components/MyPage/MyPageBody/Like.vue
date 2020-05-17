@@ -97,7 +97,7 @@ export default {
   opacity: 0;
   position: absolute;
   left: 50%;
-  transform: translate(-50%, -100%);
+  transform: translate(-50%, -90%);
   width: 100%;
   height: 100%;
   display: flex;
@@ -115,6 +115,7 @@ export default {
 .body_img_box:hover .body_img_hover {
   opacity: 1;
   cursor: pointer;
+  transform: translate(-50%, -100%);
 }
 .body_img_info {
   width: 100%;

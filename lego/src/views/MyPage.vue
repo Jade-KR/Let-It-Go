@@ -68,8 +68,14 @@ export default {
   },
   methods: {
     menuState(title, idx) {
-      this.currentState = idx;
-      this.btnFlag = title;
+      const bodyContainer = document.querySelector(".body");
+      bodyContainer.classList.add("anim-out");
+      setTimeout(() => {
+        this.currentState = idx;
+        this.btnFlag = title;
+        bodyContainer.classList.remove("anim-out");
+      }, 300);
+
       // this.currentState = idx;
       // for (let i = 0; i < n; i++) {
       //   let target = document.getElementById(`menu${i}`);
@@ -126,5 +132,11 @@ hr {
   border-style: none;
   height: fit-content;
   width: 100%;
+  opacity: 1;
+  transition: all 0.3s ease-out;
+}
+.body.anim-out {
+  opacity: 0;
+  transform: scale(0.9) translateY(40px);
 }
 </style>
