@@ -1,6 +1,8 @@
 <template>
   <div>
     asdf
+    asdfasdf
+    asdfasdfasdf
   </div>
 </template>
 
