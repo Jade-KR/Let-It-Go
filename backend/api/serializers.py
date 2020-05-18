@@ -25,3 +25,23 @@ class LegoSetSerializer(serializers.ModelSerializer):
         ]
     def get_nickname(self, obj):
         return obj.user.nickname if obj.user else "Official Set"
+
+class LegoPartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LegoPart
+        fields = [
+            "id",
+            "category",
+            "name",
+            "image",
+        ]
+
+class UserPartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserPart
+        fields = [
+            "user_id",
+            "part_id",
+            "color_id",
+            "quantity"
+        ]

@@ -19,9 +19,12 @@ schema_view = get_schema_view(
 router = DefaultRouter(trailing_slash=False)
 router.register(r"Themes", views.ThemeViewSet, basename="Themes")
 router.register(r"LegoSet", views.LegoSetViewSet, basename="LegoSet")
+router.register(r"LegoPart", views.LegoPartViewSet, basename="LegoPart")
 
 urlpatterns = [
     *router.urls,
+    path('UpdateUserInventory', views.UpdateUserInventory, name='UpdateUserInventory'),
+
     path('swagger/', schema_view.with_ui('swagger'), name='api_swagger'),
     path('token/', obtain_jwt_token),
     path('token/verify/', verify_jwt_token),
