@@ -65,6 +65,7 @@ class Command(BaseCommand):
         models.UserPart.objects.all().delete()
         models.SetPart.objects.all().delete()
         print("[+] Done")
+
         print("[*] Initializing categories...")
         categories_bulk = [
             models.Category(
@@ -76,6 +77,7 @@ class Command(BaseCommand):
         ]
         models.Category.objects.bulk_create(categories_bulk)
         print("[+] Done")
+
         print("[*] Initializing colors...")
         colors_bulk = [
             models.Color(
@@ -91,6 +93,7 @@ class Command(BaseCommand):
         ]
         models.Color.objects.bulk_create(colors_bulk)
         print("[+] Done")
+
         print("[*] Initializing themes...")
         themes_bulk = [
             models.Theme(
@@ -126,8 +129,7 @@ class Command(BaseCommand):
         ]
         models.OfficialMapping.objects.bulk_create(mapping_table)
         print("[+] Done")
-        print(part_list[0])
-        return
+        
         print("[*] Initializing lego parts...")
         lego_part_bulk = [
             models.LegoPart(
@@ -135,12 +137,13 @@ class Command(BaseCommand):
                 name=part["name"],
                 category_id=part["part_cat_id"],
                 image=part["part_img_url"] if part["part_img_url"] else "",
-                bricklink_ids="|".join(part["BrickLink"]) if part["external_ids"].get("BrickLink") else "",
-                official_ids="|".join(part["LEOG"]) if part["external_ids"].get("LEGO") else ""
+                bricklink_ids="|".join(part["external_ids"]["BrickLink"]) if part["external_ids"].get("BrickLink") else "",
+                official_ids="|".join(part["external_ids"]["LEGO"]) if part["external_ids"].get("LEGO") else ""
             )
             for part in part_list
         ]
         models.LegoPart.objects.bulk_create(lego_part_bulk)
+        print("[+] Done")
 
 
 
