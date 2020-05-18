@@ -27,6 +27,8 @@ urlpatterns = [
     path('token/refresh/', refresh_jwt_token),
     path('rest-auth/', include('rest_auth.urls')),
     path('rest-auth/registration/', include('rest_auth.registration.urls')),
+    path('login/', views.CustomLoginView.as_view(), name='login'),
+
 
 
 
