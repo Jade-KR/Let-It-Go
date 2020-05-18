@@ -35,11 +35,11 @@
 </template>
 
 <script>
-import DetailImgs from "../../components/Detail/DetailImgs.vue";
-import DetailSide from "../../components/Detail/DetailSide.vue";
-import DetailReviewWrite from "../../components/Detail/DetailReviewWrite.vue";
-import DetailReview from "../../components/Detail/DetailReview.vue";
-import DetailPart from "../../components/Detail/DetailPart.vue";
+import DetailImgs from "../../components/Detail/Body/DetailImgs.vue";
+import DetailSide from "../../components/Detail/Body/DetailSide.vue";
+import DetailReviewWrite from "../../components/Detail/Review/DetailReviewWrite.vue";
+import DetailReview from "../../components/Detail/Review/DetailReview.vue";
+import DetailPart from "../../components/Detail/Part/DetailPart.vue";
 
 export default {
   components: {
