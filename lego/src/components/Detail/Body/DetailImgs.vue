@@ -2,19 +2,19 @@
   <div class="container">
     <div>
       <div class="mySlides">
-        <img src="../../assets/git.png" class="detail-imgs" />
+        <img src="../../../assets/git.png" class="detail-imgs" />
       </div>
 
       <div class="mySlides">
-        <img src="../../assets/JS.png" class="detail-imgs" />
+        <img src="../../../assets/JS.png" class="detail-imgs" />
       </div>
 
       <div class="mySlides">
-        <img src="../../assets/logo.png" class="detail-imgs" />
+        <img src="../../../assets/logo.png" class="detail-imgs" />
       </div>
 
       <div class="mySlides">
-        <img src="../../assets/side_bg.png" class="detail-imgs" />
+        <img src="../../../assets/side_bg.png" class="detail-imgs" />
       </div>
 
       <a class="prev" @click="plusSlides(-1)">❮</a>
@@ -24,28 +24,28 @@
       <div class="column">
         <img
           class="demo cursor"
-          src="../../assets/git.png"
+          src="../../../assets/git.png"
           @click="currentSlide(1)"
         />
       </div>
       <div class="column">
         <img
           class="demo cursor"
-          src="../../assets/JS.png"
+          src="../../../assets/JS.png"
           @click="currentSlide(2)"
         />
       </div>
       <div class="column">
         <img
           class="demo cursor"
-          src="../../assets/logo.png"
+          src="../../../assets/logo.png"
           @click="currentSlide(3)"
         />
       </div>
       <div class="column">
         <img
           class="demo cursor"
-          src="../../assets/side_bg.png"
+          src="../../../assets/side_bg.png"
           @click="currentSlide(4)"
         />
       </div>

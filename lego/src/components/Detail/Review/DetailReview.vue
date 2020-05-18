@@ -2,7 +2,7 @@
   <div class="detail-review-card">
     <div class="detail-review-show">
       <img
-        src="../../../public/images/user.png"
+        src="../../../../public/images/user.png"
         alt="img"
         class="detail-review-img"
       />
