@@ -3,6 +3,7 @@ from rest_framework import routers
 from api import views
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -21,4 +22,7 @@ router.register(r"Themes", views.ThemeViewSet, basename="Themes")
 urlpatterns = [
     *router.urls,
     path('swagger/', schema_view.with_ui('swagger'), name='api_swagger'),
+    path('token/', obtain_jwt_token),
+    path('token/verify/', verify_jwt_token),
+    path('token/refresh/', refresh_jwt_token),
 ]
