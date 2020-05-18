@@ -1,15 +1,163 @@
 <template>
-  <div>
-    asdf
+  <div id="write_box">
+    <div id="progress_bar">
+      <div id="progress_step1" @click="goStep(1)">1</div>
+      <hr
+        id="progress_dash12"
+        :style="
+          step === 2 || step === 3 ? activeBarStyle[1] : deactiveBarStyle[1]
+        "
+      />
+      <div
+        id="progress_step2"
+        @click="goStep(2)"
+        :style="
+          step === 2 || step === 3 ? activeBarStyle[0] : deactiveBarStyle[0]
+        "
+      >
+        2
+      </div>
+      <hr
+        id="progress_dash23"
+        :style="step === 3 ? activeBarStyle[1] : deactiveBarStyle[1]"
+      />
+      <div
+        id="progress_step3"
+        @click="goStep(3)"
+        :style="step === 3 ? activeBarStyle[0] : deactiveBarStyle[0]"
+      >
+        3
+      </div>
+    </div>
+    <hr id="write_divideline" />
+    <div @click="onPrev(step - 1)">
+      prev
+    </div>
+    <div @click="onNext(step + 1)">
+      next
+    </div>
+    <div>
+      <write-imgs v-if="currentStep === 1"></write-imgs>
+      <write-desc v-if="currentStep === 2"></write-desc>
+      <write-part v-if="currentStep === 3"></write-part>
+    </div>
   </div>
 </template>
 
 <script>
-export default {
+import WriteImgs from "../../components/Write/WriteImgs.vue";
+import WriteDesc from "../../components/Write/WriteDesc.vue";
+import WritePart from "../../components/Write/WritePart.vue";
 
-}
+export default {
+  components: {
+    WriteImgs,
+    WriteDesc,
+    WritePart
+  },
+  data() {
+    return {
+      step: 1,
+      currentStep: 1,
+      activeBarStyle: [
+        {
+          backgroundColor: "green",
+          color: "white",
+          cursor: "pointer"
+        },
+        {
+          border: "1px solid green"
+        }
+      ],
+      deactiveBarStyle: [
+        {
+          backgroundColor: "gold",
+          color: "black",
+          cursor: "default"
+        },
+        {
+          border: "1px solid gold"
+        }
+      ]
+    };
+  },
+  mounted() {
+    const step1 = document.getElementById("progress_step1");
+    step1.style.cursor = "pointer";
+  },
+  methods: {
+    goStep(idx) {
+      if (this.currentStep >= idx || this.step >= idx) {
+        this.currentStep = idx;
+      }
+      // console.log("step", this.step)
+      // console.log("cStep", this.currentStep)
+    },
+    onStep(idx) {
+      this.step = idx;
+      this.currentStep = idx;
+      // console.log(this.step);
+    },
+    onNext(idx) {
+      const step2 = document.getElementById("progress_step2");
+      const step3 = document.getElementById("progress_step3");
+      if (idx === 2) {
+        step2.addEventListener("click", this.onStep(idx));
+      } else if (idx === 3) {
+        step3.addEventListener("click", this.onStep(idx));
+      }
+    },
+    onPrev(idx) {
+      const step1 = document.getElementById("progress_step1");
+      const step2 = document.getElementById("progress_step2");
+      if (idx === 1) {
+        step1.addEventListener("click", this.onStep(idx));
+      } else if (idx === 2) {
+        step2.addEventListener("click", this.onStep(idx));
+      }
+    }
+  }
+};
 </script>
 
 <style scoped>
-
+#write_box {
+  border: 3px solid gold;
+  width: 850px;
+  margin: auto;
+  margin-top: 20px;
+  padding: 20px;
+}
+#progress_bar {
+  text-align: center;
+  margin: 20px;
+  margin-top: 0px;
+}
+#progress_step1,
+#progress_step2,
+#progress_step3 {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: gold;
+  padding: 5px;
+  text-align: center;
+}
+#progress_step1 {
+  background-color: green;
+  color: white;
+}
+#progress_dash12,
+#progress_dash23 {
+  display: inline-block;
+  width: 150px;
+  vertical-align: middle;
+  border: 1px solid gold;
+}
+#write_divideline {
+  width: 80%;
+  margin: auto;
+  border: 1px dashed gold;
+}
 </style>

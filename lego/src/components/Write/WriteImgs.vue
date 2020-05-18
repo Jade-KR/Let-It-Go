@@ -1,0 +1,212 @@
+<template>
+  <div>
+    <div>
+      <div class="container">
+        <div>
+          <div v-for="(img, i) in modelImgs" :key="`img-${i}`">
+            <div class="mySlides" :id="`myslide-${i}`">
+              <img :src="img" class="detail-imgs" />
+            </div>
+          </div>
+
+          <a id="prev" @click="plusSlides(-1)">❮</a>
+          <a id="next" @click="plusSlides(1)">❯</a>
+        </div>
+        <div class="row">
+          <div
+            class="column"
+            v-for="(img, i) in modelImgs"
+            :key="`thumbnail-${i}`"
+          >
+            <img
+              class="demo cursor"
+              :src="img"
+              @click="currentSlide(i + 1)"
+              :id="`thumbnail-${i}`"
+            />
+            <div class="delete_btn" @click="removeImage(i)">
+              삭제
+            </div>
+          </div>
+        </div>
+      </div>
+      <input
+        type="file"
+        round
+        class="change-profile-image"
+        multiple="multiple"
+        @change="onFileChange"
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      modelImgs: [],
+      files: "",
+      slideIndex: 1
+    };
+  },
+  watch: {
+    modelImgs() {
+      if (this.modelImgs.length === 0) {
+        const prev = document.getElementById("prev");
+        const next = document.getElementById("next");
+        prev.style.display = "none";
+        next.style.display = "none";
+      }
+    }
+  },
+  methods: {
+    plusSlides(n) {
+      this.showSlides((this.slideIndex += n));
+    },
+    currentSlide(n) {
+      this.showSlides((this.slideIndex = n));
+    },
+    showSlides(n) {
+      var i;
+      var slides = document.getElementsByClassName("mySlides");
+      var dots = document.getElementsByClassName("demo");
+      if (n > slides.length) {
+        this.slideIndex = 1;
+      }
+      if (n < 1) {
+        this.slideIndex = slides.length;
+      }
+      for (i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+      for (i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(" active", "");
+      }
+      slides[this.slideIndex - 1].style.display = "block";
+      dots[this.slideIndex - 1].className += " active";
+    },
+
+    onFileChange(e) {
+      this.files = e.target.files || e.dataTransfer.files;
+      if (!this.files.length) {
+        return;
+      }
+      if (
+        this.files.length > 6 ||
+        this.modelImgs.length + this.files.length > 6
+      ) {
+        alert("사진은 최대 6장까지 가능합니다.");
+        return;
+      }
+      for (let i = 0; i < this.files.length; ++i) {
+        this.createImage(this.files[i]);
+      }
+      const prev = document.getElementById("prev");
+      const next = document.getElementById("next");
+      prev.style.display = "block";
+      next.style.display = "block";
+    },
+    createImage(file) {
+      var reader = new FileReader();
+      var vm = this;
+      reader.onload = e => {
+        vm.modelImgs.push(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    },
+    removeImage(idx) {
+      this.modelImgs = this.modelImgs.filter((e, i) => i != idx);
+      if (this.modelImgs.length === 0) {
+        this.modelImgs = [];
+      }
+      const temp = [];
+      for (let i = 0; i < this.files.length; ++i) {
+        if (i !== idx) {
+          temp.push(this.files[i]);
+        }
+      }
+      this.files = temp;
+    }
+  }
+};
+</script>
+
+<style scoped>
+img {
+  vertical-align: middle;
+}
+.container {
+  position: relative;
+  padding: 0px;
+  display: flex;
+}
+.mySlides {
+  display: none;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid gold;
+}
+#myslide-0 {
+  display: block;
+}
+.detail-imgs {
+  width: 600px;
+  height: 600px;
+}
+.cursor {
+  cursor: pointer;
+}
+#prev,
+#next {
+  display: none;
+  cursor: pointer;
+  position: absolute;
+  top: 40%;
+  color: white;
+  background-color: grey;
+  font-weight: bold;
+  transition: 0.6s ease;
+  border-radius: 50%;
+  user-select: none;
+  height: 25px;
+  width: 25px;
+  text-align: center;
+  font-size: 14px;
+  padding: 3px;
+}
+#next {
+  right: 205px;
+  border-radius: 50%;
+}
+#prev:hover,
+#next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+.row {
+  margin-left: 10px;
+}
+.column {
+  display: flex;
+}
+.demo {
+  opacity: 0.6;
+  width: 200px;
+  height: 100px;
+}
+.active,
+.demo:hover {
+  opacity: 1;
+}
+.delete_btn {
+  position: absolute;
+  right: 0;
+  background-color: rgba(255, 0, 0, 0.5);
+  padding: 5px;
+  cursor: pointer;
+  color: white;
+}
+.delete_btn:hover {
+  background-color: red;
+}
+</style>
