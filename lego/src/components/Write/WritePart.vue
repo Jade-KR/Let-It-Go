@@ -1,7 +1,5 @@
 <template>
-  <div @click="test()">
-    asdf
-  </div>
+  <div @click="test()">asdf</div>
 </template>
 
 <script>

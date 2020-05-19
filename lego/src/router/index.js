@@ -10,8 +10,7 @@ import Write from "../views/Page/Write.vue";
 
 Vue.use(VueRouter);
 
-const routes = [
-  {
+const routes = [{
     path: "/",
     name: "Home",
     component: Home
@@ -46,7 +45,7 @@ const routes = [
     path: "/write",
     name: "Write",
     component: Write
-  }
+  },
   // {
   //   path: "/about",
   //   name: "About",
