@@ -23,7 +23,7 @@ router.register(r"LegoPart", views.LegoPartViewSet, basename="LegoPart")
 
 urlpatterns = [
     *router.urls,
-    path('UpdateUserInventory', views.UpdateUserInventory, name='UpdateUserInventory'),
+    path('UpdateUserPart', views.UpdateUserPart, name='UpdateUserPart'),
 
     path('swagger/', schema_view.with_ui('swagger'), name='api_swagger'),
     path('token/', obtain_jwt_token),
