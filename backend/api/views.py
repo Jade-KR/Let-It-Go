@@ -33,7 +33,7 @@ class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserPartSerializer
     
     def list(self, request):
-        queryset = UserPart.objects.filter(user_id=1)#request.user.id)
+        queryset = UserPart.objects.filter(user=request.user)
 
         page = self.paginate_queryset(queryset)
 
@@ -47,7 +47,8 @@ class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 @api_view(['POST'])
 def UpdateUserPart(self):
-    user = CustomUser.objects.get(id=1)
+    user = self.user
+    # user = CustomUser.objects.get(id=self.user)
     if user.is_authenticated:
         update_d = self.data.get("UpdateList")
         # 요청 들어온 데이터 정리하기
