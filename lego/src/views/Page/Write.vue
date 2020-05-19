@@ -30,13 +30,7 @@
       </div>
     </div>
     <hr id="write_divideline" />
-    <div @click="onPrev(step - 1)">
-      prev
-    </div>
-    <div @click="onNext(step + 1)">
-      next
-    </div>
-    <div>
+    <div id="write_info">
       <write-imgs v-if="currentStep === 1"></write-imgs>
       <write-desc v-if="currentStep === 2"></write-desc>
       <write-part v-if="currentStep === 3"></write-part>
@@ -48,6 +42,7 @@
 import WriteImgs from "../../components/Write/WriteImgs.vue";
 import WriteDesc from "../../components/Write/WriteDesc.vue";
 import WritePart from "../../components/Write/WritePart.vue";
+import { mapState, mapMutations } from "vuex";
 
 export default {
   components: {
@@ -57,8 +52,6 @@ export default {
   },
   data() {
     return {
-      step: 1,
-      currentStep: 1,
       activeBarStyle: [
         {
           backgroundColor: "green",
@@ -81,39 +74,21 @@ export default {
       ]
     };
   },
+  computed: {
+    ...mapState({
+      step: state => state.write.step,
+      currentStep: state => state.write.currentStep
+    })
+  },
   mounted() {
     const step1 = document.getElementById("progress_step1");
     step1.style.cursor = "pointer";
   },
   methods: {
+    ...mapMutations("write", ["setCurrentStep"]),
     goStep(idx) {
       if (this.currentStep >= idx || this.step >= idx) {
-        this.currentStep = idx;
-      }
-      // console.log("step", this.step)
-      // console.log("cStep", this.currentStep)
-    },
-    onStep(idx) {
-      this.step = idx;
-      this.currentStep = idx;
-      // console.log(this.step);
-    },
-    onNext(idx) {
-      const step2 = document.getElementById("progress_step2");
-      const step3 = document.getElementById("progress_step3");
-      if (idx === 2) {
-        step2.addEventListener("click", this.onStep(idx));
-      } else if (idx === 3) {
-        step3.addEventListener("click", this.onStep(idx));
-      }
-    },
-    onPrev(idx) {
-      const step1 = document.getElementById("progress_step1");
-      const step2 = document.getElementById("progress_step2");
-      if (idx === 1) {
-        step1.addEventListener("click", this.onStep(idx));
-      } else if (idx === 2) {
-        step2.addEventListener("click", this.onStep(idx));
+        this.setCurrentStep(idx);
       }
     }
   }
@@ -159,5 +134,8 @@ export default {
   width: 80%;
   margin: auto;
   border: 1px dashed gold;
+}
+#write_info {
+  margin-top: 20px;
 }
 </style>
