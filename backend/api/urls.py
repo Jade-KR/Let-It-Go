@@ -20,6 +20,7 @@ router = DefaultRouter(trailing_slash=False)
 router.register(r"Themes", views.ThemeViewSet, basename="Themes")
 router.register(r"LegoSet", views.LegoSetViewSet, basename="LegoSet")
 router.register(r"LegoPart", views.LegoPartViewSet, basename="LegoPart")
+router.register(r"UserPart", views.UserPartViewSet, basename="UserPart")
 
 urlpatterns = [
     *router.urls,

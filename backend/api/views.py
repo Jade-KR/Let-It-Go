@@ -29,8 +29,21 @@ class LegoPartViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets
     serializer_class = serializers.LegoPartSerializer
     pagination_class = SmallPagination
 
-class UserInventoryViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = UserPart.objects.all()
+class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = serializers.UserPartSerializer
+    
+    def list(self, request):
+        queryset = UserPart.objects.filter(user_id=1)#request.user.id)
+
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 @api_view(['POST'])
 def UpdateUserPart(self):
