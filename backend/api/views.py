@@ -17,6 +17,9 @@ class ThemeViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ThemeSerializer
     pagination_class = SmallPagination
 
+def go_to_myhome(request):
+    return redirect("http://127.0.0.1:8000/api/swagger/")
+
 class CustomLoginView(LoginView):
     def get_response(self):
         user = get_object_or_404(models.CustomUser, username=self.user)
