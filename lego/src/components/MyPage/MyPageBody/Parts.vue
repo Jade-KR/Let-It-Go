@@ -1,5 +1,12 @@
 <template>
   <div>
+    <div class="control_box">
+      <PartsModal>
+        <button class="submit_btn" slot="click">
+          <i class="fas fa-plus"></i>&nbsp;부품 추가
+        </button>
+      </PartsModal>
+    </div>
     <div class="whole_box" v-for="i in images.length / 8" :key="i">
       <div class="row">
         <div class="item">
@@ -79,7 +86,11 @@
   </div>
 </template>
 <script>
+import PartsModal from "./PartsModal";
 export default {
+  components: {
+    PartsModal
+  },
   data() {
     return {
       images: [
@@ -169,5 +180,17 @@ export default {
   margin: 0;
   text-align: center;
   font-size: 15px;
+}
+.control_box {
+  display: flex;
+  justify-content: space-between;
+}
+.submit_btn {
+  background: lightblue;
+  color: white;
+  width: 120px;
+  height: 30px;
+  border-radius: 5%;
+  margin-bottom: 10px;
 }
 </style>
