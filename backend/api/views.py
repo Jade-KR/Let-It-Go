@@ -8,6 +8,14 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+import requests
+
+
+API_key = '08d368a0e1830b9fec088091be154133'
+headers = {
+    'Authorization': 'key ' + API_key,
+    'Accept': 'application/json'
+}
 
 class SmallPagination(PageNumberPagination):
     page_size = 10
@@ -34,7 +42,6 @@ class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     
     def list(self, request):
         queryset = UserPart.objects.filter(user=request.user)
-
         page = self.paginate_queryset(queryset)
 
         if page is not None:
@@ -44,6 +51,38 @@ class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = serializers.SetPartSerializer
+    
+    def retrieve(self, request, pk=None):
+        queryset = SetPart.objects.filter(lego_set_id=pk)
+        if queryset:
+            serializer = serializers.SetPartSerializer(queryset, many=True)
+            return Response(serializer.data)
+        elif OfficialMapping.objects.get(lego_set_id=pk):
+            cur_page = 1
+            set_name = OfficialMapping.objects.get(lego_set_id=pk).id
+            while True:
+                res = requests.get(url='https://rebrickable.com/api/v3/lego/sets/{}/parts/?page={}&page_size=5'.format(set_name, cur_page), headers=headers).json()
+                parts = res["results"]
+                part_bulk = [
+                    SetPart(
+                        lego_set_id=pk,
+                        part_id=part["part"]["part_num"],
+                        color_id=part["color"]["id"],
+                        quantity=part["quantity"]
+                    )
+                    for part in parts
+                ]
+                SetPart.objects.bulk_create(part_bulk)
+                if not res["next"]:
+                    break
+                cur_page += 1
+            
+            queryset = SetPart.objects.filter(lego_set_id=pk)
+            serializer = serializers.SetPartSerializer(queryset, many=True)
+            return Response(serializer.data)
+        return Response("")
 
 @api_view(['POST'])
 def UpdateUserPart(self):

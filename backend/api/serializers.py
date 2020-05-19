@@ -45,3 +45,13 @@ class UserPartSerializer(serializers.ModelSerializer):
             "color_id",
             "quantity"
         ]
+
+class SetPartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SetPart
+        fields = [
+            "lego_set_id",
+            "part_id",
+            "color_id",
+            "quantity"
+        ]

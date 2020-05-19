@@ -21,6 +21,7 @@ router.register(r"Themes", views.ThemeViewSet, basename="Themes")
 router.register(r"LegoSet", views.LegoSetViewSet, basename="LegoSet")
 router.register(r"LegoPart", views.LegoPartViewSet, basename="LegoPart")
 router.register(r"UserPart", views.UserPartViewSet, basename="UserPart")
+router.register(r"SetPart", views.SetPartViewSet, basename="SetPart")
 
 urlpatterns = [
     *router.urls,

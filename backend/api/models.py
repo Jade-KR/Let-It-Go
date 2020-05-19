@@ -126,9 +126,9 @@ class UserPart(models.Model):
         return self.part_id
 
 class SetPart(models.Model):
-    set_id = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
-    part_id = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
-    color_id = models.ForeignKey(Color, on_delete=models.CASCADE)
+    lego_set = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
+    part = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
+    color = models.ForeignKey(Color, on_delete=models.CASCADE)
     quantity = models.IntegerField(null=True)
 
     def __str__(self):
