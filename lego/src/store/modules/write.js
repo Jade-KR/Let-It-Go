@@ -1,10 +1,10 @@
 const state = {
   model: {
-    theme_name: "",
+    theme_name: [],
     set_image: "",
     set_name: "",
     description: "",
-    tags: "",
+    tags: [],
     reference: "",
     parts: {
       part_id: "",
@@ -28,11 +28,12 @@ const state = {
 
 const actions = {
   next({ commit }, params) {
-    console.log(state.descParams);
+    console.log("aa", state.model);
+    console.log(params.descParams);
     if (params.step === 1) {
       commit("setImage", state.modelImgs);
     } else if (params.step === 2) {
-      commit("setDesc", state.descParams);
+      commit("setDesc", params.descParams);
     }
     const step2 = document.getElementById("progress_step2");
     const step3 = document.getElementById("progress_step3");
@@ -43,9 +44,10 @@ const actions = {
     }
   },
   prev({ commit }, params) {
-    console.log(state.descParams);
+    console.log("aa", state.model);
+    console.log(params.descParams);
     if (params.step === 2) {
-      commit("setDesc", state.descParams);
+      commit("setDesc", params.descParams);
     }
     const step1 = document.getElementById("progress_step1");
     const step2 = document.getElementById("progress_step2");
@@ -65,7 +67,37 @@ const actions = {
   },
   enrollPart({ commit }, params) {
     commit;
-    state.enrolledPart.push([params.partName, params.partImg, params.partCnt]);
+    console.log(params);
+    if (params.partQuantity === 0) {
+      return;
+    }
+    for (let i = 0; i < state.enrolledPart.length; ++i) {
+      if (
+        state.enrolledPart[i]["id"] === params.partName &&
+        state.enrolledPart[i]["color"] === params.partColor
+      ) {
+        state.enrolledPart[i]["quantity"] =
+          Number(state.enrolledPart[i]["quantity"]) +
+          Number(params.partQuantity);
+        return;
+      }
+    }
+    state.enrolledPart.push({
+      id: params.partName,
+      img: params.partImg,
+      color: params.partColor,
+      quantity: params.partQuantity
+    });
+  },
+  deletePart({ commit }, params) {
+    commit;
+    state.enrolledPart = state.enrolledPart.filter(e => {
+      return e["id"] !== params.partName && e["color"] !== params.partColor;
+    });
+  },
+  onWriteSubmit({ commit }, params) {
+    commit;
+    console.log(params);
   }
 };
 

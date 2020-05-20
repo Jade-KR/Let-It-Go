@@ -30,13 +30,16 @@
           </div>
         </div>
       </div>
-      <input
-        type="file"
-        round
-        class="change-profile-image"
-        multiple="multiple"
-        @change="onFileChange"
-      />
+      <div class="filebox">
+        <label for="ex_filename">사진선택</label>
+        <input
+          type="file"
+          id="ex_filename"
+          class="upload-hidden"
+          multiple="multiple"
+          @change="onFileChange"
+        />
+      </div>
     </div>
     <div>
       <button @click="onPrev(step - 1)" class="before_btn">
@@ -55,6 +58,7 @@
 
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
+// import axios from "axios";
 
 export default {
   data() {
@@ -103,13 +107,33 @@ export default {
     onStep(idx) {
       this.setStep(idx);
     },
-    onNext(idx) {
-      const params = {
-        idx: idx,
-        step: 1
+    onNext() {
+      // console.log(this.modelImgs[0].slice(22));
+      var myHeaders = new Headers();
+      myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
+
+      var formdata = new FormData();
+      formdata.append("image", this.modelImgs[0].slice(22));
+
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: formdata,
+        redirect: "follow"
       };
-      this.next(params);
+
+      fetch("https://api.imgur.com/3/image", requestOptions)
+        .then(response => response.text())
+        .then(result => console.log(result))
+        .catch(error => console.log("error", error));
     },
+    // onNext(idx) {
+    //   const params = {
+    //     idx: idx,
+    //     step: 1
+    //   };
+    //   this.next(params);
+    // },
     onPrev(idx) {
       const params = {
         idx: idx,
@@ -168,6 +192,12 @@ export default {
       var reader = new FileReader();
       var vm = this;
       reader.onload = e => {
+        for (let i = 0; i < vm.modelImgs.length; ++i) {
+          if (vm.modelImgs[i] === e.target.result) {
+            alert("중복되는 사진이 있습니다.");
+            return;
+          }
+        }
         vm.modelImgs.push(e.target.result);
       };
       reader.readAsDataURL(file);
@@ -299,5 +329,37 @@ img {
 .after_btn:disabled:hover {
   background-color: gray;
   color: black;
+}
+
+.filebox {
+  margin: 20px auto 0 auto;
+  text-align: center;
+}
+.filebox input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.filebox label {
+  display: inline-block;
+  padding: 0.5em 0.75em;
+  font-size: inherit;
+  line-height: normal;
+  vertical-align: middle;
+  background-color: rgba(255, 215, 0);
+  color: black;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 0.25em;
+  width: 150px;
+}
+.filebox label:hover {
+  background-color: green;
+  color: white;
 }
 </style>
