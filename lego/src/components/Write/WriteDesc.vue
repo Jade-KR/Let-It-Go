@@ -19,17 +19,26 @@
         </div>
         <v-autocomplete
           v-model="params.theme_name"
-          :loading="loading"
-          :items="themeList"
-          :search-input.sync="search"
-          cache-items
-          flat
+          :items="themes"
+          outlined
+          chips
           hide-details
           label="테마를 골라주세요"
-          solo-inverted
-          color="rgba(255, 215, 0, 0.7)"
+          color="rgb(255, 215, 0)"
+          background-color="white"
           multiple
-        ></v-autocomplete>
+        >
+          <template v-slot:selection="data">
+            <v-chip
+              v-bind="data.attrs"
+              :input-value="data.selected"
+              @click="data.select"
+              color="white"
+            >
+              {{ data.item }}
+            </v-chip>
+          </template>
+        </v-autocomplete>
       </div>
       <div id="tag">
         <div class="star">
@@ -71,7 +80,17 @@
       <button @click="onPrev(step - 1)" class="before_btn">
         이전
       </button>
-      <button @click="onNext(step + 1)" class="after_btn">
+      <button
+        @click="onNext(step + 1)"
+        class="after_btn"
+        :disabled="
+          params.set_name.length > 50 ||
+            params.set_name.length <= 2 ||
+            !params.theme_name ||
+            !params.tags ||
+            !params.description
+        "
+      >
         다음
       </button>
     </div>
@@ -103,10 +122,6 @@ export default {
           rule: tag => tag.text.length < 2
         },
         {
-          classes: "no-numbers",
-          rule: /^([^0-9]*)$/
-        },
-        {
           classes: "avoid-item",
           rule: /^(?!Cannot).*$/,
           disableAdd: true
@@ -117,18 +132,19 @@ export default {
             text.indexOf("{") !== -1 || text.indexOf("}") !== -1
         }
       ],
-      themeHeader: LegoThemes["header"],
       themess: LegoThemes["rows"],
-      loading: false,
-      themeList: [],
-      search: null,
-      themes: []
+      // autocomplete select list
+      themes: [],
+      params: {
+        set_name: "",
+        theme_name: [],
+        tags: [],
+        description: "",
+        reference: ""
+      }
     };
   },
   watch: {
-    search(val) {
-      val && val !== this.params.theme_name && this.querySelections(val);
-    },
     tag() {
       const temp = [];
       this.tags.forEach(e => {
@@ -140,19 +156,38 @@ export default {
   },
   computed: {
     ...mapState({
-      params: state => state.write.descParams,
       step: state => state.write.step,
-      currentStep: state => state.write.currentStep
+      currentStep: state => state.write.currentStep,
+      model: state => state.write.model
     })
   },
   async mounted() {
     await this.setThemesList();
+    this.params.set_name = this.model.set_name;
+    if (this.model.theme_name.length !== 0) {
+      this.params.theme_name = this.model.theme_name;
+    }
+    if (this.model.tags.length !== 0) {
+      this.tags = [];
+      this.model.tags.forEach(e => {
+        this.tags.push({
+          text: e,
+          style: "background-color: gold"
+        });
+      });
+      this.tags.forEach(e => {
+        this.params.tags.push(e["text"]);
+      });
+    }
+    this.params.description = this.model.description;
+    this.params.reference = this.model.reference;
     document.querySelector("#tag > div.vue-tags-input > div").style.width =
       "642px";
     document.querySelector(
       "#tag > div.vue-tags-input > div > ul"
     ).style.paddingLeft = "0px";
   },
+
   methods: {
     ...mapActions("write", ["next"]),
     ...mapActions("write", ["prev"]),
@@ -165,6 +200,18 @@ export default {
     },
     onStep(idx) {
       this.setStep(idx);
+    },
+    subValidateCheck() {
+      if (
+        this.params.set_name.length > 50 ||
+        this.params.set_name.length <= 2
+      ) {
+        alert(
+          "제목이 너무 길거나 짧습니다. 2글자 이상 50글자 미만으로 작성해 주세요"
+        );
+        return false;
+      }
+      return true;
     },
     validateCheck() {
       if (
@@ -192,29 +239,22 @@ export default {
       }
       const params = {
         idx: idx,
-        step: 2
+        step: 2,
+        descParams: this.params
       };
       this.next(params);
     },
     onPrev(idx) {
-      const check = this.validateCheck();
+      const check = this.subValidateCheck();
       if (check === false) {
         return;
       }
       const params = {
         idx: idx,
-        step: 2
+        step: 2,
+        descParams: this.params
       };
       this.prev(params);
-    },
-    querySelections(v) {
-      this.loading = true;
-      setTimeout(() => {
-        this.themeList = this.themes.filter(e => {
-          return (e || "").toLowerCase().indexOf((v || "").toLowerCase()) > -1;
-        });
-        this.loading = false;
-      }, 500);
     },
     setThemesList() {
       this.themess.forEach(e => {
@@ -275,6 +315,7 @@ export default {
   position: absolute;
   transform: translateX(5px);
   color: red;
+  z-index: 1;
 }
 
 .before_btn,
