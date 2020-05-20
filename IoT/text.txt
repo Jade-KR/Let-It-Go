@@ -1,0 +1,41 @@
+컨베이어벨트
+
+레이저모듈 양 끝이 +-임
+조도센서의 경우 10k옴까지 되므로 10k옴 저항과 직렬로 연결한다.
+전압이 높으면 조도센서의 저항이 높다는 말이다. 밝을수록 저항이 높아지는 것을 이용하는것임.
+
+카메라 스냅샷 찍으려면 터미널에
+raspistill -o test.jpg 이런식으로 입력하면 된다. 시간 두고싶으면 -t 100을 추가로 입력하면 100ms 이후에 사진이 찍힌다.
+
+비디오 찍으려면 터미널에
+raspivid -o vid.h264
+명령어 확인하려면 raspivid 입력하면 된다.
+
+동영상은 기본적으로 h264이므로 인코딩해야한다
+
+sudo apt-get install -y gpac
+
+아래의 명령어를 입력하면 인코딩한다.
+MP4Box - add vid3.h264 vid3.mp4
+
+파이썬에서 카메라 사용하려면
+from picamera import PiCamera
+camera = PiCamera()
+camera.start_preview()
+
+스크린샷
+camera.capture('디렉토리/파일명')
+동영상
+camera.start_recording('디렉토리/파일명(asdf.h264)')
+
+
+camera.stop_preview()
+
+
+180도 회전
+camera.rotation = 180
+
+
+터미널에서
+omxplayer 파일명(asdf.h264)
+입력하면 동영상이 찍힘
