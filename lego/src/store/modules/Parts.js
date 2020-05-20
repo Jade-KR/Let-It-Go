@@ -1,5 +1,6 @@
 import LegoParts from "../../../jsonData/LegoParts.json";
 import LegoCategory from "../../../jsonData/LegoCategory.json";
+import LegoColor from "../../../jsonData/LegoColors.json"
 
 
 const state = {
@@ -7,7 +8,9 @@ const state = {
   legoCategory: LegoCategory,
   filtered: [],
   currentStep: 0,
-  pickedPart: ''
+  pickedPart: '',
+  legoColor: LegoColor.rows,
+  basket: []
 }
 
 const mutations = {
@@ -19,6 +22,9 @@ const mutations = {
   },
   setPart(state, id) {
     state.pickedPart = id
+  },
+  setBasket(state, info) {
+    state.basket.push(info)
   }
 }
 
@@ -41,6 +47,24 @@ const actions = {
     commit
   }, params) {
     commit("setPart", params)
+  },
+  addBasket({
+    commit
+  }, params) {
+    let info = {
+      img: '',
+      id: params.id,
+      quantity: params.quantity
+    };
+    console.log(info)
+    for (let i = 0; i < LegoParts.rows.length; i++) {
+      if (LegoParts.rows[i][0] === info.id) {
+        info.img = LegoParts.rows[i][2]
+        break
+      }
+    }
+    console.log(info)
+    commit("setBasket", info)
   }
 }
 

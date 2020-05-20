@@ -3,38 +3,46 @@
     <div class="all_box">
       <div class="form_box">
         <div class="label_box">
-          <p class="label_name">현재 비밀번호</p>
+          <p class="label_name">부품 ID</p>
         </div>
         <div class="input_box">
           <div class="outline">
-            <input type="text" placeholder="ddd" />
+            <input type="text" :placeholder="partId" disabled />
           </div>
         </div>
       </div>
       <div class="form_box">
         <div class="label_box">
-          <p class="label_name">새 비밀번호</p>
+          <p class="label_name">부품 색</p>
         </div>
         <div class="input_box">
-          <v-col cols="12" sm="6" md="10" class="text_box">
-            <v-text-field solo dense type="text"></v-text-field>
-          </v-col>
+          <select name id v-model="partColor">
+            <option
+              :value="info[1]"
+              v-for="(info, idx) in legoColor"
+              :key="`info${idx}`"
+              :id="`color${idx}`"
+            >{{info[1]}}</option>
+          </select>
         </div>
       </div>
       <div class="form_box">
         <div class="label_box">
-          <p class="label_name">새 비밀번호 확인</p>
+          <p class="label_name">수량</p>
         </div>
         <div class="input_box">
-          <v-col cols="12" sm="6" md="10" class="text_box">
-            <v-text-field solo dense type="text"></v-text-field>
-          </v-col>
+          <input type="number" step="1" min="0" v-model="quantity" />
         </div>
       </div>
       <div class="form_box">
         <div class="label_box"></div>
         <div class="input_box">
-          <button class="submit_btn">비밀번호 변경</button>
+          <button class="submit_btn" @click="goBasket()">추가</button>
+        </div>
+      </div>
+      <div class="addList">
+        <div class="item_size_box" v-for="(item, idx) in basket" :key="`item${idx}`">
+          <img :src="item.img" alt class="item" />
         </div>
       </div>
     </div>
@@ -42,7 +50,42 @@
 </template>
 
 <script>
-export default {};
+import { mapState, mapActions } from "vuex";
+export default {
+  data() {
+    return {
+      quantity: 0,
+      partColor: "Black"
+    };
+  },
+  computed: {
+    ...mapState({
+      partId: state => state.Parts.pickedPart,
+      legoColor: state => state.Parts.legoColor,
+      basket: state => state.Parts.basket
+    })
+  },
+  mounted() {
+    for (let i = 0; i < this.legoColor.length; i++) {
+      let target = document.querySelector(`#color${i}`);
+      console.log(`#${this.legoColor[i][2]}`);
+      target.style.color = `#${this.legoColor[i][2]}`;
+    }
+  },
+  methods: {
+    ...mapActions("Parts", ["addBasket"]),
+    goBasket() {
+      if (this.quantity < 1) {
+        return;
+      }
+      let params = {
+        id: this.partId,
+        quantity: this.quantity
+      };
+      this.addBasket(params);
+    }
+  }
+};
 </script>
 
 <style scoped>
@@ -122,5 +165,20 @@ textarea {
 }
 .outline > input {
   border: none;
+}
+.addList {
+  width: 90%;
+  margin: auto;
+  display: flex;
+  flex-flow: row wrap;
+}
+.item_size_box {
+  width: 100px;
+  height: 100px;
+  border: 1px solid black;
+}
+.item {
+  width: 100%;
+  height: 100%;
 }
 </style>
