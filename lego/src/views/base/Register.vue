@@ -2,29 +2,17 @@
   <div id="regi-back">
     <div id="regi-body">
       <div id="regi-img-box">
-        <img
-          src="../../assets/logo.png"
-          alt=""
-          id="regi-img"
-          @click="goHome()"
-        />
+        <img src="../../assets/logo.png" alt id="regi-img" @click="goHome()" />
       </div>
       <div>
         혹시 이미 가입하셨나요?
-        <button style="color:gold; margin-bottom: 20px;" @click="goLogin()">
-          돌아가기
-        </button>
+        <button style="color:gold; margin-bottom: 20px;" @click="goLogin()">돌아가기</button>
       </div>
 
       <ValidationObserver ref="obs" v-slot="{ invalid, validated }">
         <ValidationProvider name="아이디" rules="required|alpha_num|max:15">
           <div slot-scope="{ errors }" style="margin-bottom: 20px;">
-            <input
-              type="text"
-              id="regi-id"
-              placeholder="아이디"
-              v-model="userInfo.username"
-            />
+            <input type="text" id="regi-id" placeholder="아이디" v-model="userInfo.username" />
             <br />
             <span v-show="errors" class="error">{{ errors[0] }}</span>
           </div>
@@ -36,12 +24,7 @@
           rules="required|password|min:8|max:100"
         >
           <div slot-scope="{ errors }" style="margin-bottom: 20px;">
-            <input
-              type="password"
-              id="regi-pwd"
-              placeholder="비밀번호"
-              v-model="userInfo.password"
-            />
+            <input type="password" id="regi-pwd" placeholder="비밀번호" v-model="userInfo.password" />
             <br />
             <span v-if="errors" class="error">{{ errors[0] }}</span>
           </div>
@@ -49,12 +32,7 @@
 
         <ValidationProvider name="이메일" rules="required|email|max:50">
           <div slot-scope="{ errors }" style="margin-bottom: 20px;">
-            <input
-              type="text"
-              id="regi-email"
-              placeholder="이메일"
-              v-model="userInfo.email"
-            />
+            <input type="text" id="regi-email" placeholder="이메일" v-model="userInfo.email" />
             <br />
             <span v-if="errors" class="error">{{ errors[0] }}</span>
           </div>
@@ -62,27 +40,14 @@
 
         <ValidationProvider name="닉네임" rules="required|nickname">
           <div slot-scope="{ errors }" style="margin-bottom: 20px;">
-            <input
-              type="text"
-              id="regi-nickname"
-              placeholder="닉네임"
-              v-model="userInfo.nickname"
-            />
-            <div id="regi-random-nick" @click="randomNick()">
-              Random
-            </div>
+            <input type="text" id="regi-nickname" placeholder="닉네임" v-model="userInfo.nickname" />
+            <div id="regi-random-nick" @click="randomNick()">Random</div>
             <br />
             <span v-if="errors" class="error">{{ errors[0] }}</span>
           </div>
         </ValidationProvider>
 
-        <button
-          id="regi-btn"
-          @click="onSubmit()"
-          :disabled="invalid || !validated"
-        >
-          Register
-        </button>
+        <button id="regi-btn" @click="onSubmit()" :disabled="invalid || !validated">Register</button>
       </ValidationObserver>
     </div>
   </div>

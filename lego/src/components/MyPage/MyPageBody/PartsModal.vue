@@ -9,70 +9,17 @@
 
       <v-card class="menu_box">
         <div class="title_box">
-          <h3 class="title">부품을 등록하세요!</h3>
+          <h3 class="title_name">부품을 등록하세요!</h3>
+          <div class="search_menus">
+            <button class="search_by_id" @click="currentState=0">Id로</button>
+            <button class="search_by_img" @click="checkImg()">이미지로</button>
+          </div>
           <div class="close">
             <i class="fas fa-times" @click="dialog = 0"></i>
           </div>
         </div>
-        <div class="form_box">
-          <div class="label_box">
-            <p class="label_name">부품 ID</p>
-          </div>
-          <div class="input_box">
-            <v-autocomplete
-              v-model="partId"
-              :loading="loading"
-              :items="items"
-              :search-input.sync="search"
-              cache-items
-              class="mx-4"
-              flat
-              hide-no-data
-              hide-details
-              label="부품 id를 입력하세요"
-              solo-inverted
-              background-color="rgb(216, 216, 216)"
-            ></v-autocomplete>
-          </div>
-        </div>
-        <div class="form_box">
-          <div class="label_box">
-            <p class="label_name">부품 색</p>
-          </div>
-          <div class="input_box">
-            <v-col class="d-flex" cols="12" sm="6">
-              <v-select :items="partColors" filled label="부품 색" dense v-model="partColor"></v-select>
-            </v-col>
-          </div>
-        </div>
-        <div class="form_box">
-          <div class="label_box">
-            <p class="label_name">수량</p>
-          </div>
-          <div class="input_box">
-            <v-col cols="12" sm="6" md="3">
-              <v-text-field label="Filled" filled type="number" v-model="quantity"></v-text-field>
-            </v-col>
-          </div>
-        </div>
-        <div class="form_box">
-          <div class="label_box">
-            <p class="label_name"></p>
-          </div>
-          <div class="input_box">
-            <button class="plus_btn" @click="addBasket()">
-              <i class="fas fa-plus"></i>&nbsp;부품 추가
-            </button>
-            <button class="submit_btn">완료</button>
-          </div>
-        </div>
-        <h2 class="basket_title">부품 추가 리스트</h2>
-        <div class="parts_basket">
-          <div class="body_img_box" v-for="(item, idx) in basket" :key="item+idx">
-            <img class="body_img" :src="item.img" alt />
-            <p class="part_quantity">{{item.id}} * {{item.quantity}}</p>
-          </div>
-        </div>
+        <SearchById v-if="currentState === 0"></SearchById>
+        <SearchByImg v-if="currentState === 1"></SearchByImg>
       </v-card>
     </v-dialog>
   </div>
@@ -81,7 +28,15 @@
 <script>
 import LegoParts from "../../../../jsonData/LegoParts.json";
 import LegoColors from "../../../../jsonData/LegoColors.json";
+import SearchById from "./PartsModal/SearchById";
+import SearchByImg from "./PartsModal/SearchByImg";
+import { mapActions } from "vuex";
+
 export default {
+  components: {
+    SearchById,
+    SearchByImg
+  },
   data() {
     return {
       dialog: false,
@@ -92,6 +47,7 @@ export default {
       partId: null,
       partColor: null,
       quantity: 0,
+      currentState: 0,
       partColors: LegoColors.rows.map(color => {
         return color[1];
       }),
@@ -117,6 +73,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions("Parts", ["changeStep"]),
     querySelections(v) {
       this.loading = true;
       // Simulated ajax query
@@ -144,7 +101,10 @@ export default {
         color: this.partColors,
         quantity: Number(this.quantity)
       });
-      console.log(this.basket);
+    },
+    checkImg() {
+      this.currentState = 1;
+      this.changeStep(0);
     }
   }
 };
@@ -153,7 +113,6 @@ export default {
 <style scoped>
 .menu_box {
   height: fit-content;
-  border-top: rgb(94, 116, 122) 5px solid;
 }
 .right_body_box {
   border-style: none;
@@ -212,16 +171,16 @@ export default {
   border-bottom: silver 1px solid;
   margin-bottom: 20px;
 }
-.title {
-  flex-basis: 90%;
+.title_name {
+  flex-basis: 45%;
   margin: 0;
   margin-left: 10px;
-  font-size: 20px;
+  font-size: 30px;
   padding: 10px 0;
 }
 .close {
   flex-basis: 10%;
-  text-align: center;
+  text-align: right;
   height: 100%;
 }
 .close > i {
@@ -287,8 +246,15 @@ export default {
   padding: 0;
 }
 .body_img_box > p {
-  height: 40%;
+  height: 45%;
   display: flex;
   flex-flow: row wrap;
+}
+.search_menus {
+  display: flex;
+  flex-basis: 40%;
+}
+.search_by_id {
+  margin-right: 50px;
 }
 </style>
