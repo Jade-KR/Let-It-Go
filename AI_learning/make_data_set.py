@@ -27,8 +27,6 @@ for i in range(6):
             with open('./input2/' + a[i] + '/' + image, 'rb') as f:
                 with open('./input2/seg_train/seg_train/' + a[i] + '/' + image, 'wb') as f2:
                     f2.write(f.read())
-
-        print(image)
         cnt1 += 1
     cnt.append(cnt1)
 
