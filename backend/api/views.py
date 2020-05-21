@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 import requests
-
+from rest_auth.views import LoginView
 
 API_key = '08d368a0e1830b9fec088091be154133'
 headers = {
@@ -84,8 +84,34 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             return Response(serializer.data)
         return Response("")
 
+class CustomLoginView(LoginView):
+    def get_response(self):
+        user = get_object_or_404(models.CustomUser, username=self.user)
+        orginal_response = super().get_response()
+        mydata = {
+            "nickname": user.nickname,
+            "image": user.image,
+            "comment": user.comment,
+            "age": user.age,
+            "gender": user.gender,
+            "status": "success",
+            }
+        orginal_response.data["user"].update(mydata)
+        return orginal_response
+
 @api_view(['POST'])
 def UpdateUserPart(self):
+    '''
+    {
+        "UpdateList": [
+            {
+                "part_id": String,
+                "color_id": Integer,
+                "qte": Integer
+            }
+        ]
+    }
+    '''
     user = self.user
     # user = CustomUser.objects.get(id=self.user)
     if user.is_authenticated:
@@ -138,3 +164,56 @@ def UpdateUserPart(self):
             userpart.delete()
 
     return Response("수정 완료")
+
+
+@api_view(['POST'])
+def CreateLegoSet(self):
+    '''
+    {
+        "model": {
+            "theme_id": Integer,
+            "set_images": String, # ex: "img1|img2"
+            "set_name": String,
+            "description": String,
+            "tags": String, # ex: "tag1|tag2"
+            "reference": String,
+            "parts": [
+                {
+                    "part_id": String,
+                    "color_id": Integer,
+                    "quantity": String
+                }
+            ]
+        }
+    }
+    '''
+    user = self.user
+    # user = CustomUser.objects.get(id=self.user)
+    if user.is_authenticated:
+        data = self.data.get("model")
+        cur_id = LegoSet.objects.all().order_by('-id')[0].id + 1
+        lego_set = LegoSet.objects.create(
+            id=cur_id,
+            user=user,
+            theme_id=data["theme_id"],
+            name=data["set_name"],
+            num_parts=len(data["parts"]),
+            images=data["set_images"],
+            description=data["description"],
+            tags=data["tags"],
+            references=data["reference"],
+            )
+        create_part_list = [
+            SetPart(
+                lego_set=lego_set,
+                part_id=part["part_id"],
+                color_id=part["color_id"],
+                quantity=part["quantity"]
+            )
+            for part in data["parts"]
+        ]
+        SetPart.objects.bulk_create(create_part_list)
+
+    return Response("등록 완료")
+def go_to_myhome(request):
+    return redirect("http://127.0.0.1:8000/api/swagger/")
