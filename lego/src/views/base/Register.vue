@@ -6,15 +6,22 @@
       </div>
       <div>
         혹시 이미 가입하셨나요?
-        <button style="color:gold; margin-bottom: 20px;" @click="goLogin()">돌아가기</button>
+        <button style="color:gold; margin-bottom: 20px;" @click="goLogin()">
+          돌아가기
+        </button>
       </div>
 
       <ValidationObserver ref="obs" v-slot="{ invalid, validated }">
         <ValidationProvider name="아이디" rules="required|alpha_num|max:15">
           <div slot-scope="{ errors }" style="margin-bottom: 20px;">
-            <input type="text" id="regi-id" placeholder="아이디" v-model="userInfo.username" />
+            <input
+              type="text"
+              id="regi-id"
+              placeholder="아이디"
+              v-model="userInfo.username"
+            />
             <br />
-            <span v-show="errors" class="error">{{ errors[0] }}</span>
+            <span v-show="errors" class="error_box">{{ errors[0] }}</span>
           </div>
         </ValidationProvider>
 
@@ -24,30 +31,67 @@
           rules="required|password|min:8|max:100"
         >
           <div slot-scope="{ errors }" style="margin-bottom: 20px;">
-            <input type="password" id="regi-pwd" placeholder="비밀번호" v-model="userInfo.password" />
+            <input
+              type="password"
+              id="regi-pwd"
+              placeholder="비밀번호"
+              v-model="userInfo.password1"
+            />
             <br />
-            <span v-if="errors" class="error">{{ errors[0] }}</span>
+            <span v-if="errors" class="error_box">{{ errors[0] }}</span>
+          </div>
+        </ValidationProvider>
+
+        <ValidationProvider
+          name="비밀번호 확인"
+          rules="required|confirmed:pwd_confirmation"
+        >
+          <div slot-scope="{ errors }" style="margin-bottom: 20px;">
+            <input
+              type="password"
+              id="regi-pwd2"
+              placeholder="비밀번호 확인"
+              v-model="userInfo.password2"
+            />
+            <br />
+            <span v-if="errors" class="error_box">{{ errors[0] }}</span>
           </div>
         </ValidationProvider>
 
         <ValidationProvider name="이메일" rules="required|email|max:50">
           <div slot-scope="{ errors }" style="margin-bottom: 20px;">
-            <input type="text" id="regi-email" placeholder="이메일" v-model="userInfo.email" />
+            <input
+              type="text"
+              id="regi-email"
+              placeholder="이메일"
+              v-model="userInfo.email"
+            />
             <br />
-            <span v-if="errors" class="error">{{ errors[0] }}</span>
+            <span v-if="errors" class="error_box">{{ errors[0] }}</span>
           </div>
         </ValidationProvider>
 
         <ValidationProvider name="닉네임" rules="required|nickname">
           <div slot-scope="{ errors }" style="margin-bottom: 20px;">
-            <input type="text" id="regi-nickname" placeholder="닉네임" v-model="userInfo.nickname" />
+            <input
+              type="text"
+              id="regi-nickname"
+              placeholder="닉네임"
+              v-model="userInfo.nickname"
+            />
             <div id="regi-random-nick" @click="randomNick()">Random</div>
             <br />
-            <span v-if="errors" class="error">{{ errors[0] }}</span>
+            <span v-if="errors" class="error_box">{{ errors[0] }}</span>
           </div>
         </ValidationProvider>
 
-        <button id="regi-btn" @click="onSubmit()" :disabled="invalid || !validated">Register</button>
+        <button
+          id="regi-btn"
+          @click="onSubmit()"
+          :disabled="invalid || !validated"
+        >
+          Register
+        </button>
       </ValidationObserver>
     </div>
   </div>
@@ -56,6 +100,7 @@
 <script>
 import router from "../../router";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
+import { mapActions } from "vuex";
 
 export default {
   components: {
@@ -66,7 +111,8 @@ export default {
     return {
       userInfo: {
         username: "",
-        password: "",
+        password1: "",
+        password2: "",
         email: "",
         nickname: ""
       },
@@ -115,8 +161,24 @@ export default {
     };
   },
   methods: {
-    onSubmit() {
-      console.log(this.userInfo);
+    ...mapActions("auth", ["SHA256", "register"]),
+    setHash(pwd) {
+      this.SHA256(pwd);
+    },
+    async onSubmit() {
+      let hashPwd = "";
+      await this.SHA256(String(this.userInfo.password1)).then(res => {
+        hashPwd = res;
+      });
+      const params = {
+        username: this.userInfo.username,
+        password1: hashPwd,
+        password2: hashPwd,
+        email: this.userInfo.email,
+        nickname: this.userInfo.nickname
+      };
+      // console.log(params);
+      await this.register(params);
     },
     goLogin() {
       router.push("/login");
@@ -176,15 +238,17 @@ export default {
   width: 80%;
   cursor: pointer;
 }
-.error {
+.error_box {
   width: 100%;
   position: absolute;
   color: red;
+  background-color: unset;
   right: 50%;
   transform: translateX(50%);
 }
 #regi-id,
 #regi-pwd,
+#regi-pwd2,
 #regi-email,
 #regi-nickname {
   border: 1px solid gold;
@@ -197,6 +261,7 @@ export default {
 }
 #regi-id::placeholder,
 #regi-pwd::placeholder,
+#regi-pwd2::placeholder,
 #regi-email::placeholder,
 #regi-nickname::placeholder {
   color: white;
@@ -205,6 +270,9 @@ export default {
   background-color: red;
 }
 #regi-pwd:focus {
+  background-color: gold;
+}
+#regi-pwd2:focus {
   background-color: gold;
 }
 #regi-email:focus {
@@ -217,6 +285,9 @@ export default {
   background-color: red;
 }
 #regi-pwd:hover {
+  background-color: gold;
+}
+#regi-pwd2:hover {
   background-color: gold;
 }
 #regi-email:hover {
