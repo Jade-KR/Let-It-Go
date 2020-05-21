@@ -1,6 +1,9 @@
 <template>
   <div>
     <h2 class="lego_category_box">부품 카테고리를 선택하세요</h2>
+    <hr
+      style="border: 3px dotted rgb(255, 212, 93); width: 50%; margin: auto; border-bottom: none;"
+    />
     <div class="category_items_box">
       <div class="row">
         <div
@@ -51,7 +54,7 @@ export default {
     ...mapActions("Parts", ["legoFilter", "changeStep"]),
     goPickPart(id) {
       this.legoFilter(id);
-      this.changeStep(1);
+      this.changeStep("next");
     }
   }
 };

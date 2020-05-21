@@ -1,6 +1,10 @@
 <template>
   <div>
     <div class="lego_parts_container">
+      <h2 class="lego_category_box">부품을 선택하세요</h2>
+      <hr
+        style="border: 3px dotted rgb(255, 212, 93); width: 50%; margin: auto; border-bottom: none;"
+      />
       <div
         class="lego_parts_box"
         v-for="(part, idx) in slicedParts"
@@ -24,6 +28,9 @@
         </v-card-text>
       </v-flex>
     </v-layout>
+    <div class="modal_footer">
+      <button class="before_btn" @click="back()">이전</button>
+    </div>
   </div>
 </template>
 
@@ -52,14 +59,20 @@ export default {
   },
   watch: {
     start() {
-      this.slicedParts = this.parts.slice(this.start * 25, this.page * 25);
+      this.slicedParts = [];
+      setTimeout(() => {
+        this.slicedParts = this.parts.slice(this.start * 25, this.page * 25);
+      }, 300);
     }
   },
   methods: {
     ...mapActions("Parts", ["changeStep", "pickPart"]),
     goAddPart(id) {
       this.pickPart(id);
-      this.changeStep(2);
+      this.changeStep("next");
+    },
+    back() {
+      this.changeStep("back");
     }
   }
 };
@@ -70,9 +83,6 @@ export default {
   width: 90%;
   height: fit-content;
   margin: auto;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
 }
 .lego_parts_box {
   display: inline-block;
@@ -114,5 +124,38 @@ export default {
 .lego_parts_box:hover .lego_part {
   opacity: 0.6;
   transition: all 0.3s ease-in-out;
+}
+.before_btn,
+.after_btn {
+  background-color: gold;
+  padding: 10px;
+  border-radius: 20px;
+  width: 100px;
+  margin-top: 20px;
+}
+.before_btn:hover,
+.after_btn:hover {
+  background-color: green;
+  color: white;
+}
+.before_btn {
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+.after_btn {
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+.after_btn:disabled {
+  background-color: gray;
+  color: black;
+}
+.after_btn:disabled:hover {
+  background-color: gray;
+  color: black;
+}
+.modal_footer {
+  display: flex;
+  justify-content: space-between;
 }
 </style>
