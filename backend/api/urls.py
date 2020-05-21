@@ -6,6 +6,7 @@ from drf_yasg import openapi
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.conf.urls.static import static
+from backend import settings
 
 schema_view = get_schema_view(
     openapi.Info(

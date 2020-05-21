@@ -53,6 +53,7 @@ class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.SetPartSerializer
+    queryset = SetPart.objects.all()
     
     def retrieve(self, request, pk=None):
         queryset = SetPart.objects.filter(lego_set_id=pk)
