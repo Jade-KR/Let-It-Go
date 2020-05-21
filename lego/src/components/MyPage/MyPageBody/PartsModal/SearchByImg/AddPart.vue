@@ -1,184 +1,318 @@
 <template>
-  <div class="right_body_box">
-    <div class="all_box">
-      <div class="form_box">
-        <div class="label_box">
-          <p class="label_name">부품 ID</p>
-        </div>
-        <div class="input_box">
-          <div class="outline">
-            <input type="text" :placeholder="partId" disabled />
+  <div>
+    <div>
+      <div id="part_input">
+        <div class="star">*</div>
+        <v-autocomplete
+          v-model="partIdx"
+          :items="partList"
+          filled
+          color="rgb(255, 215, 0)"
+          background-color="white"
+          item-text="name"
+          item-value="idx"
+          hide-details
+          label="부품"
+          :placeholder="pickedPart"
+          disabled
+        />
+      </div>
+      <div id="color_input">
+        <div class="star">*</div>
+        <v-autocomplete
+          v-model="selectedColor"
+          :items="partColor"
+          filled
+          chips
+          color="rgb(255, 215, 0)"
+          background-color="white"
+          item-text="colorName"
+          item-value="idx"
+          hide-details
+          label="색상"
+          placeholder="색상을 골라주세요"
+        >
+          <template v-slot:selection="data">
+            <v-chip
+              v-bind="data.attrs"
+              :input-value="data.selected"
+              @click="data.select"
+              color="white"
+              style="height: 54px;"
+            >
+              <v-avatar left>
+                <div
+                  :style="
+                    `background-color: #${data.item.colorRgb}; width: 100%; height: 100%;`
+                  "
+                ></div>
+              </v-avatar>
+              {{ data.item.colorName }}
+            </v-chip>
+          </template>
+          <template v-slot:item="data">
+            <template v-if="typeof data.item !== 'object'">
+              <v-list-item-content v-text="data.item"></v-list-item-content>
+            </template>
+            <template v-else>
+              <v-list-item-avatar>
+                <div
+                  :style="
+                    `background-color: #${data.item.colorRgb}; width: 100%; height: 100%;`
+                  "
+                ></div>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title v-html="data.item.colorName"></v-list-item-title>
+              </v-list-item-content>
+            </template>
+          </template>
+        </v-autocomplete>
+      </div>
+      <div id="quan_input">
+        <div class="star star2">*</div>
+        <v-text-field
+          label="수량"
+          type="number"
+          min="1"
+          step="1"
+          v-model="partQuantity"
+          hide-details
+          height="55px"
+          color="rgb(255, 215, 0)"
+          style="width: 100px; font-size: 24px;"
+        ></v-text-field>
+      </div>
+      <input type="submit" value="부품 추가" id="enroll_btn" @click="addList()" />
+    </div>
+
+    <hr style="border: 1px solid gold; margin-bottom: 20px;" v-show="this.basket.length > 0" />
+    <div class="basket_list">
+      <div class="enrolled_parts_box">
+        <div v-for="(part, i) in basket" :key="`part-${i}`" class="enrolled_parts">
+          <div>
+            <img
+              src="../../../../../assets/icons/delete.png"
+              alt="delete"
+              class="delete_btn"
+              @click="deleteItem(i)"
+            />
+          </div>
+          <img :src="part.partImg" alt="enroll_img" class="enroll_img" v-if="part.partImg" />
+          <img
+            src="../../../../../assets/icons/no_img.jpg"
+            alt="enroll_img"
+            class="enroll_img"
+            v-else
+          />
+          <div class="enrolled_desc">
+            <div class="enrolled_text">
+              <div class="enrolled_name">{{ part.partId }}</div>
+              <div
+                class="enrolled_color"
+                :style="
+                `width: 100%; height: 10px; background-color: #${part.rgb};`
+              "
+              ></div>
+            </div>
+            <div class="enrolled_quan">* {{ part.quantity }}</div>
           </div>
         </div>
       </div>
-      <div class="form_box">
-        <div class="label_box">
-          <p class="label_name">부품 색</p>
-        </div>
-        <div class="input_box">
-          <select name id v-model="partColor">
-            <option
-              :value="info[1]"
-              v-for="(info, idx) in legoColor"
-              :key="`info${idx}`"
-              :id="`color${idx}`"
-            >{{info[1]}}</option>
-          </select>
-        </div>
-      </div>
-      <div class="form_box">
-        <div class="label_box">
-          <p class="label_name">수량</p>
-        </div>
-        <div class="input_box">
-          <input type="number" step="1" min="0" v-model="quantity" />
-        </div>
-      </div>
-      <div class="form_box">
-        <div class="label_box"></div>
-        <div class="input_box">
-          <button class="submit_btn" @click="goBasket()">추가</button>
-        </div>
-      </div>
-      <div class="addList">
-        <div class="item_size_box" v-for="(item, idx) in basket" :key="`item${idx}`">
-          <img :src="item.img" alt class="item" />
-        </div>
-      </div>
+    </div>
+    <div class="modal_footer">
+      <button class="before_btn" @click="back()">이전</button>
+      <button class="after_btn" :disabled="!flag">부품 등록</button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import LegoParts from "../../../../../../jsonData/LegoParts.json";
+import LegoColors from "../../../../../../jsonData/LegoColors.json";
+import { mapActions, mapState } from "vuex";
+
 export default {
   data() {
     return {
-      quantity: 0,
-      partColor: "Black"
+      partList: LegoParts.rows.map((e, i) => {
+        return {
+          name: e[0] + " " + e[1],
+          idx: i,
+          img: e[2]
+        };
+      }),
+      partQuantity: 0,
+      partIdx: "",
+      partColor: LegoColors.rows.map((color, i) => {
+        return {
+          colorName: color[1],
+          colorRgb: color[2],
+          colorId: color[0],
+          idx: i
+        };
+      }),
+      selectedColor: ""
     };
+  },
+  mounted() {
+    for (let i = 0; i < LegoParts.rows.length; i++) {
+      if (LegoParts.rows[i][0] === this.pickedPart) {
+        this.partIdx = i;
+        break;
+      }
+    }
   },
   computed: {
     ...mapState({
-      partId: state => state.Parts.pickedPart,
-      legoColor: state => state.Parts.legoColor,
-      basket: state => state.Parts.basket
-    })
-  },
-  mounted() {
-    for (let i = 0; i < this.legoColor.length; i++) {
-      let target = document.querySelector(`#color${i}`);
-      console.log(`#${this.legoColor[i][2]}`);
-      target.style.color = `#${this.legoColor[i][2]}`;
+      basket: state => state.Parts.basket,
+      pickedPart: state => state.Parts.pickedPart
+    }),
+    flag: function() {
+      return this.basket.length > 0 ? true : false;
     }
   },
   methods: {
-    ...mapActions("Parts", ["addBasket"]),
-    goBasket() {
-      if (this.quantity < 1) {
-        return;
+    ...mapActions("Parts", ["addBasket", "deleteBasket", "changeStep"]),
+    addList() {
+      if (
+        this.pickedPart === "" ||
+        this.selectedColor === "" ||
+        this.partQuantity <= 0
+      ) {
+        return alert("필수 정보를 입력해주세요.");
       }
-      let params = {
-        id: this.partId,
-        quantity: this.quantity
+      let partInfo = {
+        partId: LegoParts.rows[this.partIdx][0],
+        partImg: LegoParts.rows[this.partIdx][2],
+        colorId: LegoColors.rows[this.selectedColor][0],
+        rgb: LegoColors.rows[this.selectedColor][2],
+        quantity: Number(this.partQuantity)
       };
-      this.addBasket(params);
+      this.addBasket(partInfo);
+    },
+    deleteItem(idx) {
+      this.deleteBasket(idx);
+    },
+    back() {
+      this.changeStep("back");
     }
   }
 };
 </script>
 
 <style scoped>
-.all_box {
-  width: 90%;
-  margin: auto;
-}
-.photo_box {
-  display: flex;
-  width: 100%;
-  margin-top: 30px;
+#part_input,
+#color_input {
   margin-bottom: 20px;
 }
-.form_box {
-  display: flex;
-  width: 100%;
+#color_input,
+#quan_input,
+#enroll_btn {
+  display: inline-block;
 }
-.label_box {
-  width: 30%;
-  text-align: right;
-  padding-right: 32px;
-  display: flex;
-  justify-content: flex-end;
-  font-weight: bold;
+#color_input {
+  width: 60%;
 }
-.label_name {
-  padding-top: 7px;
+#quan_input {
+  margin: 0 20px;
 }
-.input_box {
-  width: 70%;
-  display: flex;
-  justify-content: left;
+#enroll_btn {
+  padding: 10px;
+  background-color: gold;
+  width: 20%;
 }
-input,
-textarea {
-  width: 80%;
-  height: 100%;
-  border: silver 1px solid;
-}
-.photo_frame {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: right;
-}
-.photo {
-  width: 100%;
-  height: 100%;
-  border-radius: 180%;
-}
-.user_id {
-  text-align: left;
-  font-size: 26px;
-  padding-top: 5px;
-}
-.change_photo_btn {
-  width: 100%;
-  text-align: left;
-  font-size: 13px;
-  position: relative;
-  bottom: 10px;
-  color: rgb(0, 140, 255);
-  font-weight: bold;
-}
-.text_box {
-  padding: 0;
-}
-.submit_btn {
-  background: lightblue;
-  color: white;
-  width: 120px;
-  height: 30px;
-  border-radius: 5%;
-}
-.outline {
-  border: green 3px solid;
-}
-.outline > input {
-  border: none;
-}
-.addList {
-  width: 90%;
-  margin: auto;
-  display: flex;
-  flex-flow: row wrap;
-}
-.item_size_box {
+.enroll_img {
   width: 100px;
   height: 100px;
-  border: 1px solid black;
 }
-.item {
-  width: 100%;
-  height: 100%;
+.enrolled_parts {
+  display: inline-block;
+  margin: 0 5px 10px 5px;
+  position: relative;
+}
+.enrolled_parts_box {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  margin: auto;
+  width: 95%;
+}
+.enrolled_desc {
+  text-align: center;
+  display: flex;
+  width: 100px;
+}
+.enrolled_text {
+  min-width: 50%;
+  display: inline-block;
+}
+.enrolled_name {
+  white-space: nowrap;
+  overflow: hidden;
+}
+.enrolled_quan {
+  margin-left: 5px;
+  min-width: 50%;
+  display: inline-block;
+}
+.star {
+  position: absolute;
+  transform: translateX(5px);
+  color: red;
+  z-index: 1;
+}
+.star2 {
+  transform: translate(-8px, 5px);
+}
+.delete_btn {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50px);
+  cursor: pointer;
+}
+.delete_btn:hover {
+  background-color: rgba(255, 0, 0, 0.8);
+  border-radius: 50%;
+}
+
+.before_btn,
+.after_btn {
+  background-color: gold;
+  padding: 10px;
+  border-radius: 20px;
+  width: 100px;
+  margin-top: 20px;
+}
+.before_btn:hover,
+.after_btn:hover {
+  background-color: green;
+  color: white;
+}
+.before_btn {
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+.after_btn {
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+.after_btn:disabled {
+  background-color: gray;
+  color: black;
+}
+.after_btn:disabled:hover {
+  background-color: gray;
+  color: black;
+}
+.basket_list {
+  display: flex;
+  justify-content: flex-start;
+}
+.modal_footer {
+  display: flex;
+  justify-content: space-between;
 }
 </style>

@@ -1,5 +1,5 @@
 import api from "../../api";
-// import router from "../../router";
+import router from "../../router";
 
 const state = {};
 
@@ -9,32 +9,51 @@ const actions = {
     await api
       .register(params)
       .then(res => {
-        console.log(res);
+        console.log("res", res);
+        if (res.status == 201) {
+          alert("인증 이메일을 발송하였습니다. 확인해주세요.");
+          router.push("/");
+        }
       })
       .catch(err => {
-        console.log(err);
+        console.log("err", err.response);
+        if (err.response.data.username && err.response.data.email) {
+          alert("아이디와 이메일이 중복되었습니다.");
+        } else if (err.response.data.username) {
+          alert("아이디가 중복되었습니다.");
+        } else if (err.response.data.email) {
+          alert("이메일이 중복되었습니다.");
+        }
       });
-    // let check = false;
-    // check;
-    // await api
-    //   .register(params)
-    //   .then(res => {
-    //     if (res.status == 201) {
-    //       alert("인증 이메일을 발송하였습니다. 확인해주세요.");
-    //       check = true;
-    //       router.push("/");
-    //     }
-    //   })
-    //   .catch(err => {
-    //     if (err.response.data.username && err.response.data.email) {
-    //       alert("아이디와 이메일이 중복되었습니다.");
-    //     } else if (err.response.data.username) {
-    //       alert("아이디가 중복되었습니다.");
-    //     } else if (err.response.data.email) {
-    //       alert("이메일이 중복되었습니다.");
-    //     }
-    //     console.log(err.response);
-    //   });
+  },
+  async login({ commit }, params) {
+    commit;
+    await api
+      .login(params)
+      .then(res => {
+        const token = res.data.token;
+        const user = res.data.user;
+        localStorage.setItem("token", token);
+        localStorage.setItem("pk", user.pk);
+        localStorage.setItem("username", user.username);
+        localStorage.setItem("nickname", user.nickname);
+        localStorage.setItem("email", user.email);
+        localStorage.setItem("comment", user.comment);
+        localStorage.setItem("image", user.image);
+        localStorage.setItem("gender", user.gender);
+        localStorage.setItem("age", user.age);
+        router.push("/");
+      })
+      .catch(err => {
+        if (
+          err.response.data.non_field_errors[0] ==
+          "이메일 주소가 확인되지 않았습니다."
+        ) {
+          alert("이메일 인증을 해주세요");
+        } else {
+          alert("아이디와 비밀번호를 확인해 주세요");
+        }
+      });
   },
   SHA256({ commit }, s) {
     commit;
