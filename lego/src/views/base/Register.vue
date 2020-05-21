@@ -175,9 +175,12 @@ export default {
         password1: hashPwd,
         password2: hashPwd,
         email: this.userInfo.email,
-        nickname: this.userInfo.nickname
+        nickname: this.userInfo.nickname,
+        image: "null",
+        comment: "null",
+        age: 0,
+        gender: 0
       };
-      // console.log(params);
       await this.register(params);
     },
     goLogin() {

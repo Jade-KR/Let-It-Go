@@ -48,6 +48,8 @@
 
 <script>
 import router from "../../router";
+import { mapActions } from "vuex";
+
 export default {
   data() {
     return {
@@ -58,14 +60,23 @@ export default {
     };
   },
   methods: {
+    ...mapActions("auth", ["SHA256", "login"]),
     goRegi() {
       router.push("/register");
     },
     goHome() {
       router.push("/");
     },
-    onSubmit() {
-      console.log(this.userInfo);
+    async onSubmit() {
+      let hashPwd = "";
+      await this.SHA256(String(this.userInfo.password)).then(res => {
+        hashPwd = res;
+      });
+      const params = {
+        username: this.userInfo.id,
+        password: hashPwd
+      };
+      this.login(params);
     }
   }
 };
