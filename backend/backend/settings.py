@@ -27,7 +27,11 @@ SECRET_KEY = 'v^koy7l8#=_vt3lxt7y@*_i-_#pzu6rxp-n4eql9ezq5iee4%7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "k02d1081.p.ssafy.io",
+    "127.0.0.1",
+]
 
 
 # Application definition
