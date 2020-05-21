@@ -26,7 +26,7 @@ router.register(r"SetPart", views.SetPartViewSet, basename="SetPart")
 urlpatterns = [
     *router.urls,
     path('UpdateUserPart', views.UpdateUserPart, name='UpdateUserPart'),
-
+    path('CreateLegoSet', views.CreateLegoSet, name='CreateLegoSet'),
     path('swagger/', schema_view.with_ui('swagger'), name='api_swagger'),
     path('token/', obtain_jwt_token),
     path('token/verify/', verify_jwt_token),

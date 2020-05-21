@@ -24,7 +24,7 @@ class LegoSet(models.Model):
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, null=True)
     num_parts = models.IntegerField(null=True)
-    image = models.TextField(null=True)
+    images = models.TextField(null=True)
     description = models.CharField(max_length=500, null=True)
     tags = models.CharField(max_length=200, null=True)
     references = models.CharField(max_length=500, null=True)
@@ -41,6 +41,10 @@ class LegoSet(models.Model):
     @property
     def image_list(self):
         return self.images.split("|") if self.images else []
+    @property
+    def image(self):
+        return self.images.split("|")[0] if self.images else ""
+
 
     def __str__(self):
         return self.name

@@ -86,6 +86,17 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 @api_view(['POST'])
 def UpdateUserPart(self):
+    '''
+    {
+        "UpdateList": [
+            {
+                "part_id": String,
+                "color_id": Integer,
+                "qte": Integer
+            }
+        ]
+    }
+    '''
     user = self.user
     # user = CustomUser.objects.get(id=self.user)
     if user.is_authenticated:
@@ -138,3 +149,54 @@ def UpdateUserPart(self):
             userpart.delete()
 
     return Response("수정 완료")
+
+
+@api_view(['POST'])
+def CreateLegoSet(self):
+    '''
+    {
+        "model": {
+            "theme_id": Integer,
+            "set_images": String, # ex: "img1|img2"
+            "set_name": String,
+            "description": String,
+            "tags": String, # ex: "tag1|tag2"
+            "reference": String,
+            "parts": [
+                {
+                    "part_id": String,
+                    "color_id": Integer,
+                    "quantity": String
+                }
+            ]
+        }
+    }
+    '''
+    user = self.user
+    # user = CustomUser.objects.get(id=self.user)
+    if user.is_authenticated:
+        data = self.data.get("model")
+        cur_id = LegoSet.objects.all().order_by('-id')[0].id + 1
+        lego_set = LegoSet.objects.create(
+            id=cur_id,
+            user=user,
+            theme_id=data["theme_id"],
+            name=data["set_name"],
+            num_parts=len(data["parts"]),
+            images=data["set_images"],
+            description=data["description"],
+            tags=data["tags"],
+            references=data["reference"],
+            )
+        create_part_list = [
+            SetPart(
+                lego_set=lego_set,
+                part_id=part["part_id"],
+                color_id=part["color_id"],
+                quantity=part["quantity"]
+            )
+            for part in data["parts"]
+        ]
+        SetPart.objects.bulk_create(create_part_list)
+
+    return Response("등록 완료")
