@@ -18,7 +18,7 @@
           *
         </div>
         <v-autocomplete
-          v-model="params.theme_name"
+          v-model="params.theme_id"
           :items="themes"
           outlined
           chips
@@ -26,7 +26,8 @@
           label="테마를 골라주세요"
           color="rgb(255, 215, 0)"
           background-color="white"
-          multiple
+          item-text="name"
+          item-value="id"
         >
           <template v-slot:selection="data">
             <v-chip
@@ -35,7 +36,7 @@
               @click="data.select"
               color="white"
             >
-              {{ data.item }}
+              {{ data.item.name }}
             </v-chip>
           </template>
         </v-autocomplete>
@@ -86,7 +87,7 @@
         :disabled="
           params.set_name.length > 50 ||
             params.set_name.length <= 2 ||
-            !params.theme_name ||
+            !params.theme_id ||
             !params.tags ||
             !params.description
         "
@@ -98,7 +99,6 @@
 </template>
 
 <script>
-import LegoThemes from "../../../jsonData/LegoThemes.json";
 import { mapState, mapActions, mapMutations } from "vuex";
 
 import VueTagsInput from "@johmun/vue-tags-input";
@@ -132,12 +132,10 @@ export default {
             text.indexOf("{") !== -1 || text.indexOf("}") !== -1
         }
       ],
-      themess: LegoThemes["rows"],
-      // autocomplete select list
       themes: [],
       params: {
         set_name: "",
-        theme_name: [],
+        theme_id: 0,
         tags: [],
         description: "",
         reference: ""
@@ -158,14 +156,15 @@ export default {
     ...mapState({
       step: state => state.write.step,
       currentStep: state => state.write.currentStep,
-      model: state => state.write.model
+      model: state => state.write.model,
+      themess: state => state.write.themess
     })
   },
   async mounted() {
     await this.setThemesList();
     this.params.set_name = this.model.set_name;
-    if (this.model.theme_name.length !== 0) {
-      this.params.theme_name = this.model.theme_name;
+    if (this.model.theme_id.length !== 0) {
+      this.params.theme_id = this.model.theme_id;
     }
     if (this.model.tags.length !== 0) {
       this.tags = [];
@@ -189,10 +188,10 @@ export default {
   },
 
   methods: {
-    ...mapActions("write", ["next"]),
-    ...mapActions("write", ["prev"]),
-    ...mapMutations("write", ["setSteps"]),
-    ...mapMutations("write", ["setCurrentStep"]),
+    ...mapActions("write", ["next", "prev"]),
+    // ...mapActions("write", ["prev"]),
+    ...mapMutations("write", ["setSteps", "setCurrentStep"]),
+    // ...mapMutations("write", ["setCurrentStep"]),
     goStep(idx) {
       if (this.currentStep >= idx || this.step >= idx) {
         this.setCurrentStep(idx);
@@ -223,7 +222,7 @@ export default {
         );
         return false;
       } else if (
-        !this.params.theme_name ||
+        !this.params.theme_id ||
         !this.params.tags ||
         !this.params.description
       ) {
@@ -259,36 +258,43 @@ export default {
     setThemesList() {
       this.themess.forEach(e => {
         if (e[1] === "NULL") {
-          this.themes.push(e[2]);
+          this.themes.push({ name: e[2], id: Number(e[0]) });
         } else {
           if (this.themess[e[1] - 1][1] === "NULL") {
-            this.themes.push(this.themess[e[1] - 1][2] + " > " + e[2]);
+            this.themes.push({
+              name: this.themess[e[1] - 1][2] + " > " + e[2],
+              id: Number(e[0])
+            });
           } else {
             if (this.themess[this.themess[e[1] - 1][1] - 1][1] === "NULL") {
-              this.themes.push(
-                this.themess[this.themess[e[1] - 1][1] - 1][2] +
+              this.themes.push({
+                name:
+                  this.themess[this.themess[e[1] - 1][1] - 1][2] +
                   " > " +
                   this.themess[e[1] - 1][2] +
                   " > " +
-                  e[2]
-              );
+                  e[2],
+                id: Number(e[0])
+              });
             } else {
               if (
                 this.themess[
                   this.themess[this.themess[e[1] - 1][1] - 1][1] - 1
                 ][1] === "NULL"
               ) {
-                this.themes.push(
-                  this.themess[
-                    this.themess[this.themess[e[1] - 1][1] - 1][1] - 1
-                  ][2] +
+                this.themes.push({
+                  name:
+                    this.themess[
+                      this.themess[this.themess[e[1] - 1][1] - 1][1] - 1
+                    ][2] +
                     " > " +
                     this.themess[this.themess[e[1] - 1][1] - 1][2] +
                     " > " +
                     this.themess[e[1] - 1][2] +
                     " > " +
-                    e[2]
-                );
+                    e[2],
+                  id: Number(e[0])
+                });
               }
             }
           }
