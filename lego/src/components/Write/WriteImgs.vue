@@ -94,11 +94,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions("write", ["next"]),
-    ...mapActions("write", ["prev"]),
-    ...mapActions("write", ["removeImg"]),
-    ...mapMutations("write", ["setSteps"]),
-    ...mapMutations("write", ["setCurrentStep"]),
+    ...mapActions("write", ["next", "prev", "removeImg"]),
+    // ...mapActions("write", ["prev"]),
+    // ...mapActions("write", ["removeImg"]),
+    ...mapMutations("write", ["setSteps", "setCurrentStep"]),
+    // ...mapMutations("write", ["setCurrentStep"]),
     goStep(idx) {
       if (this.currentStep >= idx || this.step >= idx) {
         this.setCurrentStep(idx);
@@ -107,33 +107,38 @@ export default {
     onStep(idx) {
       this.setStep(idx);
     },
-    onNext() {
-      // console.log(this.modelImgs[0].slice(22));
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
+    // onNext() {
+    //   // console.log(this.modelImgs[0].slice(22));
+    //   var myHeaders = new Headers();
+    //   myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
 
-      var formdata = new FormData();
-      formdata.append("image", this.modelImgs[0].slice(22));
+    //   for (let i = 0; i < this.modelImgs.length; ++i) {
+    //     var formdata = new FormData();
+    //     formdata.append("image", this.modelImgs[i].slice(22));
 
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: formdata,
-        redirect: "follow"
-      };
+    //     var requestOptions = {
+    //       method: "POST",
+    //       headers: myHeaders,
+    //       body: formdata,
+    //       redirect: "follow"
+    //     };
 
-      fetch("https://api.imgur.com/3/image", requestOptions)
-        .then(response => response.text())
-        .then(result => console.log(result))
-        .catch(error => console.log("error", error));
-    },
-    // onNext(idx) {
-    //   const params = {
-    //     idx: idx,
-    //     step: 1
-    //   };
-    //   this.next(params);
+    //     fetch("https://api.imgur.com/3/image", requestOptions)
+    //       .then(response => response.text())
+    //       .then(result => {
+    //         const test = JSON.parse(result);
+    //         console.log(test);
+    //       })
+    //       .catch(error => console.log("error", error));
+    //   }
     // },
+    onNext(idx) {
+      const params = {
+        idx: idx,
+        step: 1
+      };
+      this.next(params);
+    },
     onPrev(idx) {
       const params = {
         idx: idx,

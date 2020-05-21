@@ -1,7 +1,26 @@
 <template>
   <div>
     <div>
-      <div id="part_input">
+      <div id="part_header">
+        <div
+          id="part_input_btn"
+          @click="setInput('part')"
+          :style="inputFlag == 'part' ? btnStyle[0] : btnStyle[1]"
+        >
+          <i class="fas fa-font"></i>&nbsp; 부품명
+        </div>
+        <div
+          id="img_input_btn"
+          @click="setInput('img')"
+          :style="inputFlag == 'img' ? btnStyle[0] : btnStyle[1]"
+        >
+          <i class="fas fa-camera"></i>&nbsp; 이미지
+        </div>
+      </div>
+      <hr
+        style="border: 1px solid gold; margin: auto; margin-bottom: 10px; width: 80%;"
+      />
+      <div id="part_input" v-if="inputFlag === 'part'">
         <div class="star">
           *
         </div>
@@ -11,26 +30,31 @@
           filled
           color="rgb(255, 215, 0)"
           background-color="white"
-          item-text="name"
-          item-value="idx"
+          item-text="partName"
+          item-value="partIdx"
           hide-details
           label="부품"
           placeholder="부품을 골라주세요"
         />
       </div>
+      <div id="img_input" v-else>
+        <pick-category v-if="pickStep === 0"></pick-category>
+        <pick-part v-if="pickStep === 1"></pick-part>
+      </div>
+
       <div id="color_input">
         <div class="star">
           *
         </div>
         <v-autocomplete
-          v-model="selectedColor"
+          v-model="colorIdx"
           :items="partColor"
           filled
           chips
           color="rgb(255, 215, 0)"
           background-color="white"
           item-text="colorName"
-          item-value="colorRgb"
+          item-value="colorIdx"
           hide-details
           label="색상"
           placeholder="색상을 골라주세요"
@@ -109,7 +133,7 @@
             src="../../assets/icons/delete.png"
             alt="delete"
             class="delete_btn"
-            @click="partsDelete(part.id, part.color)"
+            @click="partsDelete(part.id, part.name, part.color)"
           />
         </div>
         <img
@@ -153,29 +177,30 @@
 </template>
 
 <script>
-import LegoParts from "../../../jsonData/LegoParts.json";
-import LegoColors from "../../../jsonData/LegoColors.json";
 import { mapState, mapActions, mapMutations } from "vuex";
+import PickCategory from "./EnrollByImg/PickCategory.vue";
+import PickPart from "./EnrollByImg/PickPart.vue";
 
 export default {
+  components: {
+    PickCategory,
+    PickPart
+  },
   data() {
     return {
-      partList: LegoParts.rows.map((e, i) => {
-        return {
-          name: e[0] + " " + e[1],
-          idx: i,
-          img: e[2]
-        };
-      }),
+      btnStyle: [
+        {
+          fontSize: "24px",
+          color: "black"
+        },
+        {
+          fontSize: "18px"
+        }
+      ],
+      inputFlag: "part",
       partQuantity: 0,
       partIdx: [],
-      partColor: LegoColors.rows.map(color => {
-        return {
-          colorName: color[1],
-          colorRgb: color[2]
-        };
-      }),
-      selectedColor: "",
+      colorIdx: 0,
       flag: false
     };
   },
@@ -184,12 +209,15 @@ export default {
       enrolledPart: state => state.write.enrolledPart,
       step: state => state.write.step,
       currentStep: state => state.write.currentStep,
-      model: state => state.write.model
+      model: state => state.write.model,
+      partList: state => state.write.partList,
+      partColor: state => state.write.partColor,
+      pickStep: state => state.write.pickStep,
+      pickedPartByImg: state => state.write.pickedPartByImg
     })
   },
   watch: {
     enrolledPart() {
-      console.log("aaa", this.enrolledPart);
       if (this.enrolledPart.length !== 0) {
         this.flag = true;
       } else {
@@ -203,12 +231,22 @@ export default {
     }
   },
   methods: {
-    ...mapActions("write", ["prev"]),
-    ...mapActions("write", ["enrollPart"]),
-    ...mapActions("write", ["deletePart"]),
-    ...mapActions("write", ["onWriteSubmit"]),
-    ...mapMutations("write", ["setSteps"]),
-    ...mapMutations("write", ["setCurrentStep"]),
+    ...mapActions("write", [
+      "prev",
+      "enrollPart",
+      "deletePart",
+      "onWriteSubmit"
+    ]),
+    // ...mapActions("write", ["enrollPart"]),
+    // ...mapActions("write", ["deletePart"]),
+    // ...mapActions("write", ["onWriteSubmit"]),
+    ...mapMutations("write", [
+      "setSteps",
+      "setCurrentStep",
+      "setPickStep",
+      "setPickedPartByImg"
+    ]),
+    // ...mapMutations("write", ["setCurrentStep"]),
     goStep(idx) {
       if (this.currentStep >= idx || this.step >= idx) {
         this.setCurrentStep(idx);
@@ -218,8 +256,6 @@ export default {
       this.setStep(idx);
     },
     onSubmit() {
-      // console.log("submit");
-      // console.log(this.model);
       this.onWriteSubmit();
     },
     onPrev(idx) {
@@ -229,32 +265,67 @@ export default {
       };
       this.prev(params);
     },
-    partEnroll() {
-      if (
-        this.partQuantity === 0 ||
-        this.partQuantity === "" ||
-        this.selectedColor === "" ||
-        this.selectedColor === undefined ||
-        this.partIdx === undefined ||
-        this.partIdx.length === 0
-      ) {
-        alert("필수값을 채워 주세요");
-        return;
+    setInput(value) {
+      if (value === "part") {
+        this.inputFlag = "part";
+      } else {
+        this.inputFlag = "img";
       }
-      const params = {
-        partName: this.partList[this.partIdx]["name"],
-        partImg: this.partList[this.partIdx]["img"],
-        partColor: this.selectedColor,
-        partQuantity: this.partQuantity
-      };
-      this.enrollPart(params);
-      this.partIdx = [];
-      this.selectedColor = "";
-      this.partQuantity = 0;
+      this.setPickStep(0);
+      this.setPickedPartByImg([]);
     },
-    partsDelete(name, color) {
+    partEnroll() {
+      if (this.pickedPartByImg.length !== 0) {
+        if (
+          this.partQuantity === 0 ||
+          this.partQuantity === "" ||
+          this.colorIdx === "" ||
+          this.colorIdx === undefined
+        ) {
+          alert("필수값을 채워 주세요");
+          return;
+        }
+        const params = {
+          partName: this.pickedPartByImg[0],
+          partImg: this.pickedPartByImg[1],
+          partId: this.pickedPartByImg[2],
+          partColor: this.partColor[this.colorIdx]["colorRgb"],
+          partColorId: this.partColor[this.colorIdx]["colorId"],
+          partQuantity: this.partQuantity
+        };
+        this.enrollPart(params);
+        this.colorIdx = "";
+        this.partQuantity = 0;
+      } else {
+        if (
+          this.partQuantity === 0 ||
+          this.partQuantity === "" ||
+          this.colorIdx === "" ||
+          this.colorIdx === undefined ||
+          this.partIdx === undefined ||
+          this.partIdx.length === 0
+        ) {
+          alert("필수값을 채워 주세요");
+          return;
+        }
+        const params = {
+          partName: this.partList[this.partIdx]["partName"],
+          partImg: this.partList[this.partIdx]["partImg"],
+          partId: this.partList[this.partIdx]["partId"],
+          partColor: this.partColor[this.colorIdx]["colorRgb"],
+          partColorId: this.partColor[this.colorIdx]["colorId"],
+          partQuantity: this.partQuantity
+        };
+        this.enrollPart(params);
+        this.partIdx = [];
+        this.colorIdx = "";
+        this.partQuantity = 0;
+      }
+    },
+    partsDelete(partId, partName, color) {
       const params = {
-        partName: name,
+        partId: partId,
+        partName: partName,
         partColor: color
       };
       this.deletePart(params);
@@ -264,6 +335,20 @@ export default {
 </script>
 
 <style scoped>
+#part_header {
+  /* display: flex; */
+  text-align: center;
+  margin-bottom: 20px;
+}
+#part_input_btn,
+#img_input_btn {
+  display: inline-block;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 5px;
+  margin: 0 120px;
+}
+
 #part_input,
 #color_input {
   margin-bottom: 20px;
