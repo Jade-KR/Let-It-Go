@@ -16,8 +16,7 @@ import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
+ROOT_DIR = os.path.dirname(BASE_DIR)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
@@ -27,7 +26,11 @@ SECRET_KEY = 'v^koy7l8#=_vt3lxt7y@*_i-_#pzu6rxp-n4eql9ezq5iee4%7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "k02d1081.p.ssafy.io",
+    "127.0.0.1",
+]
 
 
 # Application definition
@@ -49,15 +52,37 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'rest_auth.registration',
-
-
+    'allauth.socialaccount',
 ]
 
 SITE_ID = 1
-
 REST_USE_JWT = True
+ACCOUNT_AUTHENTICATION_METHOD = "username"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+OLD_PASSWORD_FIELD_ENABLED = True
+LOGOUT_ON_PASSWORD_CHANGE = False
+ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
+LOGIN_REDIRECT_URL = "/api/go_to_myhome"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/api/go_to_myhome"
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = "/api/go_to_myhome"
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/api/go_to_myhome"
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com' 
+EMAIL_HOST_USER = 'ymh1791472@gmail.com'# 이메일 ID
+EMAIL_HOST_PASSWORD = 'ssafy123!'   # 비밀번호
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'api.serializers.CustomRegisterSerializer',
+}
+
+ACCOUNT_ADAPTER = 'api.adapter.CustomAccountAdapter'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -72,7 +97,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'backend', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,6 +109,14 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
@@ -136,7 +169,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    STATIC_DIR,
+]
+STATIC_ROOT = os.path.join(BASE_DIR, '.static_root')
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 10,
@@ -157,3 +194,4 @@ JWT_AUTH = {
 }
 
 AUTH_USER_MODEL = 'api.CustomUser'
+CORS_ORIGIN_ALLOW_ALL = True

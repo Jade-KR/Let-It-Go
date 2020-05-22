@@ -87,6 +87,7 @@
 </template>
 <script>
 import PartsModal from "./PartsModal";
+
 export default {
   components: {
     PartsModal

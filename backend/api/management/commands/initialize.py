@@ -112,7 +112,7 @@ class Command(BaseCommand):
                 theme_id=legoset["theme_id"],
                 name=legoset["name"],
                 num_parts=legoset["num_parts"],
-                image=legoset["set_img_url"],
+                images=legoset["set_img_url"],
             )
             for legoset in set_list
         ]

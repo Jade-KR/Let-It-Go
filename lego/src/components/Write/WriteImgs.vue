@@ -30,25 +30,50 @@
           </div>
         </div>
       </div>
-      <input
-        type="file"
-        round
-        class="change-profile-image"
-        multiple="multiple"
-        @change="onFileChange"
-      />
+      <div class="filebox">
+        <label for="ex_filename">사진선택</label>
+        <input
+          type="file"
+          id="ex_filename"
+          class="upload-hidden"
+          multiple="multiple"
+          @change="onFileChange"
+        />
+      </div>
+    </div>
+    <div>
+      <button @click="onPrev(step - 1)" class="before_btn">
+        이전
+      </button>
+      <button
+        @click="onNext(step + 1)"
+        :disabled="modelImgs.length === 0"
+        class="after_btn"
+      >
+        다음
+      </button>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState, mapActions, mapMutations } from "vuex";
+// import axios from "axios";
+
 export default {
   data() {
     return {
-      modelImgs: [],
       files: "",
       slideIndex: 1
     };
+  },
+  computed: {
+    ...mapState({
+      model: state => state.write.model,
+      step: state => state.write.step,
+      currentStep: state => state.write.currentStep,
+      modelImgs: state => state.write.modelImgs
+    })
   },
   watch: {
     modelImgs() {
@@ -60,7 +85,68 @@ export default {
       }
     }
   },
+  mounted() {
+    if (this.modelImgs.length > 0) {
+      const prev = document.getElementById("prev");
+      const next = document.getElementById("next");
+      prev.style.display = "block";
+      next.style.display = "block";
+    }
+  },
   methods: {
+    ...mapActions("write", ["next", "prev", "removeImg"]),
+    // ...mapActions("write", ["prev"]),
+    // ...mapActions("write", ["removeImg"]),
+    ...mapMutations("write", ["setSteps", "setCurrentStep"]),
+    // ...mapMutations("write", ["setCurrentStep"]),
+    goStep(idx) {
+      if (this.currentStep >= idx || this.step >= idx) {
+        this.setCurrentStep(idx);
+      }
+    },
+    onStep(idx) {
+      this.setStep(idx);
+    },
+    // onNext() {
+    //   // console.log(this.modelImgs[0].slice(22));
+    //   var myHeaders = new Headers();
+    //   myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
+
+    //   for (let i = 0; i < this.modelImgs.length; ++i) {
+    //     var formdata = new FormData();
+    //     formdata.append("image", this.modelImgs[i].slice(22));
+
+    //     var requestOptions = {
+    //       method: "POST",
+    //       headers: myHeaders,
+    //       body: formdata,
+    //       redirect: "follow"
+    //     };
+
+    //     fetch("https://api.imgur.com/3/image", requestOptions)
+    //       .then(response => response.text())
+    //       .then(result => {
+    //         const test = JSON.parse(result);
+    //         console.log(test);
+    //       })
+    //       .catch(error => console.log("error", error));
+    //   }
+    // },
+    onNext(idx) {
+      const params = {
+        idx: idx,
+        step: 1
+      };
+      this.next(params);
+    },
+    onPrev(idx) {
+      const params = {
+        idx: idx,
+        step: 1
+      };
+      this.prev(params);
+    },
+
     plusSlides(n) {
       this.showSlides((this.slideIndex += n));
     },
@@ -111,15 +197,17 @@ export default {
       var reader = new FileReader();
       var vm = this;
       reader.onload = e => {
+        for (let i = 0; i < vm.modelImgs.length; ++i) {
+          if (vm.modelImgs[i] === e.target.result) {
+            alert("중복되는 사진이 있습니다.");
+            return;
+          }
+        }
         vm.modelImgs.push(e.target.result);
       };
       reader.readAsDataURL(file);
     },
     removeImage(idx) {
-      this.modelImgs = this.modelImgs.filter((e, i) => i != idx);
-      if (this.modelImgs.length === 0) {
-        this.modelImgs = [];
-      }
       const temp = [];
       for (let i = 0; i < this.files.length; ++i) {
         if (i !== idx) {
@@ -127,6 +215,11 @@ export default {
         }
       }
       this.files = temp;
+      const params = {
+        idx: idx,
+        files: this.files
+      };
+      this.removeImg(params);
     }
   }
 };
@@ -208,5 +301,70 @@ img {
 }
 .delete_btn:hover {
   background-color: red;
+}
+.before_btn,
+.after_btn {
+  background-color: gold;
+  padding: 10px;
+  border-radius: 20px;
+  width: 100px;
+  margin-top: 20px;
+}
+.before_btn:hover,
+.after_btn:hover {
+  background-color: green;
+  color: white;
+}
+.before_btn {
+  background-color: white;
+  color: white;
+  cursor: default;
+}
+.before_btn:hover {
+  background-color: white;
+  color: white;
+}
+.after_btn {
+  float: right;
+}
+.after_btn:disabled {
+  background-color: gray;
+  color: black;
+}
+.after_btn:disabled:hover {
+  background-color: gray;
+  color: black;
+}
+
+.filebox {
+  margin: 20px auto 0 auto;
+  text-align: center;
+}
+.filebox input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.filebox label {
+  display: inline-block;
+  padding: 0.5em 0.75em;
+  font-size: inherit;
+  line-height: normal;
+  vertical-align: middle;
+  background-color: rgba(255, 215, 0);
+  color: black;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 0.25em;
+  width: 150px;
+}
+.filebox label:hover {
+  background-color: green;
+  color: white;
 }
 </style>
