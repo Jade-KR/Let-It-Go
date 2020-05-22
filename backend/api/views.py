@@ -191,7 +191,7 @@ def CreateLegoSet(self):
     user = self.user
     # user = CustomUser.objects.get(id=self.user)
     if user.is_authenticated:
-        data = self.data.get("model")
+        data = self.data
         cur_id = LegoSet.objects.all().order_by('-id')[0].id + 1
         lego_set = LegoSet.objects.create(
             id=cur_id,

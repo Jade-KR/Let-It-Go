@@ -16,7 +16,8 @@ schema_view = get_schema_view(
         # terms_of_service='https://www.google.com/policies/terms/', # 약관 예시
         contact=openapi.Contact(email="pyeonggangkim@gmail.com"),
         license=openapi.License(name="SSAFY License"), 
-    )
+    ),
+    "http://k02d1081.p.ssafy.com:8009/api/"
 )
 
 router = DefaultRouter(trailing_slash=False)
