@@ -17,7 +17,7 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="pyeonggangkim@gmail.com"),
         license=openapi.License(name="SSAFY License"), 
     ),
-    "http://k02d1081.p.ssafy.com:8009/api/"
+    "https://k02d1081.p.ssafy.com:8009/api/"
 )
 
 router = DefaultRouter(trailing_slash=False)
