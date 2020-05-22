@@ -134,6 +134,3 @@ class SetPart(models.Model):
     part = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
     color = models.ForeignKey(Color, on_delete=models.CASCADE)
     quantity = models.IntegerField(null=True)
-
-    def __str__(self):
-        return self.set_id

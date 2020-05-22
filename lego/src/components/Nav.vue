@@ -7,19 +7,22 @@
         </div>
       </div>
       <div class="nav_middle">
-        <div class="menu">NEW!</div>
-        <div class="menu">POP!</div>
-        <div class="menu">CAN!</div>
+        <button class="button" id="nav_new" @click="onHomeCate(1)">
+          <span data-title="새로운거!">NEW!</span>
+        </button>
+        <button class="button" id="nav_pop" @click="onHomeCate(2)">
+          <span data-title="인기도순!">POP!</span>
+        </button>
+        <button class="button" id="nav_can" @click="onHomeCate(3)">
+          <span data-title="만들어볼거!">CAN!</span>
+        </button>
       </div>
       <div class="nav_right">
-        <div class="icons_box" v-if="login">
+        <div class="icons_box">
           <i class="fas fa-home" @click="goHome"></i>
           <i class="fas fa-search"></i>
+          <i class="fas fa-plus" @click="goWrite"></i>
           <i class="fas fa-user-alt" @click="goMyPage"></i>
-        </div>
-        <div class="icons_box" v-else>
-          <button @click="goLogin">로그인</button>
-          <button @click="goSignUp">회원가입</button>
         </div>
       </div>
     </div>
@@ -27,24 +30,34 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
+
 export default {
   data() {
-    return {
-      login: 1
-    };
+    return {};
   },
   methods: {
+    ...mapMutations("home", ["setHomeCate"]),
     goMyPage() {
+      if (!localStorage.getItem("token")) {
+        this.$router.push("/login");
+        return;
+      }
       this.$router.push("/MyPage");
     },
     goHome() {
       this.$router.push("/");
     },
-    goLogin() {
-      this.$router.push("/login");
+    goWrite() {
+      if (!localStorage.getItem("token")) {
+        alert("로그인을 하고 사용해 주세요.");
+        this.$router.push("/login");
+        return;
+      }
+      this.$router.push("/write");
     },
-    goSignUp() {
-      this.$router.push("/register");
+    onHomeCate(value) {
+      this.setHomeCate(value);
     }
   }
 };
@@ -58,36 +71,27 @@ export default {
   height: fit-content;
   border-bottom: rgb(255, 213, 26) solid 4px;
   position: fixed;
-  z-index: 1;
+  z-index: 10;
   background: white;
+  padding: 10px 12vw;
 }
 .nav_left {
   width: 100%;
 }
 .logo_box {
-  position: relative;
-  left: 20px;
-  width: 250px;
-  height: 90px;
+  height: 70px;
 }
 .logo_box:hover {
   cursor: pointer;
 }
 .logo_box > img {
-  width: 90%;
-  position: relative;
-  left: 12px;
-  top: 5px;
+  width: 230px;
 }
 .nav_middle {
   width: 100%;
   display: flex;
   justify-content: space-around;
   align-items: center;
-}
-.menu {
-  font-size: 30px;
-  margin-right: 20px;
 }
 .nav_right {
   display: flex;
@@ -96,11 +100,8 @@ export default {
   align-items: center;
 }
 .icons_box {
-  position: relative;
-  right: 50px;
   display: flex;
   justify-content: flex-end;
-  width: 300px;
 }
 .icons_box > i {
   font-size: 30px;
@@ -123,5 +124,49 @@ export default {
   margin-right: 20px;
   color: rgb(138, 211, 89);
   font: bolder;
+}
+
+.button {
+  display: inline-block;
+  overflow: hidden;
+  width: 12vw;
+  perspective: 400px;
+  background-color: transparent;
+  font-size: 30px;
+}
+.button span {
+  display: block;
+  position: relative;
+  transition: 0.3s ease-in-out all;
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
+  background-color: white;
+  color: black;
+  width: 100%;
+}
+.button span:after {
+  display: block;
+  content: attr(data-title);
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: 0.3s ease-in-out all;
+  transform-origin: 50% 0;
+  transform: translate3d(0px, 105%, 0px) rotateX(-90deg);
+  background-color: black;
+  color: white;
+  width: 100%;
+}
+#nav_new span:after {
+  background-color: gold;
+}
+#nav_pop span:after {
+  background-color: green;
+}
+#nav_can span:after {
+  background-color: red;
+}
+.button:hover span {
+  transform: translate3d(0px, 0px, -30px) rotateX(90deg);
 }
 </style>

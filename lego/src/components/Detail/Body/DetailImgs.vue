@@ -55,6 +55,12 @@
 
 <script>
 export default {
+  props: {
+    images: {
+      type: String,
+      default: ""
+    }
+  },
   data() {
     return {
       slideIndex: 1

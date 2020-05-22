@@ -5,7 +5,8 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-
+from django.conf.urls.static import static
+from django.conf import settings
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -15,7 +16,8 @@ schema_view = get_schema_view(
         # terms_of_service='https://www.google.com/policies/terms/', # 약관 예시
         contact=openapi.Contact(email="pyeonggangkim@gmail.com"),
         license=openapi.License(name="SSAFY License"), 
-    )
+    ),
+    # "https://k02d1081.p.ssafy.io:8009/api/"
 )
 
 router = DefaultRouter(trailing_slash=False)
@@ -41,4 +43,4 @@ urlpatterns = [
     path('reset-password/confirm/<uidb64>[0-9A-Za-z]+)-<token>/', PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'), name='password_reset_confirm'),
     path('reset-password/complete/', PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'),name='password_reset_complete'),
     path('go_to_myhome/', views.go_to_myhome, name="go_to_myhome"),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

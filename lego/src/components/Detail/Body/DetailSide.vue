@@ -4,7 +4,7 @@
       <div id="detail-side-desc">
         <div id="detail-side-title">
           <!-- <b>WHATISTHISWHATIST HISWHATISTHI SWHATISTHISWHATISTHIS</b> -->
-          <b>깃으로만든레고 여러분도할수있슴다</b>
+          <b>{{ setName }}</b>
         </div>
 
         <hr class="divide-line" />
@@ -14,7 +14,7 @@
             Designer
           </div>
           <div id="detail-side-designer-id">
-            <b>네모나게강렬한아기상어</b>
+            <b>{{ nickname }}</b>
           </div>
         </div>
         <div id="detail-side-bricks">
@@ -22,7 +22,7 @@
             Bricks
           </div>
           <div id="detail-side-part">
-            <b>1425 Parts</b>
+            <b>{{ parts }} Parts</b>
           </div>
         </div>
         <div id="detail-side-tags">
@@ -80,6 +80,24 @@
 
 <script>
 export default {
+  props: {
+    id: {
+      type: Number,
+      default: 0
+    },
+    setName: {
+      type: String,
+      default: ""
+    },
+    nickname: {
+      type: String,
+      default: ""
+    },
+    parts: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
       likeFlag: false,
