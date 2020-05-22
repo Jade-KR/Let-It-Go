@@ -56,14 +56,22 @@ class LegoPartSerializer(serializers.ModelSerializer):
         ]
 
 class UserPartSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    rgb = serializers.SerializerMethodField()
     class Meta:
         model = UserPart
         fields = [
             "user_id",
             "part_id",
             "color_id",
-            "quantity"
+            "quantity",
+            "image",
+            "rgb",
         ]
+    def get_image(self, obj):
+        return LegoPart.objects.filter(id=obj.part_id)[0].image if LegoPart.objects.filter(id=obj.part_id) else ""
+    def get_rgb(self, obj):
+        return Color.objects.get(id=obj.color_id).rgb
 
 class CustomRegisterSerializer(RegisterSerializer):
     nickname = serializers.CharField(max_length=50)

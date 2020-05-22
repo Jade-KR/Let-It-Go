@@ -179,21 +179,19 @@ def UpdateUserPart(self):
 def CreateLegoSet(self):
     '''
     {
-        "model": {
-            "theme_id": Integer,
-            "set_images": String, # ex: "img1|img2"
-            "set_name": String,
-            "description": String,
-            "tags": String, # ex: "tag1|tag2"
-            "reference": String,
-            "parts": [
-                {
-                    "part_id": String,
-                    "color_id": Integer,
-                    "quantity": String
-                }
-            ]
-        }
+        "theme_id": Integer,
+        "set_images": String, # ex: "img1|img2"
+        "set_name": String,
+        "description": String,
+        "tags": String, # ex: "tag1|tag2"
+        "reference": String,
+        "parts": [
+            {
+                "part_id": String,
+                "color_id": Integer,
+                "quantity": String
+            }
+        ]
     }
     '''
     user = self.user
