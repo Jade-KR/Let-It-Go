@@ -15,7 +15,13 @@ const state = {
 
 const mutations = {
   setCurrentStep(state, step) {
-    state.currentStep = step
+    if (step === "start") {
+      state.currentStep = 0
+    } else if (step === "back") {
+      state.currentStep -= 1
+    } else if (step === "next") {
+      state.currentStep += 1
+    }
   },
   setFiltered(state, result) {
     state.filtered = result
@@ -24,7 +30,25 @@ const mutations = {
     state.pickedPart = id
   },
   setBasket(state, info) {
-    state.basket.push(info)
+    let check = 0
+    if (state.basket.length === 0) {
+      state.basket.push(info)
+    } else {
+      state.basket.forEach(item => {
+        if (item.colorId === info.colorId && item.partId === info.partId) {
+          item.quantity += info.quantity
+          check = 1
+          return
+        }
+      })
+      if (check === 0) {
+        state.basket.push(info)
+      }
+    }
+
+  },
+  takeOutBasket(state, idx) {
+    state.basket.splice(idx, 1)
   }
 }
 
@@ -51,20 +75,12 @@ const actions = {
   addBasket({
     commit
   }, params) {
-    let info = {
-      img: '',
-      id: params.id,
-      quantity: params.quantity
-    };
-    console.log(info)
-    for (let i = 0; i < LegoParts.rows.length; i++) {
-      if (LegoParts.rows[i][0] === info.id) {
-        info.img = LegoParts.rows[i][2]
-        break
-      }
-    }
-    console.log(info)
-    commit("setBasket", info)
+    commit("setBasket", params)
+  },
+  deleteBasket({
+    commit
+  }, params) {
+    commit("takeOutBasket", params)
   }
 }
 
