@@ -6,7 +6,14 @@
       </div>
       <div>
         혹시 이미 가입하셨나요?
+      </div>
+      <div>
+        로그인하러
         <button style="color:gold; margin-bottom: 20px;" @click="goLogin()">
+          돌아가기
+        </button>
+        or 홈으로
+        <button style="color:gold; margin-bottom: 20px;" @click="goHome()">
           돌아가기
         </button>
       </div>
@@ -100,7 +107,7 @@
 <script>
 import router from "../../router";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
-import { mapActions } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 
 export default {
   components: {
@@ -160,8 +167,12 @@ export default {
       ]
     };
   },
+  mounted() {
+    this.setAuthFlag(true);
+  },
   methods: {
     ...mapActions("auth", ["SHA256", "register"]),
+    ...mapMutations("auth", ["setAuthFlag"]),
     setHash(pwd) {
       this.SHA256(pwd);
     },
@@ -187,6 +198,7 @@ export default {
       router.push("/login");
     },
     goHome() {
+      this.setAuthFlag(false);
       router.push("/");
     },
     randomNick() {

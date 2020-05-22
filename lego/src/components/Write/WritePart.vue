@@ -237,16 +237,12 @@ export default {
       "deletePart",
       "onWriteSubmit"
     ]),
-    // ...mapActions("write", ["enrollPart"]),
-    // ...mapActions("write", ["deletePart"]),
-    // ...mapActions("write", ["onWriteSubmit"]),
     ...mapMutations("write", [
       "setSteps",
       "setCurrentStep",
       "setPickStep",
       "setPickedPartByImg"
     ]),
-    // ...mapMutations("write", ["setCurrentStep"]),
     goStep(idx) {
       if (this.currentStep >= idx || this.step >= idx) {
         this.setCurrentStep(idx);

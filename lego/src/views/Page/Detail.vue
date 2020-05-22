@@ -2,10 +2,15 @@
   <div>
     <div id="detail-main">
       <div id="detail-imgs">
-        <detail-imgs></detail-imgs>
+        <detail-imgs :images="model.image"></detail-imgs>
       </div>
       <div id="detail-side">
-        <detail-side></detail-side>
+        <detail-side
+          :id="model.id"
+          :setName="model.name"
+          :nickname="model.nickname"
+          :parts="model.parts.length"
+        ></detail-side>
       </div>
     </div>
     <div id="detail-btns">
@@ -29,7 +34,7 @@
         <detail-review-write></detail-review-write>
         <detail-review></detail-review>
       </div>
-      <detail-part v-if="btnFlag == 'parts'"></detail-part>
+      <detail-part v-if="btnFlag == 'parts'" :parts="model.parts"></detail-part>
     </div>
   </div>
 </template>
@@ -40,6 +45,7 @@ import DetailSide from "../../components/Detail/Body/DetailSide.vue";
 import DetailReviewWrite from "../../components/Detail/Review/DetailReviewWrite.vue";
 import DetailReview from "../../components/Detail/Review/DetailReview.vue";
 import DetailPart from "../../components/Detail/Part/DetailPart.vue";
+import { mapState, mapActions } from "vuex";
 
 export default {
   components: {
@@ -63,7 +69,18 @@ export default {
       ]
     };
   },
+  computed: {
+    ...mapState({
+      model: state => state.detail.model
+    })
+  },
+  async mounted() {
+    const modelId = this.$route.params.modelId;
+    await this.getModelDetail(modelId);
+    // console.log(this.model);
+  },
   methods: {
+    ...mapActions("detail", ["getModelDetail"]),
     onReviews() {
       this.btnFlag = "reviews";
     },

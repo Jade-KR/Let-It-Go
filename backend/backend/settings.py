@@ -194,4 +194,5 @@ JWT_AUTH = {
 }
 
 AUTH_USER_MODEL = 'api.CustomUser'
+
 CORS_ORIGIN_ALLOW_ALL = True

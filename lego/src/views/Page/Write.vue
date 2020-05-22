@@ -14,19 +14,26 @@
         :style="
           step === 2 || step === 3 ? activeBarStyle[0] : deactiveBarStyle[0]
         "
-      >2</div>
-      <hr id="progress_dash23" :style="step === 3 ? activeBarStyle[1] : deactiveBarStyle[1]" />
+      >
+        2
+      </div>
+      <hr
+        id="progress_dash23"
+        :style="step === 3 ? activeBarStyle[1] : deactiveBarStyle[1]"
+      />
       <div
         id="progress_step3"
         @click="goStep(3)"
         :style="step === 3 ? activeBarStyle[0] : deactiveBarStyle[0]"
-      >3</div>
+      >
+        3
+      </div>
     </div>
     <hr id="write_divideline" />
     <div id="write_info">
-      <write-imgs v-if="currentStep === 2"></write-imgs>
+      <write-imgs v-if="currentStep === 1"></write-imgs>
       <write-desc v-if="currentStep === 2"></write-desc>
-      <write-part v-if="currentStep === 1"></write-part>
+      <write-part v-if="currentStep === 3"></write-part>
     </div>
   </div>
 </template>
