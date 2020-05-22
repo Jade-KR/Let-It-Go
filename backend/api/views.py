@@ -79,6 +79,7 @@ class LegoPartViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets
 
 class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserPartSerializer
+    pagination_class = SmallPagination
     
     def list(self, request):
         if request.user.is_authenticated:
