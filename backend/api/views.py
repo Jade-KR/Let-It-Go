@@ -19,23 +19,24 @@ headers = {
 
 def crawling_part_data(pk):
     cur_page = 1
-    set_name = OfficialMapping.objects.get(lego_set_id=pk).id
-    while True:
-        res = requests.get(url='https://rebrickable.com/api/v3/lego/sets/{}/parts/?page={}&page_size=1000'.format(set_name, cur_page), headers=headers).json()
-        parts = res["results"]
-        part_bulk = [
-            SetPart(
-                lego_set_id=pk,
-                part_id=part["part"]["part_num"],
-                color_id=part["color"]["id"],
-                quantity=part["quantity"]
-            )
-            for part in parts
-        ]
-        SetPart.objects.bulk_create(part_bulk)
-        if not res["next"]:
-            break
-        cur_page += 1
+    if OfficialMapping.objects.filter(lego_set_id=pk):
+        set_name = OfficialMapping.objects.get(lego_set_id=pk).id
+        while True:
+            res = requests.get(url='https://rebrickable.com/api/v3/lego/sets/{}/parts/?page={}&page_size=1000'.format(set_name, cur_page), headers=headers).json()
+            parts = res["results"]
+            part_bulk = [
+                SetPart(
+                    lego_set_id=pk,
+                    part_id=part["part"]["part_num"],
+                    color_id=part["color"]["id"],
+                    quantity=part["quantity"]
+                )
+                for part in parts
+            ]
+            SetPart.objects.bulk_create(part_bulk)
+            if not res["next"]:
+                break
+            cur_page += 1
     
 
 class SmallPagination(PageNumberPagination):
@@ -50,8 +51,26 @@ class ThemeViewSet(viewsets.ModelViewSet):
 
 class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = LegoSet.objects.all()
-    serializer_class = serializers.LegoSetSerializer
+    serializer_class = serializers.LegoSetSerializer2
     pagination_class = SmallPagination
+
+    def list(self, request):
+        queryset = LegoSet.objects.all().order_by("-id")
+        
+        page = self.paginate_queryset(queryset)
+        
+        if page is not None:
+            serializer = serializers.LegoSetSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = serializers.LegoSetSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+        # serializer = serializers.LegoSetSerializer(queryset, many=True)
+        # print(serializer.data)
+        # return Response(serializer.data)
+
 
 class LegoPartViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = LegoPart.objects.all()
@@ -60,6 +79,7 @@ class LegoPartViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets
 
 class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserPartSerializer
+    pagination_class = SmallPagination
     
     def list(self, request):
         if request.user.is_authenticated:
@@ -77,7 +97,7 @@ class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.SetPartSerializer
-    queryset = SetPart.objects.all().order_by("-id")
+    queryset = SetPart.objects.all()
     
     def retrieve(self, request, pk=None):
         queryset = SetPart.objects.filter(lego_set_id=pk)
@@ -162,7 +182,7 @@ def UpdateUserPart(self):
             # 유저가 보유하고 있지 않은 아이템이라면
             else:
                 if part["qte"] > 0:
-                    c.append(UserPart.objects.create(user=user, part_id=part["part_id"], color_id=part["color_id"], quantity=part["qte"]))
+                    c.append(UserPart(user=user, part_id=part["part_id"], color_id=part["color_id"], quantity=part["qte"]))
 
         # 갱신해야하는 값들을 갱신한다
         UserPart.objects.bulk_update(a, ["quantity"])

@@ -26,7 +26,6 @@ class LegoSetSerializer(serializers.ModelSerializer):
     # theme_detail = ThemeSerializer(source="theme")
     # set_pk, set_name, image,user_name, user_like
     nickname = serializers.SerializerMethodField()
-    parts = serializers.SerializerMethodField()
     class Meta:
         model = LegoSet
         fields = [
@@ -34,7 +33,33 @@ class LegoSetSerializer(serializers.ModelSerializer):
             "name",
             "nickname",
             "image",
+            #좋아요여부
+        ]
+    def get_nickname(self, obj):
+        return obj.user.nickname if obj.user else "Official Set"
+    def get_image(self, obj):
+        return obj.images[0] if obj.images else ""
+
+
+class LegoSetSerializer2(serializers.ModelSerializer):
+    # theme_detail = ThemeSerializer(source="theme")
+    # set_pk, set_name, image,user_name, user_like
+    nickname = serializers.SerializerMethodField()
+    parts = serializers.SerializerMethodField()
+    class Meta:
+        model = LegoSet
+        fields = [
+            "id",
+            "name",
+            "nickname",
+            "user_id",
+            "images",
+            # "like",
             "parts",
+            # "reviews",
+            "description",
+            "tags",
+            "theme",
             #좋아요여부
         ]
     def get_nickname(self, obj):

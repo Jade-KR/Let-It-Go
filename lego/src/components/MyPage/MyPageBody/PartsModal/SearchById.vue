@@ -114,7 +114,7 @@
       </div>
     </div>
     <div class="modal_footer">
-      <button class="after_btn" :disabled="!flag">부품 등록</button>
+      <button class="after_btn" :disabled="!flag" @click="onSubmit()">부품 등록</button>
     </div>
   </div>
 </template>
@@ -156,7 +156,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions("Parts", ["addBasket", "deleteBasket"]),
+    ...mapActions("Parts", [
+      "addBasket",
+      "deleteBasket",
+      "updateParts",
+      "getUserParts"
+    ]),
     addList() {
       if (
         this.partId === "" ||
@@ -176,6 +181,23 @@ export default {
     },
     deleteItem(idx) {
       this.deleteBasket(idx);
+    },
+    //     part_id": String,
+    // "color_id": Integer,
+    // "qte": Integer
+    async onSubmit() {
+      const newBasket = [];
+      this.basket.forEach(item => {
+        let info = {
+          part_id: item.partId,
+          color_id: Number(item.colorId),
+          qte: Number(item.quantity)
+        };
+        newBasket.push(info);
+      });
+      const params = { UpdateList: newBasket };
+      await this.updateParts(params);
+      await this.getUserParts().then(this.$emit("close"));
     }
   }
 };

@@ -53,9 +53,6 @@ class OfficialMapping(models.Model):
     id = models.CharField(primary_key=True, max_length=50)
     lego_set = models.ForeignKey(LegoSet, on_delete=models.SET_NULL, null=True)
 
-    def __str__(self):
-        return self.set_id
-
 class Category(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
