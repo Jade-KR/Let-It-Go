@@ -1,6 +1,7 @@
 from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, SetPart
 from rest_framework import serializers
 from rest_auth.registration.serializers import RegisterSerializer
+from api import views
 
 class ThemeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,10 +12,21 @@ class ThemeSerializer(serializers.ModelSerializer):
             "name",
         ]
 
+class SetPartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SetPart
+        fields = [
+            "lego_set_id",
+            "part_id",
+            "color_id",
+            "quantity"
+        ]
+
 class LegoSetSerializer(serializers.ModelSerializer):
     # theme_detail = ThemeSerializer(source="theme")
     # set_pk, set_name, image,user_name, user_like
     nickname = serializers.SerializerMethodField()
+    parts = serializers.SerializerMethodField()
     class Meta:
         model = LegoSet
         fields = [
@@ -22,10 +34,16 @@ class LegoSetSerializer(serializers.ModelSerializer):
             "name",
             "nickname",
             "image",
+            "parts",
             #좋아요여부
         ]
     def get_nickname(self, obj):
         return obj.user.nickname if obj.user else "Official Set"
+    def get_image(self, obj):
+        return obj.images[0] if obj.images else ""
+    def get_parts(self, obj):
+        views.crawling_part_data(obj.id)
+        return SetPartSerializer(LegoSet.objects.get(id=obj.id).setpart_set.all(), many=True).data
 
 class LegoPartSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,16 +60,6 @@ class UserPartSerializer(serializers.ModelSerializer):
         model = UserPart
         fields = [
             "user_id",
-            "part_id",
-            "color_id",
-            "quantity"
-        ]
-
-class SetPartSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SetPart
-        fields = [
-            "lego_set_id",
             "part_id",
             "color_id",
             "quantity"

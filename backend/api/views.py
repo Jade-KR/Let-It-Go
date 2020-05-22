@@ -17,6 +17,27 @@ headers = {
     'Accept': 'application/json'
 }
 
+def crawling_part_data(pk):
+    cur_page = 1
+    set_name = OfficialMapping.objects.get(lego_set_id=pk).id
+    while True:
+        res = requests.get(url='https://rebrickable.com/api/v3/lego/sets/{}/parts/?page={}&page_size=1000'.format(set_name, cur_page), headers=headers).json()
+        parts = res["results"]
+        part_bulk = [
+            SetPart(
+                lego_set_id=pk,
+                part_id=part["part"]["part_num"],
+                color_id=part["color"]["id"],
+                quantity=part["quantity"]
+            )
+            for part in parts
+        ]
+        SetPart.objects.bulk_create(part_bulk)
+        if not res["next"]:
+            break
+        cur_page += 1
+    
+
 class SmallPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = "page_size"
@@ -27,7 +48,7 @@ class ThemeViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ThemeSerializer
     pagination_class = SmallPagination
 
-class LegoSetViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = LegoSet.objects.all()
     serializer_class = serializers.LegoSetSerializer
     pagination_class = SmallPagination
@@ -41,19 +62,22 @@ class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserPartSerializer
     
     def list(self, request):
-        queryset = UserPart.objects.filter(user=request.user)
-        page = self.paginate_queryset(queryset)
+        if request.user.is_authenticated:
+            queryset = UserPart.objects.filter(user=request.user)
+            page = self.paginate_queryset(queryset)
 
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            return Response("로그인이 필요합니다.")
 
 class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.SetPartSerializer
-    queryset = SetPart.objects.all()
+    queryset = SetPart.objects.all().order_by("-id")
     
     def retrieve(self, request, pk=None):
         queryset = SetPart.objects.filter(lego_set_id=pk)
@@ -61,25 +85,7 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             serializer = serializers.SetPartSerializer(queryset, many=True)
             return Response(serializer.data)
         elif OfficialMapping.objects.get(lego_set_id=pk):
-            cur_page = 1
-            set_name = OfficialMapping.objects.get(lego_set_id=pk).id
-            while True:
-                res = requests.get(url='https://rebrickable.com/api/v3/lego/sets/{}/parts/?page={}&page_size=5'.format(set_name, cur_page), headers=headers).json()
-                parts = res["results"]
-                part_bulk = [
-                    SetPart(
-                        lego_set_id=pk,
-                        part_id=part["part"]["part_num"],
-                        color_id=part["color"]["id"],
-                        quantity=part["quantity"]
-                    )
-                    for part in parts
-                ]
-                SetPart.objects.bulk_create(part_bulk)
-                if not res["next"]:
-                    break
-                cur_page += 1
-            
+            crawling_part_data(pk)
             queryset = SetPart.objects.filter(lego_set_id=pk)
             serializer = serializers.SetPartSerializer(queryset, many=True)
             return Response(serializer.data)
