@@ -7,7 +7,7 @@
       <div class="slideshow_container">
         <div
           class="go_detail_btn"
-          @click="goDetail()"
+          @click="goDetail(id)"
           :style="styleFlag ? matrixStyle[4] : instaStyle[4]"
         >
           상세보기
@@ -80,9 +80,7 @@
         ></span>
       </div>
       <div :style="styleFlag ? matrixStyle[2] : instaStyle[2]">
-        <div class="home_card_footer_director">
-          Director. Nalbo_Nalbo
-        </div>
+        <div class="home_card_footer_director">Director. {{ nickname }}</div>
         <div class="home_card_footer_btns">
           <button v-if="like" class="home_card_like" @click="pushLike()">
             <i class="fas fa-heart" />
@@ -118,6 +116,10 @@ export default {
       default: ""
     },
     name: {
+      type: String,
+      default: ""
+    },
+    nickname: {
       type: String,
       default: ""
     }
@@ -218,7 +220,7 @@ export default {
       }
     },
     goDetail() {
-      router.push("/detail");
+      router.push("/detail" + "/" + this.id);
     },
     pushLike() {
       if (this.like === false) {

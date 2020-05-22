@@ -28,18 +28,11 @@
           :idx="i"
           :id="model.id"
           :images="model.image"
+          :nickname="model.nickname"
           :name="model.name"
           :styleFlag="styleFlag"
         />
       </div>
-      <!-- <div
-        class="home_card"
-        v-for="i in 2"
-        :key="i"
-        :style="styleFlag ? matrixStyle : instaStyle"
-      >
-        <home-card :idx="i" :styleFlag="styleFlag" />
-      </div> -->
     </div>
   </div>
 </template>
@@ -103,7 +96,7 @@ export default {
       }
     },
     async loadMore() {
-      console.log(this.page);
+      // console.log(this.page);
       this.loading = true;
       const params = {
         name: this.models[this.models.length - 1]["id"],

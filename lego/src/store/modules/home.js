@@ -48,8 +48,6 @@ const mutations = {
     state.modelList = state.modelList.concat(model);
   },
   setModelPage(state, url) {
-    console.log(url);
-    console.log("aaaaaaaaaaaaaa", new URL(url).searchParams.get("page"));
     state.modelPage = new URL(url).searchParams.get("page");
   }
 };

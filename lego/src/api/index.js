@@ -17,5 +17,8 @@ export default {
   },
   getModels(params) {
     return http.get(`${apiUrl}/LegoSet`, { params });
+  },
+  getModelDetail(params) {
+    return http.get(`${apiUrl}/LegoSet/${params}`);
   }
 };
