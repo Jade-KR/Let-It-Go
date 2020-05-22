@@ -2,7 +2,7 @@
   <div class="text-center">
     <PickCategory v-if="currentStep === 0"></PickCategory>
     <PickPart v-if="currentStep === 1"></PickPart>
-    <AddPart v-if="currentStep === 2"></AddPart>
+    <AddPart v-if="currentStep === 2" @close="close()"></AddPart>
   </div>
 </template>
 
@@ -27,6 +27,11 @@ export default {
       allParts: state => state.Parts.legoParts.rows,
       currentStep: state => state.Parts.currentStep
     })
+  },
+  methods: {
+    close() {
+      this.$emit("close");
+    }
   }
 };
 </script>

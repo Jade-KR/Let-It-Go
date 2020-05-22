@@ -7,5 +7,22 @@ export default {
   },
   login(params) {
     return http.post(`${apiUrl}/login/`, params);
+  },
+  getUserParts() {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.get(`${apiUrl}/UserPart?page=1&page_size=21`, {
+      headers
+    })
+  },
+  addUserParts(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    console.log(params)
+    return http.post(`${apiUrl}/UpdateUserPart`, params, {
+      headers
+    })
   }
 };

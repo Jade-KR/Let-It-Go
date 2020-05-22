@@ -1,6 +1,7 @@
 import LegoParts from "../../../jsonData/LegoParts.json";
 import LegoCategory from "../../../jsonData/LegoCategory.json";
 import LegoColor from "../../../jsonData/LegoColors.json"
+import api from "../../api";
 
 
 const state = {
@@ -10,7 +11,8 @@ const state = {
   currentStep: 0,
   pickedPart: '',
   legoColor: LegoColor.rows,
-  basket: []
+  basket: [],
+  userParts: []
 }
 
 const mutations = {
@@ -49,6 +51,12 @@ const mutations = {
   },
   takeOutBasket(state, idx) {
     state.basket.splice(idx, 1)
+  },
+  resetBasket(state) {
+    state.basket = []
+  },
+  setUserParts(state, params) {
+    state.userParts = params
   }
 }
 
@@ -81,6 +89,20 @@ const actions = {
     commit
   }, params) {
     commit("takeOutBasket", params)
+  },
+  async updateParts({
+    commit
+  }, params) {
+    await api.addUserParts(params)
+    commit("resetBasket")
+  },
+  async getUserParts({
+    commit
+  }) {
+    const resp = await api.getUserParts()
+    console.log(resp)
+    console.log(resp)
+    commit("setUserParts", resp.data.results)
   }
 }
 

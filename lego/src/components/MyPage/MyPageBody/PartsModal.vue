@@ -25,8 +25,8 @@
             <i class="fas fa-times" @click="dialog = 0"></i>
           </div>
         </div>
-        <SearchById v-if="currentState === 0"></SearchById>
-        <SearchByImg v-if="currentState === 1"></SearchByImg>
+        <SearchById v-if="currentState === 0" @close="dialog=false"></SearchById>
+        <SearchByImg v-if="currentState === 1" @close="dialog=false"></SearchByImg>
       </v-card>
     </v-dialog>
   </div>

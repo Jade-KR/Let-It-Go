@@ -122,7 +122,7 @@
     </div>
     <div class="modal_footer">
       <button class="before_btn" @click="back()">이전</button>
-      <button class="after_btn" :disabled="!flag">부품 등록</button>
+      <button class="after_btn" :disabled="!flag" @click="onSubmit">부품 등록</button>
     </div>
   </div>
 </template>
@@ -173,7 +173,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions("Parts", ["addBasket", "deleteBasket", "changeStep"]),
+    ...mapActions("Parts", [
+      "addBasket",
+      "deleteBasket",
+      "changeStep",
+      "updateParts",
+      "getUserParts"
+    ]),
     addList() {
       if (
         this.pickedPart === "" ||
@@ -196,6 +202,20 @@ export default {
     },
     back() {
       this.changeStep("back");
+    },
+    async onSubmit() {
+      const newBasket = [];
+      this.basket.forEach(item => {
+        let info = {
+          part_id: item.partId,
+          color_id: Number(item.colorId),
+          qte: Number(item.quantity)
+        };
+        newBasket.push(info);
+      });
+      const params = { UpdateList: newBasket };
+      this.updateParts(params);
+      await this.getUserParts().then(this.$emit("close"));
     }
   }
 };
