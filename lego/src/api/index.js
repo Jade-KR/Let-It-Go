@@ -13,12 +13,34 @@ export default {
     return http.post(`${apiUrl}/login/`, params);
   },
   writeSubmit(params) {
-    return http.post(`${apiUrl}/CreateLegoSet`, params, { headers });
+    return http.post(`${apiUrl}/CreateLegoSet`, params, {
+      headers
+    });
   },
   getModels(params) {
-    return http.get(`${apiUrl}/LegoSet`, { params });
+    return http.get(`${apiUrl}/LegoSet`, {
+      params
+    });
   },
   getModelDetail(params) {
     return http.get(`${apiUrl}/LegoSet/${params}`);
+  },
+  getUserParts() {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.get(`${apiUrl}/UserPart?page=1&page_size=21`, {
+      headers
+    })
+  },
+  addUserParts(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    console.log(params)
+    return http.post(`${apiUrl}/UpdateUserPart`, params, {
+      headers
+    })
+
   }
-};
+}
