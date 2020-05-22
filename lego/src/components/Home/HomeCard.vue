@@ -1,85 +1,93 @@
 <template>
-  <div class="home-card-body">
-    <div class="home-card-header">
-      Title
+  <div class="home_card_body">
+    <div class="home_card_header">
+      {{ name }}
     </div>
-    <div class="home-card-imgs">
-      <div class="slideshow-container">
+    <div class="home_card_imgs">
+      <div class="slideshow_container">
         <div
-          class="go-detail-btn"
+          class="go_detail_btn"
           @click="goDetail()"
           :style="styleFlag ? matrixStyle[4] : instaStyle[4]"
         >
           상세보기
         </div>
+
         <div :class="`mySlides${idx} fade`">
           <img
-            src="../../assets/git.png"
+            :src="images"
+            alt=""
             :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
           />
         </div>
 
-        <div :class="`mySlides${idx} fade`">
-          <img
-            src="../../assets/logo.png"
-            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
-          />
-        </div>
-
-        <div :class="`mySlides${idx} fade`">
-          <img
-            src="../../assets/JS.png"
-            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
-          />
-        </div>
-
-        <div :class="`mySlides${idx} fade`">
-          <img
-            src="../../assets/logo.png"
-            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
-          />
-        </div>
-
-        <div :class="`mySlides${idx} fade`">
-          <img
-            src="../../assets/side_bg.png"
-            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
-          />
-        </div>
-
-        <div :class="`mySlides${idx} fade`">
-          <img
-            src="../../assets/JS.png"
-            style="width:100%"
-            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
-          />
-        </div>
+        <!-- <div v-for="(url, i) in params" :key="`url-${i}`">
+          <div :class="`mySlides${idx} fade`" :id="`mySlide-${i}`">
+            <img
+              :src="url"
+              :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
+              :id="`slideImg-${i}-${idx}`"
+              v-if="!images"
+            />
+            <img
+              :src="images"
+              alt=""
+              :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
+              :id="`slideImg-${i}-${idx}`"
+              v-else
+            />
+          </div>
+        </div> -->
 
         <a class="prev" @click.stop="plusSlides(-1)">&#10094;</a>
         <a class="next" @click.stop="plusSlides(1)">&#10095;</a>
       </div>
     </div>
     <div
-      class="home-card-footer"
+      class="home_card_footer"
       :style="styleFlag ? matrixStyle[1] : instaStyle[1]"
     >
       <div :style="styleFlag ? matrixStyle[0] : instaStyle[0]">
-        <span :class="`dot${idx}`" @click="currentSlide(1)"></span>
-        <span :class="`dot${idx}`" @click="currentSlide(2)"></span>
-        <span :class="`dot${idx}`" @click="currentSlide(3)"></span>
-        <span :class="`dot${idx}`" @click="currentSlide(4)"></span>
-        <span :class="`dot${idx}`" @click="currentSlide(5)"></span>
-        <span :class="`dot${idx}`" @click="currentSlide(6)"></span>
+        <span
+          :class="`dot${idx}`"
+          @click="currentSlide(1)"
+          v-if="params.length >= 1"
+        ></span>
+        <span
+          :class="`dot${idx}`"
+          @click="currentSlide(2)"
+          v-if="params.length >= 2"
+        ></span>
+        <span
+          :class="`dot${idx}`"
+          @click="currentSlide(3)"
+          v-if="params.length >= 3"
+        ></span>
+        <span
+          :class="`dot${idx}`"
+          @click="currentSlide(4)"
+          v-if="params.length >= 4"
+        ></span>
+        <span
+          :class="`dot${idx}`"
+          @click="currentSlide(5)"
+          v-if="params.length >= 5"
+        ></span>
+        <span
+          :class="`dot${idx}`"
+          @click="currentSlide(6)"
+          v-if="params.length >= 6"
+        ></span>
       </div>
       <div :style="styleFlag ? matrixStyle[2] : instaStyle[2]">
-        <div class="home-card-footer-director">
+        <div class="home_card_footer_director">
           Director. Nalbo_Nalbo
         </div>
-        <div class="home-card-footer-btns">
-          <button v-if="like" class="home-card-like" @click="pushLike()">
+        <div class="home_card_footer_btns">
+          <button v-if="like" class="home_card_like" @click="pushLike()">
             <i class="fas fa-heart" />
           </button>
-          <button v-else class="home-card-like" @click="pushLike()">
+          <button v-else class="home_card_like" @click="pushLike()">
             <i class="far fa-heart" />
           </button>
         </div>
@@ -100,12 +108,32 @@ export default {
     styleFlag: {
       type: Boolean,
       default: false
+    },
+    id: {
+      type: Number,
+      default: 0
+    },
+    images: {
+      type: String,
+      default: ""
+    },
+    name: {
+      type: String,
+      default: ""
     }
   },
   data() {
     return {
       like: false,
       slideIndex: 1,
+      params: [
+        "/images/로고2.png",
+        "/images/side_bg.png",
+        "/images/부품들.jpg",
+        "/images/git.png",
+        "/images/header.jpg",
+        "/images/login_bg.jpg"
+      ],
       matrixStyle: [
         {
           display: "block",
@@ -143,6 +171,7 @@ export default {
         },
         {
           width: "100%"
+          // maxHeight: "800px"
         },
         {
           left: "87.7%"
@@ -171,6 +200,23 @@ export default {
     dots[this.slideIndex - 1].className += " active";
   },
   methods: {
+    test() {
+      var maxHeight = 0;
+      for (let i = 0; i < this.params.length; ++i) {
+        var naturalHeight = document.getElementById(`slideImg-${i}-${this.idx}`)
+          .naturalHeight; // img 높이
+        if (maxHeight < naturalHeight) {
+          maxHeight = naturalHeight;
+        }
+      }
+      if (maxHeight > 614) {
+        maxHeight = 614;
+      }
+      for (let i = 0; i < this.params.length; ++i) {
+        document.getElementById(`slideImg-${i}-${this.idx}`).style.height =
+          String(maxHeight) + "px";
+      }
+    },
     goDetail() {
       router.push("/detail");
     },
@@ -211,13 +257,13 @@ export default {
 </script>
 
 <style scoped>
-.home-card-body {
+.home_card_body {
   text-align: initial;
 }
-.home-card-header {
+.home_card_header {
   padding: 10px;
 }
-.home-card-imgs {
+.home_card_imgs {
   border-top: 5px solid gold;
   border-bottom: 5px solid gold;
 }
@@ -229,16 +275,16 @@ export default {
   padding: 10px;
   display: flex;
 } */
-.home-card-footer-director {
+.home_card_footer_director {
   padding: 5px;
   flex: 1;
 }
-.home-card-like {
+.home_card_like {
   color: red;
   font-size: 25px;
   float: right;
 }
-.go-detail-btn {
+.go_detail_btn {
   position: absolute;
   cursor: pointer;
   background-color: rgba(255, 215, 0, 0.5);
@@ -246,7 +292,7 @@ export default {
   font-weight: 700;
   padding: 5px;
   text-align: center;
-  z-index: 10;
+  z-index: 5;
 }
 .mySlides {
   display: none;
@@ -254,13 +300,9 @@ export default {
 img {
   vertical-align: middle;
 }
-.slideshow-container {
-  /* max-width: 1000px; */
+.slideshow_container {
   position: relative;
   margin: auto;
-  /* height: 614px; */
-  /* overflow: hidden;
-  box-sizing: content-box; */
 }
 .prev,
 .next {

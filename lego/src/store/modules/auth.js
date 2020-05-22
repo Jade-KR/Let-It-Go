@@ -1,7 +1,9 @@
 import api from "../../api";
 import router from "../../router";
 
-const state = {};
+const state = {
+  authFlag: false
+};
 
 const actions = {
   async register({ commit }, params) {
@@ -12,6 +14,7 @@ const actions = {
         console.log("res", res);
         if (res.status == 201) {
           alert("인증 이메일을 발송하였습니다. 확인해주세요.");
+          commit("setAuthFlag", false);
           router.push("/");
         }
       })
@@ -42,6 +45,7 @@ const actions = {
         localStorage.setItem("image", user.image);
         localStorage.setItem("gender", user.gender);
         localStorage.setItem("age", user.age);
+        commit("setAuthFlag", false);
         router.push("/");
       })
       .catch(err => {
@@ -280,7 +284,11 @@ const actions = {
   }
 };
 
-const mutations = {};
+const mutations = {
+  setAuthFlag(state, value) {
+    state.authFlag = value;
+  }
+};
 
 export default {
   namespaced: true,

@@ -3,6 +3,9 @@ import LegoParts from "../../../jsonData/LegoParts.json";
 import LegoColors from "../../../jsonData/LegoColors.json";
 import LegoCategory from "../../../jsonData/LegoCategory.json";
 
+import api from "../../api";
+// import router from "../../router";
+
 const state = {
   model: {
     theme_id: 0,
@@ -52,31 +55,31 @@ const state = {
 const actions = {
   next({ commit }, params) {
     if (params.step === 1) {
-      commit("setImage", state.modelImgs);
-      // var modelImgUrls = [];
-      // var myHeaders = new Headers();
-      // myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
+      // commit("setImage", state.modelImgs);
+      var modelImgUrls = [];
+      var myHeaders = new Headers();
+      myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
 
-      // for (let i = 0; i < state.modelImgs.length; ++i) {
-      //   var formdata = new FormData();
-      //   formdata.append("image", state.modelImgs[i].slice(22));
+      for (let i = 0; i < state.modelImgs.length; ++i) {
+        var formdata = new FormData();
+        formdata.append("image", state.modelImgs[i].slice(22));
 
-      //   var requestOptions = {
-      //     method: "POST",
-      //     headers: myHeaders,
-      //     body: formdata,
-      //     redirect: "follow"
-      //   };
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: formdata,
+          redirect: "follow"
+        };
 
-      //   fetch("https://api.imgur.com/3/image", requestOptions)
-      //     .then(response => response.text())
-      //     .then(result => {
-      //       const test = JSON.parse(result);
-      //       modelImgUrls.push(test.data.link);
-      //       commit("setImage", modelImgUrls);
-      //     })
-      //     .catch(error => console.log("error", error));
-      // }
+        fetch("https://api.imgur.com/3/image", requestOptions)
+          .then(response => response.text())
+          .then(result => {
+            const test = JSON.parse(result);
+            modelImgUrls.push(test.data.link);
+            commit("setImage", modelImgUrls);
+          })
+          .catch(error => console.log("error", error));
+      }
     } else if (params.step === 2) {
       commit("setDesc", params.descParams);
     }
@@ -139,7 +142,20 @@ const actions = {
       return e["name"] !== params.partName || e["color"] !== params.partColor;
     });
   },
-  onWriteSubmit({ commit }) {
+  filterParts({ commit }, params) {
+    let filteredParts = LegoParts.rows.filter(part => {
+      return part[5] === params;
+    });
+    commit("setPickedParts", filteredParts);
+  },
+  changeStep({ commit }, params) {
+    commit("setPickStep", params);
+  },
+  pickPartBytImg({ commit }, params) {
+    const part = [params[0] + " " + params[1], params[2], params[0]];
+    commit("setPickedPartByImg", part);
+  },
+  async onWriteSubmit({ commit }) {
     const imgUrlList = state.model.set_images;
     var imgUrlString = "";
     imgUrlList.forEach((e, i) => {
@@ -162,20 +178,14 @@ const actions = {
     });
     commit("setTags", tagString);
     commit("setParts");
-    console.log(state.model);
-  },
-  filterParts({ commit }, params) {
-    let filteredParts = LegoParts.rows.filter(part => {
-      return part[5] === params;
-    });
-    commit("setPickedParts", filteredParts);
-  },
-  changeStep({ commit }, params) {
-    commit("setPickStep", params);
-  },
-  pickPartBytImg({ commit }, params) {
-    const part = [params[0] + " " + params[1], params[2], params[0]];
-    commit("setPickedPartByImg", part);
+    await api
+      .writeSubmit(state.model)
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err.response);
+      });
   }
 };
 
@@ -207,7 +217,7 @@ const mutations = {
     state.enrolledPart.forEach(e => {
       state.model.parts.push({
         part_id: e["id"],
-        color_id: e["colorId"],
+        color_id: Number(e["colorId"]),
         quantity: e["quantity"]
       });
     });
