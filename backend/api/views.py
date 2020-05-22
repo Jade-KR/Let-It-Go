@@ -143,7 +143,8 @@ def UpdateUserPart(self):
         a = []
         # 삭제리스트
         b = []
-
+        # 생성리스트
+        c = []
         # 사용자 요청 데이터들에 대해서 반복문을 돌리며 갱신 혹은 삭제할 것들 확인한다.
         for part in update_d:
             # 유저가 보유하고 있는 아이템이라면
@@ -161,11 +162,12 @@ def UpdateUserPart(self):
             # 유저가 보유하고 있지 않은 아이템이라면
             else:
                 if part["qte"] > 0:
-                    a.append(UserPart.objects.create(user=user, part_id=part["part_id"], color_id=part["color_id"], quantity=part["qte"]))
+                    c.append(UserPart.objects.create(user=user, part_id=part["part_id"], color_id=part["color_id"], quantity=part["qte"]))
 
         # 갱신해야하는 값들을 갱신한다
         UserPart.objects.bulk_update(a, ["quantity"])
-
+        # 생성해야하는 값들을 생성한다
+        UserPart.objects.bulk_create(c)
         # 삭제해야할 값들을 삭제한다.
         for userpart in b:
             userpart.delete()
