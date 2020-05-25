@@ -63,7 +63,7 @@ class Category(models.Model):
 
 class Review(models.Model):
     id = models.IntegerField(primary_key=True)
-    set_id = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
+    lego_set = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
     score = models.IntegerField()
