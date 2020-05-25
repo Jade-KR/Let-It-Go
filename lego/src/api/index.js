@@ -25,19 +25,18 @@ export default {
   getModelDetail(params) {
     return http.get(`${apiUrl}/LegoSet/${params}`, { headers });
   },
-  getUserParts() {
+  getUserParts(page) {
     const headers = {
       Authorization: "jwt " + localStorage.getItem("token")
-    };
-    return http.get(`${apiUrl}/UserPart?page=1&page_size=21`, {
+    }
+    return http.get(`${apiUrl}/UserPart?page=${page}&page_size=21`, {
       headers
     });
   },
   addUserParts(params) {
     const headers = {
       Authorization: "jwt " + localStorage.getItem("token")
-    };
-    console.log(params);
+    }
     return http.post(`${apiUrl}/UpdateUserPart`, params, {
       headers
     });

@@ -26,7 +26,7 @@ router.register(r"LegoSet", views.LegoSetViewSet, basename="LegoSet")
 router.register(r"LegoPart", views.LegoPartViewSet, basename="LegoPart")
 router.register(r"UserPart", views.UserPartViewSet, basename="UserPart")
 router.register(r"SetPart", views.SetPartViewSet, basename="SetPart")
-
+router.register(r"Review", views.ReviewViewSet, basename="Review")
 urlpatterns = [
     *router.urls,
     path('UpdateUserPart', views.UpdateUserPart, name='UpdateUserPart'),

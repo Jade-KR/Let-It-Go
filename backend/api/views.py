@@ -145,11 +145,17 @@ class CustomLoginView(LoginView):
         orginal_response.data["user"].update(mydata)
         return orginal_response
 
-# class ReviewViewset(viewsets.ModelViewSet):
-#     serializer_class = serializers.ReviewSerializer
-#     pagination_class = SmallPagination
+class ReviewViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.ReviewSerializer
+    pagination_class = SmallPagination
+    queryset = Review.objects.all()
 
-
+    def create(self, request):
+        if request.user.is_authenticated:
+            user = CustomUser.objects.get(id=request.user.id)
+            data = request.data
+            Review.objects.create(lego_set_id=data["lego_set_id"], user=user, content=data["content"], score=data["score"])
+        return Response("")
 
 @api_view(['POST'])
 def UpdateUserPart(self):
@@ -182,7 +188,10 @@ def UpdateUserPart(self):
         # 유저 보유 데이터 정리하기
         inventory_dict = dict()
         for userpart in UserPart.objects.filter(user=user):
-            inventory_dict[userpart.part_id] = {userpart.color_id: userpart}
+            if not inventory_dict.get(userpart.part_id):
+                inventory_dict[userpart.part_id] = dict()
+
+            inventory_dict[userpart.part_id][userpart.color_id] = userpart
         
         # 갱신리스트
         a = []
@@ -208,7 +217,6 @@ def UpdateUserPart(self):
             else:
                 if part["qte"] > 0:
                     c.append(UserPart(user=user, part_id=part["part_id"], color_id=part["color_id"], quantity=part["qte"]))
-
         # 갱신해야하는 값들을 갱신한다
         UserPart.objects.bulk_update(a, ["quantity"])
         # 생성해야하는 값들을 생성한다
