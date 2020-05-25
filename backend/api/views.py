@@ -74,7 +74,7 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
         legoset = get_object_or_404(LegoSet, id=pk)
         serializer_data = serializers.LegoSetSerializer2(legoset).data
         if request.user.is_authenticated:
-            serializer_data["is_like"] = 1 if legoset.like_users.filter(user=request.user) else 0
+            serializer_data["is_like"] = 1 if legoset.like_users.filter(id=request.user.id) else 0
         else:
             serializer_data["is_like"] = 0
         return Response(serializer_data)
@@ -144,6 +144,12 @@ class CustomLoginView(LoginView):
             }
         orginal_response.data["user"].update(mydata)
         return orginal_response
+
+# class ReviewViewset(viewsets.ModelViewSet):
+#     serializer_class = serializers.ReviewSerializer
+#     pagination_class = SmallPagination
+
+
 
 @api_view(['POST'])
 def UpdateUserPart(self):
@@ -301,4 +307,3 @@ def follow(self):
             return Response("팔로우")
     else:
         return Response("비 인증 유저")
-
