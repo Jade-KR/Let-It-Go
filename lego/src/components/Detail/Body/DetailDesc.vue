@@ -23,7 +23,9 @@ export default {
   },
   watch: {
     description() {
-      this.sentences = this.description.split("\n");
+      if (this.description !== null) {
+        this.sentences = this.description.split("\n");
+      }
     }
   }
 };

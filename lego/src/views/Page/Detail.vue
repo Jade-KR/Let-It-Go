@@ -41,7 +41,11 @@
         <detail-review-write></detail-review-write>
         <detail-review></detail-review>
       </div>
-      <detail-part v-if="btnFlag == 'parts'" :parts="model.parts"></detail-part>
+      <detail-part
+        v-if="btnFlag == 'parts'"
+        :parts="model.parts"
+        :setName="model.name"
+      ></detail-part>
     </div>
   </div>
 </template>

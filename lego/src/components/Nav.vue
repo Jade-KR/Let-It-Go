@@ -16,7 +16,6 @@
       </div>
       <div class="nav_right">
         <div class="icons_box">
-          <i class="fas fa-home" @click="goHome"></i>
           <i class="fas fa-search"></i>
           <i class="fas fa-plus" @click="goWrite"></i>
           <i class="fas fa-user-alt" @click="goMyPage"></i>
@@ -41,11 +40,17 @@ export default {
         this.$router.push("/login");
         return;
       }
+      const locationNow = location.pathname;
       const user_id = localStorage.getItem("pk");
-      this.$router.push("/MyPage" + "/" + user_id);
+      if (locationNow !== "/mypage/" + user_id) {
+        this.$router.push("/mypage" + "/" + user_id);
+      }
     },
     goHome() {
-      this.$router.push("/");
+      const locationNow = location.pathname;
+      if (locationNow !== "/") {
+        this.$router.push("/");
+      }
     },
     goWrite() {
       if (!localStorage.getItem("token")) {
@@ -53,7 +58,10 @@ export default {
         this.$router.push("/login");
         return;
       }
-      this.$router.push("/write");
+      const locationNow = location.pathname;
+      if (locationNow !== "/write") {
+        this.$router.push("/write");
+      }
     },
     async onHomeCate(value) {
       await this.setHomeCate(value);

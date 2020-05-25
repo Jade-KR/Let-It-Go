@@ -9,7 +9,7 @@ with open('LegoParts.json', 'r', encoding='UTF8') as partsRaw:
     for part in partList:
         # print(part)
         LegoSort["parts"][part[0]] = [
-            part[0], part[2]
+            part[0], part[2], part[1]
         ]
 
 with open('LegoColors.json', 'r', encoding='UTF8') as colorsRaw:

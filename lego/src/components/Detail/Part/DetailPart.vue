@@ -1,7 +1,13 @@
 <template>
   <div>
-    <div>
-      엑셀로 다운로드
+    <div id="excel_export">
+      <download-excel
+        :data="json_data"
+        :fields="json_fields"
+        :name="`${setName}.xls`"
+      >
+        엑셀로 다운로드
+      </download-excel>
     </div>
     <div class="lego_parts_container">
       <div
@@ -53,6 +59,10 @@ export default {
   props: {
     parts: {
       type: Array
+    },
+    setName: {
+      type: String,
+      default: ""
     }
   },
   data() {
@@ -61,10 +71,34 @@ export default {
       pageLength: 1,
       slicedParts: [],
       imageStore: [],
-
       colorList: LegoSort["colors"],
       partDict: LegoSort["parts"],
-      sortedParts: []
+      sortedParts: [],
+
+      json_fields: {
+        "part ID": "part_id",
+        "part Name": "part_name",
+        "part Image Url": "part_img_url",
+        RGB: "color_rgb",
+        Quantity: "quantity"
+      },
+      json_data: [
+        {
+          part_id: "",
+          part_name: "",
+          part_img_url: "",
+          color_rgb: "",
+          quantity: 0
+        }
+      ],
+      json_meta: [
+        [
+          {
+            key: "charset",
+            value: "utf-8"
+          }
+        ]
+      ]
     };
   },
   mounted() {
@@ -73,12 +107,23 @@ export default {
         this.partDict[e.part_id][0],
         this.partDict[e.part_id][1],
         this.colorList[e.color_id],
-        e.quantity
+        e.quantity,
+        this.partDict[e.part_id][2]
       ]);
     });
 
     this.pageLength = Math.ceil(this.sortedParts.length / 27);
     this.slicedParts = this.sortedParts.slice(this.start * 27, this.page * 27);
+
+    // console.log(this.sortedParts);
+    this.json_data = this.sortedParts.map(e => ({
+      part_id: e[0],
+      part_name: e[4],
+      part_img_url: e[1],
+      color_rgb: e[2],
+      quantity: e[3]
+    }));
+    console.log(this.json_data);
   },
   computed: {
     start: function() {
@@ -100,6 +145,15 @@ export default {
 </script>
 
 <style scoped>
+#excel_export {
+  float: right;
+  transform: translateY(-12px);
+  padding: 5px;
+  background-color: green;
+  color: white;
+  cursor: pointer;
+  /* border-radius: 10px; */
+}
 .lego_parts_container {
   width: 100%;
   height: fit-content;

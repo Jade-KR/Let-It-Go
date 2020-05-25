@@ -19,7 +19,10 @@ const routes = [
   {
     path: "/mypage/:user_id",
     name: "MyPage",
-    component: MyPage
+    component: MyPage,
+    meta: {
+      authRequired: true
+    }
   },
   {
     path: "/login",
@@ -40,28 +43,43 @@ const routes = [
     path: "/UserSetting",
     name: "UserSetting",
     component: UserSetting,
-    props: true
+    props: true,
+    meta: {
+      authRequired: true
+    }
   },
   {
     path: "/write",
     name: "Write",
-    component: Write
+    component: Write,
+    meta: {
+      authRequired: true
+    }
   }
-  // {
-  //   path: "/about",
-  //   name: "About",
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () =>
-  //     import(/* webpackChunkName: "about" */ "../views/About.vue")
-  // }
 ];
 
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes
+});
+
+router.beforeEach(function(to, from, next) {
+  const user_pk = localStorage.getItem("pk");
+  if (
+    to.matched.some(function(routeInfo) {
+      return routeInfo.meta.authRequired;
+    })
+  ) {
+    if (user_pk) {
+      next();
+    } else {
+      alert("로그인을 해주세요");
+      router.push("/login");
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;
