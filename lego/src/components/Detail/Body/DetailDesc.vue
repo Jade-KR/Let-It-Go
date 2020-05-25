@@ -1,6 +1,10 @@
 <template>
   <div>
-    {{ description }}
+    <div v-if="sentences !== ''">
+      <div v-for="(sentence, i) in sentences" :key="i">
+        {{ sentence }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -10,6 +14,16 @@ export default {
     description: {
       type: String,
       default: ""
+    }
+  },
+  data() {
+    return {
+      sentences: ""
+    };
+  },
+  watch: {
+    description() {
+      this.sentences = this.description.split("\n");
     }
   }
 };

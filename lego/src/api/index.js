@@ -23,7 +23,7 @@ export default {
     });
   },
   getModelDetail(params) {
-    return http.get(`${apiUrl}/LegoSet/${params}`);
+    return http.get(`${apiUrl}/LegoSet/${params}`, { headers });
   },
   getUserParts() {
     const headers = {
@@ -44,5 +44,8 @@ export default {
   },
   setLike(params) {
     return http.post(`${apiUrl}/like_set`, params, { headers });
+  },
+  setFollow(params) {
+    return http.post(`${apiUrl}/follow`, params, { headers });
   }
 };

@@ -133,7 +133,7 @@ export default {
     },
     isLike: {
       type: Number,
-      default: 0
+      default: -1
     }
   },
   data() {
@@ -165,20 +165,29 @@ export default {
     },
     theme() {
       this.themeName = this.legoThemeList[this.theme - 1][2];
+    },
+    isLike() {
+      if (this.isLike === 1) {
+        this.likeFlag = true;
+      } else if (this.isLike === 0) {
+        this.likeFlag = false;
+      }
     }
   },
   async mounted() {
     if (this.tags) {
       this.tagList = await this.tags.split("|");
     }
-    // console.log(this.legoThemeList);
     this.themeName = this.legoThemeList[this.theme - 1][2];
-    console.log(this.isLike);
+    if (this.isLike === 1) {
+      this.likeFlag = true;
+    } else if (this.isLike === 0) {
+      this.likeFlag = false;
+    }
   },
   methods: {
     ...mapActions("detail", ["onLike"]),
     goMypage() {
-      // console.log("aaaa");
       if (this.userId === null) {
         var user_id = localStorage.getItem("pk");
       } else {

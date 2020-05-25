@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div>
+      엑셀로 다운로드
+    </div>
     <div class="lego_parts_container">
       <div
         class="lego_parts_box"
