@@ -60,7 +60,11 @@
             5.0
           </div>
         </div>
-        <div id="detail_side_likes" @click="isLike()" v-if="likeFlag == false">
+        <div
+          id="detail_side_likes"
+          @click="pushLike()"
+          v-if="likeFlag === false"
+        >
           <div id="detail_side_like">
             Like
           </div>
@@ -68,7 +72,7 @@
             12
           </div>
         </div>
-        <button id="detail_side_onlikes" @click="isLike()" v-else>
+        <button id="detail_side_onlikes" @click="pushLike()" v-else>
           <i class="fas fa-heart" />
         </button>
       </div>
@@ -95,6 +99,7 @@
 <script>
 import LegoThemes from "../../../../jsonData/LegoThemes.json";
 import router from "../../../router";
+import { mapActions } from "vuex";
 
 export default {
   props: {
@@ -122,14 +127,18 @@ export default {
       type: Number,
       default: 1
     },
-    user_id: {
+    userId: {
+      type: Number,
+      default: 0
+    },
+    isLike: {
       type: Number,
       default: 0
     }
   },
   data() {
     return {
-      tagList: [],
+      tagList: ["태그가 없습니다."],
       themeName: "",
       legoThemeList: LegoThemes["rows"],
       likeFlag: false,
@@ -164,22 +173,30 @@ export default {
     }
     // console.log(this.legoThemeList);
     this.themeName = this.legoThemeList[this.theme - 1][2];
+    console.log(this.isLike);
   },
   methods: {
+    ...mapActions("detail", ["onLike"]),
     goMypage() {
       // console.log("aaaa");
-      if (this.user_id === null) {
+      if (this.userId === null) {
         var user_id = localStorage.getItem("pk");
       } else {
-        user_id = this.user_id;
+        user_id = this.userId;
       }
       router.push("/mypage" + "/" + user_id);
     },
-    isLike() {
-      if (this.likeFlag === false) {
+    async pushLike() {
+      const params = {
+        set_id: this.id
+      };
+      const setLike = await this.onLike(params);
+      if (setLike === "좋아요") {
         this.likeFlag = true;
-      } else {
+      } else if (setLike === "좋아요 취소") {
         this.likeFlag = false;
+      } else {
+        alert("문제가 발생했습니다.");
       }
     },
     isFollow() {

@@ -12,7 +12,8 @@
           :parts="model.parts.length"
           :tags="model.tags"
           :theme="model.theme"
-          :user_id="model.user_id"
+          :userId="model.user_id"
+          :isLike="model.is_like"
         ></detail-side>
       </div>
     </div>
