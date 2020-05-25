@@ -13,31 +13,24 @@
           상세보기
         </div>
 
-        <div :class="`mySlides${idx} fade`">
-          <img
-            :src="images"
-            alt=""
-            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
-          />
-        </div>
-
-        <!-- <div v-for="(url, i) in params" :key="`url-${i}`">
+        <div v-for="(url, i) in imageList" :key="`url-${i}`">
           <div :class="`mySlides${idx} fade`" :id="`mySlide-${i}`">
             <img
-              :src="url"
+              src="../../assets/icons/no_img.jpg"
               :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
               :id="`slideImg-${i}-${idx}`"
               v-if="!images"
             />
             <img
-              :src="images"
+              :src="url"
               alt=""
               :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
               :id="`slideImg-${i}-${idx}`"
               v-else
+              @load="showSlides(1), onResizeHeight()"
             />
           </div>
-        </div> -->
+        </div>
 
         <a class="prev" @click.stop="plusSlides(-1)">&#10094;</a>
         <a class="next" @click.stop="plusSlides(1)">&#10095;</a>
@@ -47,37 +40,14 @@
       class="home_card_footer"
       :style="styleFlag ? matrixStyle[1] : instaStyle[1]"
     >
-      <div :style="styleFlag ? matrixStyle[0] : instaStyle[0]">
-        <span
-          :class="`dot${idx}`"
-          @click="currentSlide(1)"
-          v-if="params.length >= 1"
-        ></span>
-        <span
-          :class="`dot${idx}`"
-          @click="currentSlide(2)"
-          v-if="params.length >= 2"
-        ></span>
-        <span
-          :class="`dot${idx}`"
-          @click="currentSlide(3)"
-          v-if="params.length >= 3"
-        ></span>
-        <span
-          :class="`dot${idx}`"
-          @click="currentSlide(4)"
-          v-if="params.length >= 4"
-        ></span>
-        <span
-          :class="`dot${idx}`"
-          @click="currentSlide(5)"
-          v-if="params.length >= 5"
-        ></span>
-        <span
-          :class="`dot${idx}`"
-          @click="currentSlide(6)"
-          v-if="params.length >= 6"
-        ></span>
+      <div :style="styleFlag ? matrixStyle[0] : instaStyle[5]">
+        <div
+          :style="styleFlag ? matrixStyle[5] : instaStyle[0]"
+          v-for="i in imageLength"
+          :key="`dots-${i}`"
+        >
+          <span :class="`dot${idx} dotdot`" @click="currentSlide(i + 1)"></span>
+        </div>
       </div>
       <div :style="styleFlag ? matrixStyle[2] : instaStyle[2]">
         <div class="home_card_footer_director">Director. {{ nickname }}</div>
@@ -128,22 +98,16 @@ export default {
     return {
       like: false,
       slideIndex: 1,
-      params: [
-        "/images/로고2.png",
-        "/images/side_bg.png",
-        "/images/부품들.jpg",
-        "/images/git.png",
-        "/images/header.jpg",
-        "/images/login_bg.jpg"
-      ],
+      imageList: ["images/icons/no_img.jpg"],
+      imageLength: 0,
       matrixStyle: [
         {
-          display: "block",
-          textAlign: "center"
+          display: "block"
         },
         {
           padding: "5px",
-          display: "block"
+          display: "block",
+          textAlign: "center"
         },
         {
           width: "100%",
@@ -155,13 +119,14 @@ export default {
         },
         {
           left: "80%"
+        },
+        {
+          display: "inline-block"
         }
       ],
       instaStyle: [
         {
-          position: "absolute",
-          right: "50%",
-          transform: "translateX(50%)"
+          display: "inline-block"
         },
         {
           padding: "10px",
@@ -173,50 +138,59 @@ export default {
         },
         {
           width: "100%"
-          // maxHeight: "800px"
         },
         {
           left: "87.7%"
+        },
+        {
+          position: "absolute",
+          right: "50%",
+          transform: "translateX(50%)"
         }
       ]
     };
   },
-  mounted() {
-    var i;
-    var n = 1;
-    var slides = document.getElementsByClassName(`mySlides${this.idx}`);
-    var dots = document.getElementsByClassName(`dot${this.idx}`);
-    if (n > slides.length) {
-      this.slideIndex = 1;
+  watch: {
+    imageList() {
+      this.imageLength = this.imageList.length;
     }
-    if (n < 1) {
-      this.slideIndex = slides.length;
+  },
+  async mounted() {
+    if (this.images) {
+      this.imageList = await this.images.split("|");
     }
-    for (i = 0; i < slides.length; i++) {
-      slides[i].style.display = "none";
-    }
-    for (i = 0; i < dots.length; i++) {
-      dots[i].className = dots[i].className.replace(" active", "");
-    }
-    slides[this.slideIndex - 1].style.display = "block";
-    dots[this.slideIndex - 1].className += " active";
   },
   methods: {
-    test() {
+    onResizeHeight() {
+      if (this.styleFlag == true) {
+        for (let i = 0; i < this.imageList.length; ++i) {
+          document.getElementById(`slideImg-${i}-${this.idx}`).style.height =
+            "250px";
+        }
+        return;
+      }
       var maxHeight = 0;
-      for (let i = 0; i < this.params.length; ++i) {
+      // var minHeight = 614;
+      for (let i = 0; i < this.imageList.length; ++i) {
         var naturalHeight = document.getElementById(`slideImg-${i}-${this.idx}`)
           .naturalHeight; // img 높이
         if (maxHeight < naturalHeight) {
           maxHeight = naturalHeight;
         }
+        // if (minHeight > naturalHeight) {
+        //   minHeight = naturalHeight;
+        // }
       }
       if (maxHeight > 614) {
         maxHeight = 614;
       }
-      for (let i = 0; i < this.params.length; ++i) {
+      // if (minHeight < 200) {
+      //   minHeight = 300;
+      // }
+      for (let i = 0; i < this.imageList.length; ++i) {
         document.getElementById(`slideImg-${i}-${this.idx}`).style.height =
           String(maxHeight) + "px";
+        // String(minHeight) + "px";
       }
     },
     goDetail() {
@@ -264,22 +238,24 @@ export default {
 }
 .home_card_header {
   padding: 10px;
+  padding-left: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 18px;
+  font-weight: 700;
 }
 .home_card_imgs {
   border-top: 5px solid gold;
   border-bottom: 5px solid gold;
 }
-/* .home-card-img {
-  height: 100%;
-  width: 100%;
-} */
-/* .home-card-footer {
-  padding: 10px;
-  display: flex;
-} */
+
 .home_card_footer_director {
   padding: 5px;
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .home_card_like {
   color: red;
@@ -331,16 +307,7 @@ img {
 .next:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
-.dot1,
-.dot2,
-.dot3,
-.dot4,
-.dot5,
-.dot6,
-.dot7,
-.dot8,
-.dot9,
-.dot10 {
+.dotdot {
   cursor: pointer;
   height: 10px;
   width: 10px;

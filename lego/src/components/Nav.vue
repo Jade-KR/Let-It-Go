@@ -13,9 +13,6 @@
         <button class="button" id="nav_pop" @click="onHomeCate(2)">
           <span data-title="인기도순!">POP!</span>
         </button>
-        <button class="button" id="nav_can" @click="onHomeCate(3)">
-          <span data-title="만들어볼거!">CAN!</span>
-        </button>
       </div>
       <div class="nav_right">
         <div class="icons_box">
@@ -31,6 +28,7 @@
 
 <script>
 import { mapMutations } from "vuex";
+import router from "../router";
 
 export default {
   data() {
@@ -43,7 +41,8 @@ export default {
         this.$router.push("/login");
         return;
       }
-      this.$router.push("/MyPage");
+      const user_id = localStorage.getItem("pk");
+      this.$router.push("/MyPage" + "/" + user_id);
     },
     goHome() {
       this.$router.push("/");
@@ -56,8 +55,13 @@ export default {
       }
       this.$router.push("/write");
     },
-    onHomeCate(value) {
-      this.setHomeCate(value);
+    async onHomeCate(value) {
+      await this.setHomeCate(value);
+      const locationLength = location.origin.length + 1;
+      const locationNow = location.href.length;
+      if (locationLength !== locationNow) {
+        router.push("/");
+      }
     }
   }
 };

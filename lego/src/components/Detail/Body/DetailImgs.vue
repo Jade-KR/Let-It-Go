@@ -1,52 +1,28 @@
 <template>
   <div class="container">
     <div>
-      <div class="mySlides">
-        <img src="../../../assets/git.png" class="detail-imgs" />
+      <div v-for="(url, i) in imageList" :key="`url-${i}`">
+        <div class="mySlides">
+          <img :src="url" class="detail-imgs" v-if="images" />
+          <img
+            src="../../../assets/icons/no_img.jpg"
+            alt="no_images"
+            class="detail-imgs"
+            v-else
+          />
+        </div>
       </div>
 
-      <div class="mySlides">
-        <img src="../../../assets/JS.png" class="detail-imgs" />
-      </div>
-
-      <div class="mySlides">
-        <img src="../../../assets/logo.png" class="detail-imgs" />
-      </div>
-
-      <div class="mySlides">
-        <img src="../../../assets/side_bg.png" class="detail-imgs" />
-      </div>
-
-      <a class="prev" @click="plusSlides(-1)">❮</a>
-      <a class="next" @click="plusSlides(1)">❯</a>
+      <a class="prev" @click="plusSlides(-1)" v-if="images">❮</a>
+      <a class="next" @click="plusSlides(1)" v-if="images">❯</a>
     </div>
     <div class="row">
-      <div class="column">
+      <div class="column" v-for="(url, i) in imageList" :key="`thumnail-${i}`">
         <img
           class="demo cursor"
-          src="../../../assets/git.png"
+          :src="url"
           @click="currentSlide(1)"
-        />
-      </div>
-      <div class="column">
-        <img
-          class="demo cursor"
-          src="../../../assets/JS.png"
-          @click="currentSlide(2)"
-        />
-      </div>
-      <div class="column">
-        <img
-          class="demo cursor"
-          src="../../../assets/logo.png"
-          @click="currentSlide(3)"
-        />
-      </div>
-      <div class="column">
-        <img
-          class="demo cursor"
-          src="../../../assets/side_bg.png"
-          @click="currentSlide(4)"
+          v-if="images"
         />
       </div>
     </div>
@@ -63,10 +39,21 @@ export default {
   },
   data() {
     return {
-      slideIndex: 1
+      slideIndex: 1,
+      imageList: ["images/icons/no_img.jpg"]
     };
   },
-  mounted() {
+  watch: {
+    async images() {
+      if (this.images) {
+        this.imageList = await this.images.split("|");
+      }
+    }
+  },
+  async mounted() {
+    if (this.images) {
+      this.imageList = await this.images.split("|");
+    }
     this.showSlides(this.slideIndex);
   },
   methods: {
@@ -81,7 +68,9 @@ export default {
     showSlides(n) {
       var i;
       var slides = document.getElementsByClassName("mySlides");
-      var dots = document.getElementsByClassName("demo");
+      if (this.images) {
+        var dots = document.getElementsByClassName("demo");
+      }
       if (n > slides.length) {
         this.slideIndex = 1;
       }
@@ -91,11 +80,13 @@ export default {
       for (i = 0; i < slides.length; i++) {
         slides[i].style.display = "none";
       }
-      for (i = 0; i < dots.length; i++) {
-        dots[i].className = dots[i].className.replace(" active", "");
+      if (this.images) {
+        for (i = 0; i < dots.length; i++) {
+          dots[i].className = dots[i].className.replace(" active", "");
+        }
+        dots[this.slideIndex - 1].className += " active";
       }
       slides[this.slideIndex - 1].style.display = "block";
-      dots[this.slideIndex - 1].className += " active";
     }
   }
 };

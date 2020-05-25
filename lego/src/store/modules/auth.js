@@ -11,7 +11,6 @@ const actions = {
     await api
       .register(params)
       .then(res => {
-        console.log("res", res);
         if (res.status == 201) {
           alert("인증 이메일을 발송하였습니다. 확인해주세요.");
           commit("setAuthFlag", false);
@@ -19,7 +18,6 @@ const actions = {
         }
       })
       .catch(err => {
-        console.log("err", err.response);
         if (err.response.data.username && err.response.data.email) {
           alert("아이디와 이메일이 중복되었습니다.");
         } else if (err.response.data.username) {
