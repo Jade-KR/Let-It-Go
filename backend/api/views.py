@@ -61,15 +61,34 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
         
         if page is not None:
             serializer = serializers.LegoSetSerializer(page, many=True)
+            # k = serializer.data
+            # for kk in k:
+            #     kk['is_like'] = 1
+            # print(k)
             return self.get_paginated_response(serializer.data)
 
         serializer = serializers.LegoSetSerializer(queryset, many=True)
         return Response(serializer.data)
-
-
-        # serializer = serializers.LegoSetSerializer(queryset, many=True)
+    
+    def retrieve(self, request, pk=None):
+        legoset = get_object_or_404(LegoSet, id=pk)
+        serializer_data = serializers.LegoSetSerializer2(legoset).data
+        if request.user.is_authenticated:
+            serializer_data["is_like"] = 1 if legoset.like_users.filter(id=request.user.id) else 0
+        else:
+            serializer_data["is_like"] = 0
+        return Response(serializer_data)
         # print(serializer.data)
-        # return Response(serializer.data)
+        # if queryset:
+        #     serializer_data = serializers.SetPartSerializer(queryset, many=True).data
+        #     return Response(serializer_data)
+        # elif OfficialMapping.objects.get(lego_set_id=pk):
+        #     crawling_part_data(pk)
+        #     queryset = SetPart.objects.filter(lego_set_id=pk)
+        #     serializer_data = serializers.SetPartSerializer(queryset, many=True).data
+        #     return Response(serializer_data)
+        # return Response("")
+
 
 
 class LegoPartViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -102,13 +121,13 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, pk=None):
         queryset = SetPart.objects.filter(lego_set_id=pk)
         if queryset:
-            serializer = serializers.SetPartSerializer(queryset, many=True)
-            return Response(serializer.data)
+            serializer_data = serializers.SetPartSerializer(queryset, many=True).data
+            return Response(serializer_data)
         elif OfficialMapping.objects.get(lego_set_id=pk):
             crawling_part_data(pk)
             queryset = SetPart.objects.filter(lego_set_id=pk)
-            serializer = serializers.SetPartSerializer(queryset, many=True)
-            return Response(serializer.data)
+            serializer_data = serializers.SetPartSerializer(queryset, many=True).data
+            return Response(serializer_data)
         return Response("")
 
 class CustomLoginView(LoginView):
@@ -125,6 +144,12 @@ class CustomLoginView(LoginView):
             }
         orginal_response.data["user"].update(mydata)
         return orginal_response
+
+# class ReviewViewset(viewsets.ModelViewSet):
+#     serializer_class = serializers.ReviewSerializer
+#     pagination_class = SmallPagination
+
+
 
 @api_view(['POST'])
 def UpdateUserPart(self):
@@ -244,3 +269,41 @@ def CreateLegoSet(self):
     return Response("등록 완료")
 def go_to_myhome(request):
     return redirect("http://127.0.0.1:8000/api/swagger/")
+
+@api_view(['POST'])
+def like_set(self):
+    '''
+    {
+        "set_id": Integer    # LegoSet.id
+    }
+    '''
+    user = self.user
+    if user.is_authenticated:
+        lego_set = get_object_or_404(LegoSet, id=self.data["set_id"])
+        if user.like_sets.filter(id=lego_set.id):
+            user.like_sets.remove(lego_set)
+            return Response("좋아요 취소")
+        else:
+            user.like_sets.add(lego_set)
+            return Response("좋아요")
+    else:
+        return Response("비 인증 유저")
+
+@api_view(['POST'])
+def follow(self):
+    '''
+    {
+        "user_id": Integer    # CustomUser.id
+    }
+    '''
+    user = self.user
+    if user.is_authenticated:
+        follow_user = get_object_or_404(get_user_model(), id=self.data["user_id"])
+        if user.followings.filter(id=follow_user.id):
+            user.followings.remove(follow_user)
+            return Response("팔로우 취소")
+        else:
+            user.followings.add(follow_user)
+            return Response("팔로우")
+    else:
+        return Response("비 인증 유저")

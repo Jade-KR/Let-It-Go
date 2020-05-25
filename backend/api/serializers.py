@@ -32,13 +32,13 @@ class LegoSetSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "nickname",
-            "image",
+            "images",
             #좋아요여부
         ]
     def get_nickname(self, obj):
         return obj.user.nickname if obj.user else "Official Set"
-    def get_image(self, obj):
-        return obj.images[0] if obj.images else ""
+    # def get_image(self, obj):
+    #     return obj.images[0] if obj.images else ""
 
 
 class LegoSetSerializer2(serializers.ModelSerializer):
@@ -54,13 +54,11 @@ class LegoSetSerializer2(serializers.ModelSerializer):
             "nickname",
             "user_id",
             "images",
-            # "like",
             "parts",
             # "reviews",
             "description",
             "tags",
             "theme",
-            #좋아요여부
         ]
     def get_nickname(self, obj):
         return obj.user.nickname if obj.user else "Official Set"

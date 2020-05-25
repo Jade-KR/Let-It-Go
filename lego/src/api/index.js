@@ -23,24 +23,29 @@ export default {
     });
   },
   getModelDetail(params) {
-    return http.get(`${apiUrl}/LegoSet/${params}`);
+    return http.get(`${apiUrl}/LegoSet/${params}`, { headers });
   },
   getUserParts() {
     const headers = {
       Authorization: "jwt " + localStorage.getItem("token")
-    }
+    };
     return http.get(`${apiUrl}/UserPart?page=1&page_size=21`, {
       headers
-    })
+    });
   },
   addUserParts(params) {
     const headers = {
       Authorization: "jwt " + localStorage.getItem("token")
-    }
-    console.log(params)
+    };
+    console.log(params);
     return http.post(`${apiUrl}/UpdateUserPart`, params, {
       headers
-    })
-
+    });
+  },
+  setLike(params) {
+    return http.post(`${apiUrl}/like_set`, params, { headers });
+  },
+  setFollow(params) {
+    return http.post(`${apiUrl}/follow`, params, { headers });
   }
-}
+};

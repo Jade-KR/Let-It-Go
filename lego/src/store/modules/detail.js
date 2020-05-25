@@ -21,11 +21,16 @@ const state = {
 const actions = {
   async getModelDetail({ commit }, params) {
     commit;
-    // console.log(params);
     const resp = await api.getModelDetail(params).then(res => res.data);
-    // console.log(resp);
     state.model = resp;
-    // console.log(state.model);
+  },
+  async onLike({ commit }, params) {
+    commit;
+    const resp = await api
+      .setLike(params)
+      .then(res => res.data)
+      .catch(err => err);
+    return resp;
   }
 };
 

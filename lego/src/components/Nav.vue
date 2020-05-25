@@ -13,13 +13,9 @@
         <button class="button" id="nav_pop" @click="onHomeCate(2)">
           <span data-title="인기도순!">POP!</span>
         </button>
-        <button class="button" id="nav_can" @click="onHomeCate(3)">
-          <span data-title="만들어볼거!">CAN!</span>
-        </button>
       </div>
       <div class="nav_right">
         <div class="icons_box">
-          <i class="fas fa-home" @click="goHome"></i>
           <i class="fas fa-search"></i>
           <i class="fas fa-plus" @click="goWrite"></i>
           <i class="fas fa-user-alt" @click="goMyPage"></i>
@@ -31,6 +27,7 @@
 
 <script>
 import { mapMutations } from "vuex";
+import router from "../router";
 
 export default {
   data() {
@@ -43,10 +40,17 @@ export default {
         this.$router.push("/login");
         return;
       }
-      this.$router.push("/MyPage");
+      const locationNow = location.pathname;
+      const user_id = localStorage.getItem("pk");
+      if (locationNow !== "/mypage/" + user_id) {
+        this.$router.push("/mypage" + "/" + user_id);
+      }
     },
     goHome() {
-      this.$router.push("/");
+      const locationNow = location.pathname;
+      if (locationNow !== "/") {
+        this.$router.push("/");
+      }
     },
     goWrite() {
       if (!localStorage.getItem("token")) {
@@ -54,10 +58,18 @@ export default {
         this.$router.push("/login");
         return;
       }
-      this.$router.push("/write");
+      const locationNow = location.pathname;
+      if (locationNow !== "/write") {
+        this.$router.push("/write");
+      }
     },
-    onHomeCate(value) {
-      this.setHomeCate(value);
+    async onHomeCate(value) {
+      await this.setHomeCate(value);
+      const locationLength = location.origin.length + 1;
+      const locationNow = location.href.length;
+      if (locationLength !== locationNow) {
+        router.push("/");
+      }
     }
   }
 };
