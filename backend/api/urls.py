@@ -26,7 +26,7 @@ router.register(r"LegoSet", views.LegoSetViewSet, basename="LegoSet")
 router.register(r"LegoPart", views.LegoPartViewSet, basename="LegoPart")
 router.register(r"UserPart", views.UserPartViewSet, basename="UserPart")
 router.register(r"SetPart", views.SetPartViewSet, basename="SetPart")
-
+router.register(r"Review", views.ReviewViewSet, basename="Review")
 urlpatterns = [
     *router.urls,
     path('UpdateUserPart', views.UpdateUserPart, name='UpdateUserPart'),
@@ -44,5 +44,6 @@ urlpatterns = [
     path('reset-password/complete/', PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'),name='password_reset_complete'),
     path('go_to_myhome/', views.go_to_myhome, name="go_to_myhome"),
     path('like_set', views.like_set, name='like_set'),
-    path('follow', views.follow, name='follow')
+    path('follow', views.follow, name='follow'),
+    # path('create_review', views.create_review, name='create_review')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

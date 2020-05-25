@@ -110,3 +110,16 @@ class CustomRegisterSerializer(RegisterSerializer):
         data_dict['age'] = self.validated_data.get('age', '')
         data_dict['gender'] = self.validated_data.get('gender', '')
         return data_dict
+
+class ReviewSerializer(serializers.ModelSerializer):
+    nickname = serializers.SerializerMethodField()
+    class Meta:
+        model = Review
+        fields = [
+            "user_id",
+            "nickname",
+            "content",
+            "score",
+        ]
+    def get_nickname(self, obj):
+        return obj.user.nickname
