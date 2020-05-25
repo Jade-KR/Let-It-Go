@@ -25,8 +25,8 @@
             <i class="fas fa-times" @click="dialog = 0"></i>
           </div>
         </div>
-        <SearchById v-if="currentState === 0" @close="dialog=false"></SearchById>
-        <SearchByImg v-if="currentState === 1" @close="dialog=false"></SearchByImg>
+        <SearchById v-if="currentState === 0" @close="close()"></SearchById>
+        <SearchByImg v-if="currentState === 1" @close="close()"></SearchByImg>
       </v-card>
     </v-dialog>
   </div>
@@ -58,6 +58,10 @@ export default {
     checkImg() {
       this.currentState = 1;
       this.changeStep("start");
+    },
+    close() {
+      this.dialog = false;
+      this.$emit("page");
     }
   }
 };

@@ -12,7 +12,10 @@ const state = {
   pickedPart: '',
   legoColor: LegoColor.rows,
   basket: [],
-  userParts: []
+  userParts: [],
+  partPageLength: 1,
+  originalCnt: 0,
+
 }
 
 const mutations = {
@@ -56,7 +59,11 @@ const mutations = {
     state.basket = []
   },
   setUserParts(state, params) {
-    state.userParts = params
+    state.userParts = params.results;
+    state.partPageLength = Math.ceil(params.count / 21)
+  },
+  deleteAllParts(state) {
+    state.userParts = new Array()
   }
 }
 
@@ -93,16 +100,21 @@ const actions = {
   async updateParts({
     commit
   }, params) {
+    console.log(params)
     await api.addUserParts(params)
     commit("resetBasket")
   },
   async getUserParts({
     commit
+  }, page) {
+    const resp = await api.getUserParts(page)
+    console.log(resp)
+    commit("setUserParts", resp.data)
+  },
+  async deleteAll({
+    commit
   }) {
-    const resp = await api.getUserParts()
-    console.log(resp)
-    console.log(resp)
-    commit("setUserParts", resp.data.results)
+    commit("deleteAllParts")
   }
 }
 

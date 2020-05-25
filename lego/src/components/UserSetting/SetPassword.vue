@@ -17,48 +17,88 @@
           </div>
         </div>
       </div>
-      <div class="form_box">
-        <div class="label_box">
-          <p class="label_name">현재 비밀번호</p>
+      <ValidationObserver ref="obs" v-slot="{ invalid, validated }">
+        <div class="form_box">
+          <div class="label_box">
+            <p class="label_name">현재 비밀번호</p>
+          </div>
+          <div class="input_box">
+            <ValidationProvider name="비밀번호" rules="required">
+              <div slot-scope="{ errors }" style="margin-bottom: 20px; position:relative">
+                <div class="value_box">
+                  <input type="password" v-model="currentPw" />
+                </div>
+                <br />
+                <span v-if="errors" class="error_box">{{ errors[0] }}</span>
+              </div>
+            </ValidationProvider>
+          </div>
         </div>
-        <div class="input_box">
-          <v-col cols="12" sm="6" md="10" class="text_box">
-            <v-text-field solo dense type="password"></v-text-field>
-          </v-col>
+        <div class="form_box">
+          <div class="label_box">
+            <p class="label_name">새 비밀번호</p>
+          </div>
+          <div class="input_box">
+            <ValidationProvider
+              name="비밀번호"
+              vid="pwd_confirmation"
+              rules="required|password|min:8|max:100"
+            >
+              <div slot-scope="{ errors }" style="margin-bottom: 20px; position:relative">
+                <div class="value_box">
+                  <input type="password" v-model="newPw" />
+                </div>
+                <br />
+                <span v-if="errors" class="error_box">{{ errors[0] }}</span>
+              </div>
+            </ValidationProvider>
+          </div>
         </div>
-      </div>
-      <div class="form_box">
-        <div class="label_box">
-          <p class="label_name">새 비밀번호</p>
+        <div class="form_box">
+          <div class="label_box">
+            <p class="label_name">새 비밀번호 확인</p>
+          </div>
+          <div class="input_box">
+            <ValidationProvider name="비밀번호 확인" rules="required|confirmed:pwd_confirmation">
+              <div
+                slot-scope="{ errors }"
+                style="margin-bottom: 20px; height:20px; position:relative"
+              >
+                <div class="value_box">
+                  <input type="password" v-model="checkPw" />
+                </div>
+                <br />
+                <span v-if="errors" class="error_box">{{ errors[0] }}</span>
+              </div>
+            </ValidationProvider>
+          </div>
         </div>
-        <div class="input_box">
-          <v-col cols="12" sm="6" md="10" class="text_box">
-            <v-text-field solo dense type="password"></v-text-field>
-          </v-col>
+        <div class="form_box">
+          <div class="label_box"></div>
+          <div class="input_box">
+            <button class="submit_btn" @click="onSubmit()" :disabled="invalid || !validated">비밀번호 변경</button>
+          </div>
         </div>
-      </div>
-      <div class="form_box">
-        <div class="label_box">
-          <p class="label_name">새 비밀번호 확인</p>
-        </div>
-        <div class="input_box">
-          <v-col cols="12" sm="6" md="10" class="text_box">
-            <v-text-field solo dense type="password"></v-text-field>
-          </v-col>
-        </div>
-      </div>
-      <div class="form_box">
-        <div class="label_box"></div>
-        <div class="input_box">
-          <button class="submit_btn">비밀번호 변경</button>
-        </div>
-      </div>
+      </ValidationObserver>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import { ValidationProvider, ValidationObserver } from "vee-validate";
+export default {
+  components: {
+    ValidationProvider,
+    ValidationObserver
+  },
+  data() {
+    return {
+      currentPw: "",
+      newPw: "",
+      checkPw: ""
+    };
+  }
+};
 </script>
 
 <style scoped>
@@ -99,7 +139,13 @@ input,
 textarea {
   width: 80%;
   height: 100%;
-  border: silver 1px solid;
+  width: 97%;
+}
+.value_box {
+  border: 1px solid silver;
+  width: 25vw;
+  height: 40px;
+  background: rgb(248, 248, 248);
 }
 .photo_frame {
   width: 50px;
@@ -129,11 +175,25 @@ textarea {
 .text_box {
   padding: 0;
 }
-.submit_btn {
+.submit_btn:disabled {
   background: lightblue;
+}
+.submit_btn {
+  background: rgb(96, 187, 218);
   color: white;
   width: 120px;
   height: 30px;
   border-radius: 5%;
+  margin-top: 40px;
+}
+.error_box {
+  width: 100%;
+  position: absolute;
+  color: red;
+  background-color: unset;
+  right: 50%;
+  top: 50px;
+  left: 0px;
+  font-size: 13px;
 }
 </style>
