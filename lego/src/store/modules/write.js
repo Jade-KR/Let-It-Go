@@ -4,7 +4,7 @@ import LegoColors from "../../../jsonData/LegoColors.json";
 import LegoCategory from "../../../jsonData/LegoCategory.json";
 
 import api from "../../api";
-// import router from "../../router";
+import router from "../../router";
 
 const state = {
   model: {
@@ -181,10 +181,16 @@ const actions = {
     await api
       .writeSubmit(state.model)
       .then(res => {
-        console.log(res);
+        res;
+        // console.log(res);
+        alert("글이 성공적으로 작성되었습니다.");
+        router.push("/");
+        location.reload();
       })
       .catch(err => {
-        console.log(err.response);
+        err;
+        // console.log(err.response);
+        alert("글 작성에 문제가 생겼습니다.");
       });
   }
 };

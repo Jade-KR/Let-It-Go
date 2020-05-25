@@ -27,7 +27,7 @@
         <home-card
           :idx="i"
           :id="model.id"
-          :images="model.image"
+          :images="model.images"
           :nickname="model.nickname"
           :name="model.name"
           :styleFlag="styleFlag"
@@ -85,6 +85,7 @@ export default {
     };
     await this.getModels(params);
     this.loading = false;
+    // console.log("aaa", this.models);
   },
   methods: {
     ...mapActions("home", ["getModels"]),
