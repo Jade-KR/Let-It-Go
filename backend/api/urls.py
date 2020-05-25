@@ -43,4 +43,6 @@ urlpatterns = [
     path('reset-password/confirm/<uidb64>[0-9A-Za-z]+)-<token>/', PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'), name='password_reset_confirm'),
     path('reset-password/complete/', PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'),name='password_reset_complete'),
     path('go_to_myhome/', views.go_to_myhome, name="go_to_myhome"),
+    path('like_set', views.like_set, name='like_set'),
+    path('follow', views.follow, name='follow')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
