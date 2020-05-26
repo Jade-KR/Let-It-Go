@@ -6,7 +6,9 @@ const state = {
 };
 
 const actions = {
-  async register({ commit }, params) {
+  async register({
+    commit
+  }, params) {
     commit;
     await api
       .register(params)
@@ -27,7 +29,9 @@ const actions = {
         }
       });
   },
-  async login({ commit }, params) {
+  async login({
+    commit
+  }, params) {
     commit;
     await api
       .login(params)
@@ -57,7 +61,9 @@ const actions = {
         }
       });
   },
-  SHA256({ commit }, s) {
+  SHA256({
+    commit
+  }, s) {
     commit;
     var chrsz = 8;
     var hexcase = 0;
@@ -279,6 +285,20 @@ const actions = {
 
     s = Utf8Encode(s);
     return binb2hex(core_sha256(str2binb(s), s.length * chrsz));
+  },
+  async changePassword({
+    commit
+  }, params) {
+    commit;
+    await api.changePasssword(params)
+  },
+  async logout({
+    commit
+  }) {
+    commit;
+    await api.logout()
+    localStorage.clear()
+    router.push('Login')
   }
 };
 

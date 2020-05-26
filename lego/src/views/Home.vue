@@ -6,16 +6,8 @@
     infinite-scroll-distance="10"
   >
     <div id="home_show">
-      <div
-        @click="styleCheck()"
-        v-if="styleFlag === false"
-        class="home_show_btn"
-      >
-        모아보기
-      </div>
-      <div v-else @click="styleCheck()" class="home_show_btn">
-        크게보기
-      </div>
+      <div @click="styleCheck()" v-if="styleFlag === false" class="home_show_btn">모아보기</div>
+      <div v-else @click="styleCheck()" class="home_show_btn">크게보기</div>
     </div>
     <div :style="styleFlag ? matrixWidth : instaWidth">
       <div

@@ -3,7 +3,7 @@ import http from "./http";
 const apiUrl = "/api";
 
 const headers = {
-  authorization: "jwt " + localStorage.getItem("token")
+  Authorization: "jwt " + localStorage.getItem("token")
 };
 export default {
   register(params) {
@@ -23,28 +23,38 @@ export default {
     });
   },
   getModelDetail(params) {
-    return http.get(`${apiUrl}/LegoSet/${params}`, { headers });
+    return http.get(`${apiUrl}/LegoSet/${params}`, {
+      headers
+    });
   },
   getUserParts(page) {
-    const headers = {
-      Authorization: "jwt " + localStorage.getItem("token")
-    };
     return http.get(`${apiUrl}/UserPart?page=${page}&page_size=21`, {
       headers
     });
   },
   addUserParts(params) {
-    const headers = {
-      Authorization: "jwt " + localStorage.getItem("token")
-    };
     return http.post(`${apiUrl}/UpdateUserPart`, params, {
       headers
     });
   },
   setLike(params) {
-    return http.post(`${apiUrl}/like_set`, params, { headers });
+    return http.post(`${apiUrl}/like_set`, params, {
+      headers
+    });
   },
   setFollow(params) {
-    return http.post(`${apiUrl}/follow`, params, { headers });
+    return http.post(`${apiUrl}/follow`, params, {
+      headers
+    });
+  },
+  changePasssword(params) {
+    return http.post(`${apiUrl}/rest-auth/password/change/`, params, {
+      headers
+    })
+  },
+  logout() {
+    return http.post(`${apiUrl}/rest-auth/logout/`, {
+      headers
+    })
   }
 };

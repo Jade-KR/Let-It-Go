@@ -86,6 +86,7 @@
 
 <script>
 import { ValidationProvider, ValidationObserver } from "vee-validate";
+import { mapActions } from "vuex";
 export default {
   components: {
     ValidationProvider,
@@ -97,6 +98,27 @@ export default {
       newPw: "",
       checkPw: ""
     };
+  },
+  methods: {
+    ...mapActions("auth", ["changePassword", "SHA256", "logout"]),
+    async onSubmit() {
+      let oldHash = "";
+      let newHash = "";
+      await this.SHA256(String(this.currentPw)).then(res => {
+        oldHash = res;
+      });
+      await this.SHA256(String(this.newPw)).then(res => {
+        newHash = res;
+      });
+      const params = {
+        new_password1: newHash,
+        new_password2: newHash,
+        old_password: oldHash
+      };
+      await this.changePassword(params);
+      alert("다시 로그인해주세요");
+      this.logout();
+    }
   }
 };
 </script>
