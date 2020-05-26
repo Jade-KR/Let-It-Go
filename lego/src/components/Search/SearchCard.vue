@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="whole_box" v-for="i in images.length" :key="i">
+    <div class="whole_box" v-for="i in images.length / 3" :key="i">
       <div class="row">
         <div class="item">
           <div class="body_img_box">
-            <img class="body_img" :src="images[i - 1]" alt />
+            <img class="body_img" :src="images[i * 3 - 3]" alt />
             <div class="body_img_hover">
               <div class="body_img_info">
                 <i class="fas fa-heart"></i>
@@ -15,22 +15,18 @@
             </div>
           </div>
         </div>
-        <div class="plus">
-          <i class="fas fa-plus"></i>
-        </div>
         <div class="item">
           <div class="body_img_box">
-            <img class="body_img" src="../../../assets/부품들.jpg" alt />
+            <img class="body_img" :src="images[i * 3 - 2]" alt />
             <div class="body_img_hover">
               <div class="body_img_info">
-                <span>필요한 부품을</span>
-                <span>확인하세요</span>
+                <i class="fas fa-heart"></i>
+                <span>0</span>
+                <i class="fas fa-comment"></i>
+                <span>0</span>
               </div>
             </div>
           </div>
-        </div>
-        <div class="equal">
-          <i class="fas fa-equals"></i>
         </div>
         <div class="item">
           <div class="body_img_box">
@@ -54,15 +50,12 @@ export default {
   data() {
     return {
       images: [
-        "https://www.lego.com/cdn/cs/set/assets/blt13e6e2a178c38704/Spiderman-Sidekick-Tall-1.jpg?fit=crop&width=800&height=600&quality=80",
         "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
+        "https://www.lego.com/cdn/cs/set/assets/blt13e6e2a178c38704/Spiderman-Sidekick-Tall-1.jpg?fit=crop&width=800&height=600&quality=80",
+        "https://images.unsplash.com/photo-1542410613-d073472c3135?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
         "https://images.unsplash.com/photo-1472457974886-0ebcd59440cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
         "https://images.unsplash.com/photo-1526505262320-81542978f63b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-        "https://images.unsplash.com/photo-1542410613-d073472c3135?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-        "https://images.unsplash.com/photo-1560167016-022b78a0258e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-        "https://images.unsplash.com/photo-1517242810446-cc8951b2be40?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-        "https://images.unsplash.com/photo-1538448174498-9956c159edb0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-        "https://images.unsplash.com/photo-1517232202491-70f954c23ed4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
+        "https://images.unsplash.com/photo-1560167016-022b78a0258e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
       ]
     };
   }
@@ -83,8 +76,8 @@ export default {
   justify-content: center;
 }
 .item {
-  width: 200px;
-  height: 200px;
+  width: 260px;
+  height: 250px;
   margin-left: 15px;
   margin-right: 15px;
 }
@@ -128,6 +121,7 @@ export default {
   width: 100%;
   text-align: center;
   position: absolute;
+  display: flex;
   justify-content: center;
   align-items: baseline;
 }
@@ -140,12 +134,5 @@ export default {
   font-size: 25px;
   color: white;
   margin-right: 20px;
-}
-.plus,
-.equal {
-  display: flex;
-  font-size: 50px;
-  align-items: center;
-  margin: 0px 20px;
 }
 </style>
