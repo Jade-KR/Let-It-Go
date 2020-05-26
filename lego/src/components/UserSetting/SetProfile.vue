@@ -14,7 +14,17 @@
         <div class="input_box">
           <div class="photo_desc">
             <h1 class="user_id">Jade</h1>
-            <button class="change_photo_btn">프로필 사진 바꾸기</button>
+            <div class="file_input_div">
+              <input
+                id="fileName"
+                class="file_input_button"
+                type="button"
+                readonly
+                value="프로필 사진 변경"
+              />
+              <input type="file" class="file_input_hidden" @change="changeToUrl" />
+            </div>
+            <img src height="200" alt="이미지 미리보기..." id="profile_img" />
           </div>
         </div>
       </div>
@@ -59,7 +69,21 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {};
+  },
+  methods: {
+    changeToUrl(e) {
+      let file = e.target.files[0];
+      let reader = new FileReader();
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+      console.log(reader);
+    }
+  }
+};
 </script>
 
 <style scoped>
@@ -135,5 +159,32 @@ textarea {
   width: 50px;
   height: 30px;
   border-radius: 10%;
+}
+.file_input_div {
+  position: relative;
+  width: 100px;
+  height: 23px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.file_input_button {
+  position: absolute;
+  width: 100px;
+  height: 23px;
+  font-size: 13px;
+  color: rgb(0, 140, 255);
+  font-weight: bold;
+  top: 0px;
+  left: 0px;
+  border-style: none;
+  cursor: pointer;
+}
+.file_input_hidden {
+  font-size: 30px;
+  position: absolute;
+  width: 100px;
+  left: 0px;
+  top: 0px;
+  opacity: 0;
 }
 </style>
