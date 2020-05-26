@@ -4,7 +4,7 @@
       <div class="row">
         <div class="item">
           <div class="body_img_box">
-            <img class="body_img" :src="images[i-1]" alt />
+            <img class="body_img" :src="images[i - 1]" alt />
             <div class="body_img_hover">
               <div class="body_img_info">
                 <i class="fas fa-heart"></i>
@@ -34,7 +34,7 @@
         </div>
         <div class="item">
           <div class="body_img_box">
-            <img class="body_img" :src="images[i*3 -1]" alt />
+            <img class="body_img" :src="images[i * 3 - 1]" alt />
             <div class="body_img_hover">
               <div class="body_img_info">
                 <i class="fas fa-heart"></i>
