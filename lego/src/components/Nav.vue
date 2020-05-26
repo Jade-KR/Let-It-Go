@@ -16,7 +16,7 @@
       </div>
       <div class="nav_right">
         <div class="icons_box">
-          <i class="fas fa-search"></i>
+          <i class="fas fa-search" @click="goSearch"></i>
           <i class="fas fa-plus" @click="goWrite"></i>
           <i class="fas fa-user-alt" @click="goMyPage"></i>
         </div>
@@ -44,6 +44,12 @@ export default {
       const user_id = localStorage.getItem("pk");
       if (locationNow !== "/mypage/" + user_id) {
         this.$router.push("/mypage" + "/" + user_id);
+      }
+    },
+    goSearch() {
+      const locationNow = location.pathname;
+      if (locationNow !== "/search") {
+        this.$router.push("/search");
       }
     },
     goHome() {

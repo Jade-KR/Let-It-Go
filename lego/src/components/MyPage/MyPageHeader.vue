@@ -4,20 +4,27 @@
       <div class="my_photo">
         <div class="photo_box">
           <img
+            src="../../../public/images/user.png"
+            alt="no_image"
+            v-if="userImg === 'null' || userImg === ''"
+          />
+          <img :src="`${userImg}`" alt="user_image" v-else />
+          <!-- <img
             src="https://images.unsplash.com/photo-1472457974886-0ebcd59440cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
             alt="photo"
-          />
+            v-else
+          /> -->
         </div>
       </div>
       <div class="my_info">
         <div class="info_top">
-          <span class="user_id">Jade</span>
+          <span class="user_id">{{ userNickname }}</span>
           <div v-if="!isUser" class="user_follow" @click="pushFollow()">
             <div v-if="followFlag">
-              팔로우
+              팔로우 취소
             </div>
             <div v-else>
-              팔로우 취소
+              팔로우
             </div>
           </div>
           <UserModal v-else>
@@ -34,7 +41,7 @@
             >
           </div>
         </div>
-        <div class="info_bottom">{{ comment }}</div>
+        <div class="info_bottom">{{ userComment }}</div>
       </div>
     </div>
   </div>
@@ -59,7 +66,10 @@ export default {
         "새로운 회계연도가 개시될 때까지 예산안이 의결되지 못한 때에는 정부는 국회에서 예산안이 의결될 때까지 다음의 목적을 위한 경비는 전년도 예산에 준하여 집행할 수 있다.연소자의 근로는 특별한 보호를 받는다. 체포·구속·압수 또는 수색을 할 때에는 적법한 절차에 따라 검사의 신청에 의하여 법관이 발부한 영장을 제시하여야 한다. 다만, 현행범인인 경우와 장기 3년 이상의 형에 해당하는 죄를 범하고 도피 또는 증거인멸의 염려가 있을 때에는 사후에 영장을 청구할 수 있다",
       dialog: false,
       isUser: true,
-      followFlag: true
+      followFlag: true,
+      userNickname: "",
+      userImg: "",
+      userComment: ""
     };
   },
   mounted() {
@@ -67,6 +77,10 @@ export default {
     const currentUser = localStorage.getItem("pk");
     if (locationPath !== currentUser) {
       this.isUser = false;
+    } else {
+      this.userNickname = localStorage.getItem("nickname");
+      this.userImg = localStorage.getItem("image");
+      this.userComment = localStorage.getItem("comment");
     }
   },
   methods: {

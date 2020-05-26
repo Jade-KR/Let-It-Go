@@ -12,14 +12,18 @@
           <div class="search_menus">
             <button
               class="search_by_id"
-              @click="currentState=0"
+              @click="currentState = 0"
               :style="currentState === 0 ? menuStyle[0] : menuStyle[1]"
-            >ID로 찾기</button>
+            >
+              ID로 찾기
+            </button>
             <button
               class="search_by_img"
               @click="checkImg()"
               :style="currentState === 1 ? menuStyle[0] : menuStyle[1]"
-            >이미지로 찾기</button>
+            >
+              이미지로 찾기
+            </button>
           </div>
           <div class="close">
             <i class="fas fa-times" @click="dialog = 0"></i>

@@ -28,7 +28,7 @@ export default {
   getUserParts(page) {
     const headers = {
       Authorization: "jwt " + localStorage.getItem("token")
-    }
+    };
     return http.get(`${apiUrl}/UserPart?page=${page}&page_size=21`, {
       headers
     });
@@ -36,7 +36,7 @@ export default {
   addUserParts(params) {
     const headers = {
       Authorization: "jwt " + localStorage.getItem("token")
-    }
+    };
     return http.post(`${apiUrl}/UpdateUserPart`, params, {
       headers
     });

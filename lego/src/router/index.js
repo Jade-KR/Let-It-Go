@@ -7,6 +7,7 @@ import Register from "../views/base/Register.vue";
 import Detail from "../views/Page/Detail.vue";
 import UserSetting from "../views/UserSetting.vue";
 import Write from "../views/Page/Write.vue";
+import Search from "../views/Page/Search.vue";
 
 Vue.use(VueRouter);
 
@@ -55,6 +56,11 @@ const routes = [
     meta: {
       authRequired: true
     }
+  },
+  {
+    path: "/search",
+    name: "Search",
+    component: Search
   }
 ];
 
