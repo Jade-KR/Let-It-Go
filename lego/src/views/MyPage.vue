@@ -10,11 +10,11 @@
           class="menu"
           @click.prevent="menuState(menu.title, idx)"
           :id="`menu${idx}`"
-          v-for="(menu,idx) in menus"
+          v-for="(menu, idx) in menus"
           :key="`first${idx}`"
           :style="btnFlag === menu.title ? btnStyle[0] : btnStyle[1]"
         >
-          <i :class="menu.icon">&nbsp;{{menu.title}}</i>
+          <i :class="menu.icon">&nbsp;{{ menu.title }}</i>
         </button>
       </div>
       <div class="body">
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import MyPageHeader from "@/components/MyPage/MyPageHeader.vue";
+import MyPageHeader from "@/components/MyPage/MyPageHeader/MyPageHeader.vue";
 import Instruction from "@/components/MyPage/MyPageBody/Instruction.vue";
 import Like from "@/components/MyPage/MyPageBody/Like.vue";
 import Parts from "@/components/MyPage/MyPageBody/Parts.vue";

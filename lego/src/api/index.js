@@ -50,11 +50,20 @@ export default {
   changePasssword(params) {
     return http.post(`${apiUrl}/rest-auth/password/change/`, params, {
       headers
-    })
+    });
   },
   logout() {
     return http.post(`${apiUrl}/rest-auth/logout/`, {
       headers
-    })
+    });
+  },
+  tokenVerify(params) {
+    return http.post(`${apiUrl}/token/verify/`, params);
+  },
+  getFollower() {
+    return http.get(`${apiUrl}/Follower`, { headers });
+  },
+  getFollowing() {
+    return http.get(`${apiUrl}/Following`, { headers });
   }
 };

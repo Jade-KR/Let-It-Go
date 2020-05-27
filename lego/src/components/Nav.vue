@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 import router from "../router";
 
 export default {
@@ -34,10 +34,11 @@ export default {
     return {};
   },
   methods: {
+    ...mapActions("auth", ["isTokenVerify", "logout"]),
     ...mapMutations("home", ["setHomeCate"]),
-    goMyPage() {
-      if (!localStorage.getItem("token")) {
-        this.$router.push("/login");
+    async goMyPage() {
+      const isVerify = await this.isTokenVerify();
+      if (isVerify === false) {
         return;
       }
       const locationNow = location.pathname;
@@ -58,10 +59,9 @@ export default {
         this.$router.push("/");
       }
     },
-    goWrite() {
-      if (!localStorage.getItem("token")) {
-        alert("로그인을 하고 사용해 주세요.");
-        this.$router.push("/login");
+    async goWrite() {
+      const isVerify = await this.isTokenVerify();
+      if (isVerify === false) {
         return;
       }
       const locationNow = location.pathname;

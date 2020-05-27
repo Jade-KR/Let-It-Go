@@ -4,7 +4,7 @@
       <div class="my_photo">
         <div class="photo_box">
           <img
-            src="../../../public/images/user.png"
+            src="../../../../public/images/user.png"
             alt="no_image"
             v-if="userImg === 'null' || userImg === ''"
           />
@@ -34,26 +34,43 @@
           </UserModal>
         </div>
         <div class="info_middle">
-          <div v-for="i in summaryItems.length" :key="i" class="summary">
-            <span
-              >{{ summaryItems[i - 1].title }}
-              {{ summaryItems[i - 1].cnt }}</span
-            >
+          <div class="summary">
+            <span>설계도 0</span>
+          </div>
+          <div class="summary cursor">
+            <follower :followerList="followerList">
+              <span slot="follower">팔로워 {{ followerList.length }}</span>
+            </follower>
+          </div>
+          <div class="summary cursor">
+            <following :followingList="followingList">
+              <span slot="following">팔로우 {{ followingList.length }}</span>
+            </following>
           </div>
         </div>
-        <div class="info_bottom">{{ userComment }}</div>
+        <div class="info_bottom" v-if="userComment === 'null'">
+          레고를 안 산 사람은 있어도, 하나만 산 사람은 없다. <br />
+          레고와 함께라면 놀이가 교육이다. <br />
+          무엇을 생각하는가? 일단 지르고 고민해라. <br />
+          레고는 아름답고, 쌓을만한 가치가 있다.
+        </div>
+        <div class="info_bottom" v-else>{{ userComment }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import UserModal from "./UserModal";
-import { mapActions } from "vuex";
+import UserModal from "../UserModal";
+import Follower from "./Follower";
+import Following from "./Following";
+import { mapState, mapActions } from "vuex";
 
 export default {
   components: {
-    UserModal
+    UserModal,
+    Follower,
+    Following
   },
   data() {
     return {
@@ -72,23 +89,35 @@ export default {
       userComment: ""
     };
   },
-  mounted() {
-    const locationPath = location.pathname.slice(8, 9);
+  computed: {
+    ...mapState({
+      followingList: state => state.mypage.followingList,
+      followerList: state => state.mypage.followerList
+    })
+  },
+  async mounted() {
+    // 사용자 확인
+    const locationPath = this.$route.params.user_id;
     const currentUser = localStorage.getItem("pk");
     if (locationPath !== currentUser) {
       this.isUser = false;
+      // 다른 사용자 정보 받아오기
     } else {
+      // 내정보
       this.userNickname = localStorage.getItem("nickname");
       this.userImg = localStorage.getItem("image");
       this.userComment = localStorage.getItem("comment");
     }
+    // 팔로우
+    await this.follower();
+    await this.following();
   },
   methods: {
-    ...mapActions("mypage", ["onFollow"]),
+    ...mapActions("mypage", ["onFollow", "follower", "following"]),
     async pushFollow() {
       // console.log("aaa");
       const params = {
-        user_id: localStorage.getItem("pk")
+        user_id: this.$route.params.user_id
       };
       const result = await this.onFollow(params);
       console.log(result);
@@ -176,6 +205,9 @@ export default {
   font-weight: 700;
   border-radius: 10px;
   transform: translateY(-5px);
+  cursor: pointer;
+}
+.cursor {
   cursor: pointer;
 }
 </style>

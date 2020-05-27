@@ -6,7 +6,6 @@
         @click="setCate(0)"
         :style="selectedCate === 0 ? selectedStyle[0] : selectedStyle[1]"
       >
-        <!-- <i class="fas fa-check checked" v-if="selectedCate === 0"></i> -->
         <i
           class="fas fa-angle-double-right checked"
           v-if="selectedCate === 0"
@@ -19,7 +18,6 @@
         @click="setCate(1)"
         :style="selectedCate === 1 ? selectedStyle[0] : selectedStyle[1]"
       >
-        <!-- <i class="fas fa-check checked" v-if="selectedCate === 1"></i> -->
         <i
           class="fas fa-angle-double-right checked"
           v-if="selectedCate === 1"
@@ -32,7 +30,6 @@
         @click="setCate(2)"
         :style="selectedCate === 2 ? selectedStyle[0] : selectedStyle[1]"
       >
-        <!-- <i class="fas fa-check checked" v-if="selectedCate === 2"></i> -->
         <i
           class="fas fa-angle-double-right checked"
           v-if="selectedCate === 2"
@@ -82,6 +79,7 @@ export default {
       } else if (value === 2) {
         this.selectedCate = 2;
       }
+      this.searchWords = "";
     },
     onSubmit(value) {
       if (
