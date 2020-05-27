@@ -258,6 +258,21 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = serializers.UserDetailSerializer(user)
         return Response(serializer.data)
 
+class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = serializers.LegoSetSerializer
+    pagination_class = SmallPagination
+    
+    def retrieve(self, request, pk=None):
+        queryset = LegoSet.objects.filter(user_id=pk)
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = serializers.LegoSetSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = serializers.LegoSetSerializer(queryset, many=True)
+        return Response(serializer.data)
+
 @api_view(['POST'])
 def UpdateUserPart(self):
     '''

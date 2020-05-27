@@ -30,6 +30,7 @@ router.register(r"Review", views.ReviewViewSet, basename="Review")
 router.register(r"Follower", views.FollowUserViewSet, basename="Follower")
 router.register(r"Following", views.FollowingUserViewSet, basename="Following")
 router.register(r"User", views.UserViewSet, basename="User")
+router.register(r"UserLegoSet", views.UserLegoSetViewSet, basename="UserLegoSet")
 urlpatterns = [
     *router.urls,
     path('UpdateUserPart', views.UpdateUserPart, name='UpdateUserPart'),
