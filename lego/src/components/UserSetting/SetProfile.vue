@@ -22,9 +22,8 @@
                 readonly
                 value="프로필 사진 변경"
               />
-              <input type="file" class="file_input_hidden" @change="changeToUrl" />
+              <input type="file" class="file_input_hidden" title @change="changeToUrl" />
             </div>
-            <img src height="200" alt="이미지 미리보기..." id="profile_img" />
           </div>
         </div>
       </div>
@@ -69,18 +68,22 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   data() {
     return {};
   },
   methods: {
-    changeToUrl(e) {
+    ...mapActions("user", ["updateImg"]),
+    async changeToUrl(e) {
       let file = e.target.files[0];
       let reader = new FileReader();
+      reader.onload = a => {
+        this.updateImg(a.target.result);
+      };
       if (file) {
         reader.readAsDataURL(file);
       }
-      console.log(reader);
     }
   }
 };

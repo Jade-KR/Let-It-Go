@@ -53,7 +53,9 @@ const state = {
 };
 
 const actions = {
-  next({ commit }, params) {
+  next({
+    commit
+  }, params) {
     if (params.step === 1) {
       // commit("setImage", state.modelImgs);
       var modelImgUrls = [];
@@ -63,7 +65,6 @@ const actions = {
       for (let i = 0; i < state.modelImgs.length; ++i) {
         var formdata = new FormData();
         formdata.append("image", state.modelImgs[i].slice(22));
-
         var requestOptions = {
           method: "POST",
           headers: myHeaders,
@@ -91,7 +92,9 @@ const actions = {
       step3.addEventListener("click", commit("setSteps", params.idx));
     }
   },
-  prev({ commit }, params) {
+  prev({
+    commit
+  }, params) {
     if (params.step === 2) {
       commit("setDesc", params.descParams);
     }
@@ -103,7 +106,9 @@ const actions = {
       step2.addEventListener("click", commit("setSteps", params.idx));
     }
   },
-  removeImg({ commit }, params) {
+  removeImg({
+    commit
+  }, params) {
     commit;
     state.modelImgs = state.modelImgs.filter((e, i) => i != params.idx);
     if (state.modelImgs.length === 0) {
@@ -111,7 +116,9 @@ const actions = {
     }
     commit("setImgFiles", params.files);
   },
-  enrollPart({ commit }, params) {
+  enrollPart({
+    commit
+  }, params) {
     commit;
     if (params.partQuantity === 0) {
       return;
@@ -136,26 +143,36 @@ const actions = {
       quantity: params.partQuantity
     });
   },
-  deletePart({ commit }, params) {
+  deletePart({
+    commit
+  }, params) {
     commit;
     state.enrolledPart = state.enrolledPart.filter(e => {
       return e["name"] !== params.partName || e["color"] !== params.partColor;
     });
   },
-  filterParts({ commit }, params) {
+  filterParts({
+    commit
+  }, params) {
     let filteredParts = LegoParts.rows.filter(part => {
       return part[5] === params;
     });
     commit("setPickedParts", filteredParts);
   },
-  changeStep({ commit }, params) {
+  changeStep({
+    commit
+  }, params) {
     commit("setPickStep", params);
   },
-  pickPartBytImg({ commit }, params) {
+  pickPartBytImg({
+    commit
+  }, params) {
     const part = [params[0] + " " + params[1], params[2], params[0]];
     commit("setPickedPartByImg", part);
   },
-  async onWriteSubmit({ commit }) {
+  async onWriteSubmit({
+    commit
+  }) {
     const imgUrlList = state.model.set_images;
     var imgUrlString = "";
     imgUrlList.forEach((e, i) => {

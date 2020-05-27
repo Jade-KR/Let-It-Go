@@ -7,7 +7,9 @@ const state = {
 };
 
 const actions = {
-  async onFollow({ commit }, params) {
+  async onFollow({
+    commit
+  }, params) {
     commit;
     const resp = await api
       .setFollow(params)

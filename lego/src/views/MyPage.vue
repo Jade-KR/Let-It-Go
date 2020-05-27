@@ -24,7 +24,7 @@
         </button>
       </div>
       <div class="body">
-        <Instruction v-if="currentState === 0"></Instruction>
+        <Models v-if="currentState === 0"></Models>
         <Like v-if="currentState === 1"></Like>
         <Parts v-if="currentState === 2"></Parts>
         <Combination v-if="currentState === 3"></Combination>
@@ -34,8 +34,8 @@
 </template>
 
 <script>
-import MyPageHeader from "@/components/MyPage/MyPageHeader/MyPageHeader.vue";
-import Instruction from "@/components/MyPage/MyPageBody/Instruction.vue";
+import MyPageHeader from "@/components/MyPage/MyPageHeader.vue";
+import Models from "@/components/MyPage/MyPageBody/Models.vue";
 import Like from "@/components/MyPage/MyPageBody/Like.vue";
 import Parts from "@/components/MyPage/MyPageBody/Parts.vue";
 import Combination from "@/components/MyPage/MyPageBody/Combination.vue";
@@ -45,7 +45,7 @@ import router from "../router";
 export default {
   components: {
     MyPageHeader,
-    Instruction,
+    Models,
     Like,
     Parts,
     Combination
