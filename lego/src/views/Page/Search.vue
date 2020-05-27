@@ -3,9 +3,6 @@
     <div id="search_bar">
       <search-bar></search-bar>
     </div>
-    <div id="search_data">
-      <search-data></search-data>
-    </div>
     <div id="search_card">
       <search-card></search-card>
     </div>
@@ -14,13 +11,11 @@
 
 <script>
 import SearchBar from "../../components/Search/SearchBar.vue";
-import SearchData from "../../components/Search/SearchData.vue";
 import SearchCard from "../../components/Search/SearchCard.vue";
 
 export default {
   components: {
     SearchBar,
-    SearchData,
     SearchCard
   }
 };
@@ -40,8 +35,6 @@ export default {
   position: sticky;
   top: 90px;
   background-color: white;
-}
-#search_data {
 }
 #search_card {
 }
