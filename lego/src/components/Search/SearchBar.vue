@@ -45,9 +45,9 @@
         id="search_bar_input"
         placeholder="검색어를 입력해주세요."
         v-model="searchWords"
-        @keypress.enter="onSubmit(searchWords)"
+        @keypress.enter="onSubmit()"
       />
-      <button id="search_bar_btn" @click="onSubmit(searchWords)">검색!</button>
+      <button id="search_bar_btn" @click="onSubmit()">검색!</button>
     </div>
   </div>
 </template>
@@ -80,17 +80,18 @@ export default {
         this.selectedCate = 2;
       }
       this.searchWords = "";
+      this.$emit("setCate");
     },
-    onSubmit(value) {
+    onSubmit() {
       if (
         this.searchWords === " " ||
         this.searchWords === "  " ||
         this.searchWords.length === 0
       ) {
         alert("검색어를 입력해주세요.");
+        return;
       }
-      console.log(value);
-      console.log(this.selectedCate);
+      this.$emit("onSubmit", this.searchWords, this.selectedCate);
     }
   }
 };

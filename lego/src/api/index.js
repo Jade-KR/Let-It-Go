@@ -60,13 +60,16 @@ export default {
   tokenVerify(params) {
     return http.post(`${apiUrl}/token/verify/`, params);
   },
-  getFollower() {
-    return http.get(`${apiUrl}/Follower`, { headers });
+  getFollower(params) {
+    return http.get(`${apiUrl}/Follower/${params}`, { headers });
   },
-  getFollowing() {
-    return http.get(`${apiUrl}/Following`, { headers });
+  getFollowing(params) {
+    return http.get(`${apiUrl}/Following/${params}`, { headers });
   },
   getUserInfo(params) {
     return http.get(`${apiUrl}/User/${params}`);
+  },
+  searchModels(params) {
+    return http.get(`${apiUrl}/LegoSet`, params);
   }
 };

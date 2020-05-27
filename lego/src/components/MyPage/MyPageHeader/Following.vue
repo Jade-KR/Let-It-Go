@@ -32,8 +32,26 @@
               >
                 {{ following.nickname }}
               </div>
-              <div class="follow_card_btn">
+              <div
+                class="follow_card_btn"
+                v-if="following.isFollow === false"
+                @click="pushFollow(i, following.id)"
+              >
                 팔로우
+              </div>
+              <div
+                class="follow_card_btn"
+                v-else-if="following.isFollow === true"
+                @click="pushFollow(i, following.id)"
+              >
+                팔로우취소
+              </div>
+              <div
+                class="follow_card_btn"
+                v-else
+                @click="pushFollow(i, following.id)"
+              >
+                It's Me
               </div>
             </div>
           </div>
@@ -44,7 +62,9 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
 import router from "../../../router";
+
 export default {
   props: {
     followingList: {
@@ -53,15 +73,56 @@ export default {
   },
   data() {
     return {
-      following: false
+      following: false,
+      followFlag: false
     };
   },
+  computed: {
+    ...mapState({
+      myFollowingList: state => state.mypage.myFollowingList
+    })
+  },
+  watch: {
+    following() {
+      for (let i = 0; i < this.followingList.length; ++i) {
+        if (
+          this.followingList[i]["id"] === Number(localStorage.getItem("pk"))
+        ) {
+          this.followingList[i]["isFollow"] = "me";
+          continue;
+        }
+        this.followingList[i]["isFollow"] = false;
+        for (let j = 0; j < this.myFollowingList.length; ++j) {
+          if (this.myFollowingList[j]["id"] === this.followingList[i]["id"]) {
+            this.followingList[i]["isFollow"] = true;
+          }
+        }
+      }
+    }
+  },
   methods: {
+    ...mapActions("mypage", ["onFollowInModal"]),
     close() {
       this.following = false;
     },
     goYourPage(value) {
       router.push("/mypage/" + value);
+    },
+    async pushFollow(idx, user_id) {
+      const params = {
+        user_id: user_id
+      };
+      const result = await this.onFollowInModal(params);
+      console.log(result);
+      if (result === "팔로우") {
+        this.followingList[idx]["isFollow"] = true;
+        console.log(this.followingList);
+      } else if (result === "팔로우 취소") {
+        this.followingList[idx]["isFollow"] = false;
+        console.log(this.followingList);
+      } else {
+        alert("문제가 발생했습니다.");
+      }
     }
   }
 };
@@ -105,5 +166,14 @@ export default {
 }
 .follow_card_btn {
   padding: 13px 0;
+  background-color: gold;
+  font-weight: 600;
+  width: 100px;
+  text-align: center;
+  line-height: 12px;
+  height: 40px;
+  margin-top: 7px;
+  border-radius: 10px;
+  cursor: pointer;
 }
 </style>

@@ -91,9 +91,10 @@ export default {
     }
     this.userInfo = result;
     this.menuState("설계도", 0);
+    await this.myFollowing();
   },
   methods: {
-    ...mapActions("mypage", ["getUserInfo"]),
+    ...mapActions("mypage", ["getUserInfo", "myFollowing"]),
     menuState(title, idx) {
       const bodyContainer = document.querySelector(".body");
       bodyContainer.classList.add("anim-out");
