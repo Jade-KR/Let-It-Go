@@ -1,0 +1,120 @@
+<template>
+  <div>
+    <div class="whole_box">
+      <div class="row">
+        <div class="item">
+          <div class="body_img_box">
+            <img class="body_img" :src="images[1]" alt />
+            <div class="body_img_hover">
+              <div class="body_img_info">
+                <i class="fas fa-heart"></i>
+                <span>0</span>
+                <i class="fas fa-comment"></i>
+                <span>0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { mapActions, mapState } from "vuex";
+export default {
+  data() {
+    return {};
+  },
+  mounted() {
+    const params = {
+      id: Number(localStorage.getItem("pk")),
+      nickname: localStorage.getItem("nickname"),
+      image: localStorage.getItem("image")
+    };
+    this.getModels(params);
+  },
+  computed: {
+    ...mapState({
+      myModels: state => state.myModels
+    })
+  },
+  methods: {
+    ...mapActions("mypage", ["getModels"])
+  }
+};
+</script>
+
+<style scoped>
+.whole_box {
+  height: 100%;
+  width: 100%;
+}
+.row {
+  display: flex;
+  flex-flow: row nowrap;
+  border-style: none;
+  height: fit-content;
+  margin-bottom: 30px;
+  justify-content: center;
+}
+.item {
+  width: 260px;
+  height: 250px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+.body_img_box {
+  width: 100%;
+  height: 100%;
+  background: black;
+  position: relative;
+}
+.body_img_box > img {
+  width: 100%;
+  height: 100%;
+  /* border-radius: 180%; */
+}
+.body_img_hover {
+  transition: 0.5s ease;
+  opacity: 0;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -90%);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.body_img {
+  opacity: 1;
+  cursor: pointer;
+  transition: 0.5s ease;
+}
+.body_img_box:hover .body_img {
+  opacity: 0.5;
+  cursor: pointer;
+}
+.body_img_box:hover .body_img_hover {
+  opacity: 1;
+  cursor: pointer;
+  transform: translate(-50%, -100%);
+}
+.body_img_info {
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+.body_img_info > i {
+  font-size: 25px;
+  color: white;
+}
+.body_img_info > span {
+  margin-left: 10px;
+  font-size: 25px;
+  color: white;
+  margin-right: 20px;
+}
+</style>

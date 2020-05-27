@@ -56,5 +56,10 @@ export default {
     return http.post(`${apiUrl}/rest-auth/logout/`, {
       headers
     })
+  },
+  getMyModels(params) {
+    return http.get(`${apiUrl}/User/${params.id}`, {
+      headers
+    })
   }
 };
