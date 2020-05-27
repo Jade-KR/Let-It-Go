@@ -2,7 +2,13 @@
   <div>
     <div class="whole_box">
       <div class="header">
-        <MyPageHeader></MyPageHeader>
+        <MyPageHeader
+          :id="userInfo.id"
+          :image="userInfo.image"
+          :nickname="userInfo.nickname"
+          :comment="userInfo.comment"
+          :legoSet="userInfo.lego_sets.length"
+        ></MyPageHeader>
       </div>
       <hr />
       <div class="body_menu_bar">
@@ -33,6 +39,9 @@ import Instruction from "@/components/MyPage/MyPageBody/Instruction.vue";
 import Like from "@/components/MyPage/MyPageBody/Like.vue";
 import Parts from "@/components/MyPage/MyPageBody/Parts.vue";
 import Combination from "@/components/MyPage/MyPageBody/Combination.vue";
+import { mapActions } from "vuex";
+import router from "../router";
+
 export default {
   components: {
     MyPageHeader,
@@ -60,13 +69,31 @@ export default {
         {
           fontSize: "17px"
         }
-      ]
+      ],
+      userInfo: {
+        id: 0,
+        image: "",
+        nickname: "",
+        comment: "",
+        lego_sets: []
+      }
     };
   },
-  mounted() {
+  async mounted() {
+    const params = {
+      user_id: this.$route.params.user_id
+    };
+    const result = await this.getUserInfo(params);
+    if (result === 404) {
+      alert("유효하지 않은 사용자입니다.");
+      router.push("/");
+      return;
+    }
+    this.userInfo = result;
     this.menuState("설계도", 0);
   },
   methods: {
+    ...mapActions("mypage", ["getUserInfo"]),
     menuState(title, idx) {
       const bodyContainer = document.querySelector(".body");
       bodyContainer.classList.add("anim-out");
@@ -75,7 +102,6 @@ export default {
         this.btnFlag = title;
         bodyContainer.classList.remove("anim-out");
       }, 300);
-
       // this.currentState = idx;
       // for (let i = 0; i < n; i++) {
       //   let target = document.getElementById(`menu${i}`);

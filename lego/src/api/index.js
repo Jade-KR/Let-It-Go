@@ -65,5 +65,8 @@ export default {
   },
   getFollowing() {
     return http.get(`${apiUrl}/Following`, { headers });
+  },
+  getUserInfo(params) {
+    return http.get(`${apiUrl}/User/${params}`);
   }
 };

@@ -6,9 +6,9 @@
           <img
             src="../../../../public/images/user.png"
             alt="no_image"
-            v-if="userImg === 'null' || userImg === ''"
+            v-if="image === 'null' || image === ''"
           />
-          <img :src="`${userImg}`" alt="user_image" v-else />
+          <img :src="`${image}`" alt="user_image" v-else />
           <!-- <img
             src="https://images.unsplash.com/photo-1472457974886-0ebcd59440cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
             alt="photo"
@@ -18,7 +18,7 @@
       </div>
       <div class="my_info">
         <div class="info_top">
-          <span class="user_id">{{ userNickname }}</span>
+          <span class="user_id">{{ nickname }}</span>
           <div v-if="!isUser" class="user_follow" @click="pushFollow()">
             <div v-if="followFlag">
               팔로우 취소
@@ -35,7 +35,7 @@
         </div>
         <div class="info_middle">
           <div class="summary">
-            <span>설계도 0</span>
+            <span>설계도 {{ legoSet }}</span>
           </div>
           <div class="summary cursor">
             <follower :followerList="followerList">
@@ -48,13 +48,13 @@
             </following>
           </div>
         </div>
-        <div class="info_bottom" v-if="userComment === 'null'">
+        <div class="info_bottom" v-if="comment === 'null'">
           레고를 안 산 사람은 있어도, 하나만 산 사람은 없다. <br />
           레고와 함께라면 놀이가 교육이다. <br />
           무엇을 생각하는가? 일단 지르고 고민해라. <br />
           레고는 아름답고, 쌓을만한 가치가 있다.
         </div>
-        <div class="info_bottom" v-else>{{ userComment }}</div>
+        <div class="info_bottom" v-else>{{ comment }}</div>
       </div>
     </div>
   </div>
@@ -72,6 +72,28 @@ export default {
     Follower,
     Following
   },
+  props: {
+    id: {
+      type: Number,
+      default: 0
+    },
+    image: {
+      type: String,
+      default: ""
+    },
+    nickname: {
+      type: String,
+      default: ""
+    },
+    comment: {
+      type: String,
+      default: ""
+    },
+    legoSet: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
       summaryItems: [
@@ -79,14 +101,9 @@ export default {
         { title: "팔로우", cnt: "0" },
         { title: "팔로잉", cnt: "0" }
       ],
-      comment:
-        "새로운 회계연도가 개시될 때까지 예산안이 의결되지 못한 때에는 정부는 국회에서 예산안이 의결될 때까지 다음의 목적을 위한 경비는 전년도 예산에 준하여 집행할 수 있다.연소자의 근로는 특별한 보호를 받는다. 체포·구속·압수 또는 수색을 할 때에는 적법한 절차에 따라 검사의 신청에 의하여 법관이 발부한 영장을 제시하여야 한다. 다만, 현행범인인 경우와 장기 3년 이상의 형에 해당하는 죄를 범하고 도피 또는 증거인멸의 염려가 있을 때에는 사후에 영장을 청구할 수 있다",
       dialog: false,
       isUser: true,
-      followFlag: true,
-      userNickname: "",
-      userImg: "",
-      userComment: ""
+      followFlag: true
     };
   },
   computed: {
@@ -96,19 +113,6 @@ export default {
     })
   },
   async mounted() {
-    // 사용자 확인
-    const locationPath = this.$route.params.user_id;
-    const currentUser = localStorage.getItem("pk");
-    if (locationPath !== currentUser) {
-      this.isUser = false;
-      // 다른 사용자 정보 받아오기
-    } else {
-      // 내정보
-      this.userNickname = localStorage.getItem("nickname");
-      this.userImg = localStorage.getItem("image");
-      this.userComment = localStorage.getItem("comment");
-    }
-    // 팔로우
     await this.follower();
     await this.following();
   },

@@ -24,6 +24,14 @@ const actions = {
     commit;
     const resp = await api.getFollowing().then(res => res.data.results);
     commit("setFollowingList", resp);
+  },
+  async getUserInfo({ commit }, params) {
+    commit;
+    const resp = await api
+      .getUserInfo(params.user_id)
+      .then(res => res.data)
+      .catch(err => err.response.status);
+    return resp;
   }
 };
 
