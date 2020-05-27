@@ -19,7 +19,7 @@
       <div class="my_info">
         <div class="info_top">
           <span class="user_id">{{ nickname }}</span>
-          <div v-if="!isUser" class="user_follow" @click="pushFollow()">
+          <div v-if="!isMe" class="user_follow" @click="pushFollow()">
             <div v-if="followFlag">
               팔로우 취소
             </div>
@@ -102,7 +102,7 @@ export default {
         { title: "팔로잉", cnt: "0" }
       ],
       dialog: false,
-      isUser: true,
+      isMe: true,
       followFlag: true
     };
   },
@@ -112,9 +112,30 @@ export default {
       followerList: state => state.mypage.followerList
     })
   },
-  async mounted() {
-    await this.follower();
-    await this.following();
+  watch: {
+    async id() {
+      await this.follower(this.id);
+      await this.following(this.id);
+      const userPK = Number(localStorage.getItem("pk"));
+      if (this.id !== userPK) {
+        this.isMe = false;
+      } else if (this.id === userPK) {
+        this.isMe = true;
+      }
+    },
+    followerList() {
+      if (this.followerList.length === 0) {
+        this.followFlag = false;
+        return;
+      }
+      for (let i = 0; i < this.followerList.length; ++i) {
+        if (this.followerList[i].id === Number(localStorage.getItem("pk"))) {
+          this.followFlag = true;
+          return;
+        }
+        this.followFlag = false;
+      }
+    }
   },
   methods: {
     ...mapActions("mypage", ["onFollow", "follower", "following"]),
