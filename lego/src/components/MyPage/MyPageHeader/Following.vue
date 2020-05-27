@@ -32,8 +32,17 @@
               >
                 {{ following.nickname }}
               </div>
-              <div class="follow_card_btn">
+              <div class="follow_card_btn" v-if="following.isFollow === false">
                 팔로우
+              </div>
+              <div
+                class="follow_card_btn"
+                v-else-if="following.isFollow === true"
+              >
+                팔로우취소
+              </div>
+              <div class="follow_card_btn" v-else>
+                It's Me
               </div>
             </div>
           </div>
@@ -44,7 +53,9 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import router from "../../../router";
+
 export default {
   props: {
     followingList: {
@@ -53,9 +64,34 @@ export default {
   },
   data() {
     return {
-      following: false
+      following: false,
+      followFlag: false
     };
   },
+  computed: {
+    ...mapState({
+      myFollowingList: state => state.mypage.myFollowingList
+    })
+  },
+  watch: {
+    following() {
+      for (let i = 0; i < this.followingList.length; ++i) {
+        if (
+          this.followingList[i]["id"] === Number(localStorage.getItem("pk"))
+        ) {
+          this.followingList[i]["isFollow"] = "me";
+          continue;
+        }
+        this.followingList[i]["isFollow"] = false;
+        for (let j = 0; j < this.myFollowingList.length; ++j) {
+          if (this.myFollowingList[j]["id"] === this.followingList[i]["id"]) {
+            this.followingList[i]["isFollow"] = true;
+          }
+        }
+      }
+    }
+  },
+  mounted() {},
   methods: {
     close() {
       this.following = false;
@@ -88,22 +124,29 @@ export default {
   padding: 10px;
 }
 .follow_card {
-  display: flex;
   margin-bottom: 5px;
+  height: 50px;
+  margin-right: 5px;
 }
 .follow_card_img {
+  display: inline-block;
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  margin-right: 5px;
   cursor: pointer;
 }
 .follow_card_nickname {
-  padding: 13px 0;
-  flex: 1;
+  display: inline-block;
   cursor: pointer;
+  vertical-align: middle;
 }
 .follow_card_btn {
+  display: inline-block;
   padding: 13px 0;
+  background-color: gold;
+  font-weight: 600;
+  width: 70px;
+  text-align: center;
+  float: right;
 }
 </style>

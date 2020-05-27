@@ -3,7 +3,8 @@ import api from "../../api";
 
 const state = {
   followingList: [],
-  followerList: []
+  followerList: [],
+  myFollowingList: []
 };
 
 const actions = {
@@ -15,15 +16,18 @@ const actions = {
       .catch(err => err);
     return resp;
   },
-  async follower({ commit }) {
-    commit;
-    const resp = await api.getFollower().then(res => res.data.results);
+  async follower({ commit }, params) {
+    const resp = await api.getFollower(params).then(res => res.data.results);
     commit("setFollowerList", resp);
   },
-  async following({ commit }) {
-    commit;
-    const resp = await api.getFollowing().then(res => res.data.results);
+  async following({ commit }, params) {
+    const resp = await api.getFollowing(params).then(res => res.data.results);
     commit("setFollowingList", resp);
+  },
+  async myFollowing({ commit }) {
+    const params = localStorage.getItem("pk");
+    const resp = await api.getFollowing(params).then(res => res.data.results);
+    commit("setMyFollowingList", resp);
   },
   async getUserInfo({ commit }, params) {
     commit;
@@ -41,6 +45,9 @@ const mutations = {
   },
   setFollowerList(state, followers) {
     state.followerList = followers.map(s => s);
+  },
+  setMyFollowingList(state, followings) {
+    state.myFollowingList = followings.map(s => s);
   }
 };
 

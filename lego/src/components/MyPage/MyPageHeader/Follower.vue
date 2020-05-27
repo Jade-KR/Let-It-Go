@@ -32,8 +32,17 @@
               >
                 {{ follower.nickname }}
               </div>
-              <div class="follow_card_btn">
+              <div class="follow_card_btn" v-if="follower.isFollow === false">
                 팔로우
+              </div>
+              <div
+                class="follow_card_btn"
+                v-else-if="follower.isFollow === true"
+              >
+                팔로우취소
+              </div>
+              <div class="follow_card_btn" v-else>
+                It's Me
               </div>
             </div>
           </div>
@@ -44,7 +53,9 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import router from "../../../router";
+
 export default {
   props: {
     followerList: {
@@ -53,8 +64,30 @@ export default {
   },
   data() {
     return {
-      follower: false
+      follower: false,
+      followFlag: false
     };
+  },
+  computed: {
+    ...mapState({
+      myFollowingList: state => state.mypage.myFollowingList
+    })
+  },
+  watch: {
+    follower() {
+      for (let i = 0; i < this.followerList.length; ++i) {
+        if (this.followerList[i]["id"] === Number(localStorage.getItem("pk"))) {
+          this.followerList[i]["isFollow"] = "me";
+          continue;
+        }
+        this.followerList[i]["isFollow"] = false;
+        for (let j = 0; j < this.myFollowingList.length; ++j) {
+          if (this.myFollowingList[j]["id"] === this.followerList[i]["id"]) {
+            this.followerList[i]["isFollow"] = true;
+          }
+        }
+      }
+    }
   },
   methods: {
     close() {
