@@ -134,14 +134,11 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 class UserDetailSerializer(serializers.ModelSerializer):
-    lego_sets = LegoSetSerializer(source="legoset_set", many=True)
-
     class Meta:
         model = CustomUser
         fields = [
             "id",
             "nickname",
             "image",
-            "lego_sets",
             "comment",
         ]
