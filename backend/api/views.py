@@ -38,6 +38,28 @@ def crawling_part_data(pk):
                 break
             cur_page += 1
     
+# 메서드 정리
+# class UserViewSet(viewsets.ViewSet):
+#     """
+#     Example empty viewset demonstrating the standard
+#     actions that will be handled by a router class.
+
+#     If you're using format suffixes, make sure to also include
+#     the `format=None` keyword argument for each action.
+#     """
+
+#     def list(self, request):
+#         pass
+#     def create(self, request):
+#         pass
+#     def retrieve(self, request, pk=None):
+#         pass
+#     def update(self, request, pk=None):
+#         pass
+#     def partial_update(self, request, pk=None):
+#         pass
+#     def destroy(self, request, pk=None):
+#         pass
 
 class SmallPagination(PageNumberPagination):
     page_size = 10
@@ -50,13 +72,37 @@ class ThemeViewSet(viewsets.ModelViewSet):
     pagination_class = SmallPagination
 
 class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = LegoSet.objects.all()
+    # queryset = LegoSet.objects.all()
     serializer_class = serializers.LegoSetSerializer2
     pagination_class = SmallPagination
 
+    # 쿼리셋을 word 받아서 스플릿하고 세트명, 태그, 테마 검색해보기
+    # 해당하는것 전부 포함시키기
+    def get_queryset(self):
+        queryset = []
+        tmp = set()
+        if self.request.query_params.get("name"):
+            for word in self.request.query_params["name"].split(' '):
+                for legoset in LegoSet.objects.filter(name__contains=word).order_by("-id"):
+                    if legoset.id not in tmp:
+                        tmp.add(legoset.id)
+                        queryset.append(legoset)
+            return queryset
+        elif self.request.query_params.get("tag"):
+            for word in self.request.query_params["tag"].split(' '):
+                for legoset in LegoSet.objects.filter(tags__contains=word).order_by("-id"):
+                    if legoset.id not in tmp:
+                        tmp.add(legoset.id)
+                        queryset.append(legoset)
+            return queryset
+        elif self.request.query_params.get("theme"):
+            queryset = LegoSet.objects.filter(theme_id=self.request.query_params["theme"]).order_by("-id")
+            return queryset
+
+        return LegoSet.objects.all()
+
     def list(self, request):
-        queryset = LegoSet.objects.all().order_by("-id")
-        
+        queryset = self.get_queryset()
         page = self.paginate_queryset(queryset)
         
         if page is not None:
@@ -78,18 +124,6 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
         else:
             serializer_data["is_like"] = 0
         return Response(serializer_data)
-        # print(serializer.data)
-        # if queryset:
-        #     serializer_data = serializers.SetPartSerializer(queryset, many=True).data
-        #     return Response(serializer_data)
-        # elif OfficialMapping.objects.get(lego_set_id=pk):
-        #     crawling_part_data(pk)
-        #     queryset = SetPart.objects.filter(lego_set_id=pk)
-        #     serializer_data = serializers.SetPartSerializer(queryset, many=True).data
-        #     return Response(serializer_data)
-        # return Response("")
-
-
 
 class LegoPartViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = LegoPart.objects.all()
@@ -99,7 +133,7 @@ class LegoPartViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets
 class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserPartSerializer
     pagination_class = SmallPagination
-    
+
     def list(self, request):
         if request.user.is_authenticated:
             queryset = UserPart.objects.filter(user=request.user)
@@ -145,7 +179,7 @@ class CustomLoginView(LoginView):
         orginal_response.data["user"].update(mydata)
         return orginal_response
 
-class ReviewViewSet(viewsets.ModelViewSet):
+class ReviewViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.ReviewSerializer
     pagination_class = SmallPagination
     queryset = Review.objects.all()
@@ -156,6 +190,65 @@ class ReviewViewSet(viewsets.ModelViewSet):
             data = request.data
             Review.objects.create(lego_set_id=data["lego_set_id"], user=user, content=data["content"], score=data["score"])
         return Response("")
+
+    def update(self, request, pk=None):
+        review = get_object_or_404(Review, pk=pk)
+        user_id = request.user_id
+        if request.user.is_authenticated and review.user_id == user_id:
+            data = request.data
+            review.content = data["content"]
+            review.score = data["score"]
+            return Response("수정 완료")
+        return Response("수정 실패")
+
+    def destroy(self, request, pk=None):
+        review = get_object_or_404(Review, pk=pk)
+        if request.user.is_authenticated and review.user_id == request.user_id:
+            review.delete()
+            return Response("삭제 완료")
+        return Response("삭제 실패")
+
+class FollowUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = serializers.UserSerializer
+    pagination_class = SmallPagination
+
+    def list(self, request):
+        user = get_object_or_404(get_user_model(), pk=request.user.id)
+        followers = user.followers.all()
+        page = self.paginate_queryset(followers)
+        
+        if page is not None:
+            serializer = serializers.UserSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = serializers.LegoSetSerializer(followers, many=True)
+        return Response(serializer.data)
+
+class FollowingUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = serializers.UserSerializer
+    pagination_class = SmallPagination
+
+    def list(self, request):
+        user = get_object_or_404(get_user_model(), pk=request.user.id)
+        followings = user.followings.all()
+        page = self.paginate_queryset(followings)
+        
+        if page is not None:
+            serializer = serializers.UserSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = serializers.LegoSetSerializer(followings, many=True)
+        return Response(serializer.data)
+
+class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = serializers.UserSerializer
+    pagination_class = SmallPagination
+    queryset = CustomUser.objects.all()
+
+    def retrieve(self, request, pk=None):
+        user = get_object_or_404(get_user_model(), id=pk)
+        serializer = serializers.UserDetailSerializer(user)
+        return Response(serializer.data)
 
 @api_view(['POST'])
 def UpdateUserPart(self):
@@ -169,6 +262,18 @@ def UpdateUserPart(self):
             }
         ]
     }
+    ---
+    parameters:
+    - name: username
+      description: Foobar long description goes here
+      required: true
+      type: string
+      paramType: form
+    - name: password
+      paramType: form
+      required: true
+      type: string
+
     '''
     user = self.user
     # user = CustomUser.objects.get(id=self.user)
