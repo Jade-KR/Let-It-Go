@@ -216,12 +216,12 @@ class ReviewViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Des
             return Response("삭제 완료")
         return Response("삭제 실패")
 
-class FollowUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class FollowUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserSerializer
     pagination_class = SmallPagination
 
-    def list(self, request):
-        user = get_object_or_404(get_user_model(), pk=request.user.id)
+    def retrieve(self, request, pk=None):
+        user = get_object_or_404(get_user_model(), pk=pk)
         followers = user.followers.all()
         page = self.paginate_queryset(followers)
         
@@ -232,15 +232,15 @@ class FollowUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         serializer = serializers.LegoSetSerializer(followers, many=True)
         return Response(serializer.data)
 
-class FollowingUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class FollowingUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserSerializer
     pagination_class = SmallPagination
 
-    def list(self, request):
-        user = get_object_or_404(get_user_model(), pk=request.user.id)
+    def retrieve(self, request, pk=None):
+        user = get_object_or_404(get_user_model(), pk=pk)
         followings = user.followings.all()
         page = self.paginate_queryset(followings)
-        
+
         if page is not None:
             serializer = serializers.UserSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
