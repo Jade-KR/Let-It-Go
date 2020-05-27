@@ -18,6 +18,22 @@ from surprise.dataset import DatasetAutoFolds
 from surprise.model_selection import GridSearchCV
 from api.models import Review, CustomUser
 
+def read_item_names():
+    """Read the u.item file from MovieLens 100-k dataset and return two
+    mappings to convert raw ids into movie names and movie names into raw ids.
+    """
+
+    file_name = get_dataset_dir() + '/ml-100k/ml-100k/u.item'
+    rid_to_name = {}
+    name_to_rid = {}
+    with io.open(file_name, 'r', encoding='ISO-8859-1') as f:
+        for line in f:
+            line = line.split('|')
+            rid_to_name[line[0]] = line[1]
+            name_to_rid[line[1]] = line[0]
+
+    return rid_to_name, name_to_rid
+
 user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
 review_df = pd.DataFrame(Review.objects.all().values("user_id", "score", "set_id_id"))
 
@@ -56,15 +72,21 @@ print(knn_gs.cv_results['mean_test_rmse'])
 print(knn_gs.cv_results['mean_test_mae'])
 print('학습 시작')
 # 피어슨 유사도로 학습
-sim_options = {'name': 'pearson', 'user_based': False}
+sim_options = {'name': 'pearson_baseline', 'user_based': False}
 algo = surprise.KNNBaseline(k=30, sim_options=sim_options)
 algo.fit(trainset)
 print('학습 완료')
 
-top_neighbors = 
+toy_story_inner_id = algo.trainset.to_inner_iid(15373)
+top_neighbors = algo.get_neighbors(toy_story_inner_id, k=10)
+print(toy_story_inner_id)
+print(top_neighbors)
 
 
+top_neighbors = [algo.trainset.to_raw_iid(inner_id)
+                       for inner_id in top_neighbors]
 
-
-
-
+    
+print(dir(top_neighbors))
+print(top_neighbors.__getattribute__)
+print(top_neighbors)
