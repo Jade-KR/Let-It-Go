@@ -123,3 +123,24 @@ class ReviewSerializer(serializers.ModelSerializer):
         ]
     def get_nickname(self, obj):
         return obj.user.nickname
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = [
+            "id",
+            "nickname",
+            "image"
+        ]
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    lego_sets = LegoSetSerializer(source="legoset_set", many=True)
+
+    class Meta:
+        model = CustomUser
+        fields = [
+            "id",
+            "nickname",
+            "image",
+            "lego_sets",
+        ]
