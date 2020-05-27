@@ -1,17 +1,20 @@
 <template>
-  <div>
+  <div
+    id="model_body"
+    v-infinite-scroll="loadMore"
+    infinite-scroll-disabled="loading"
+    infinite-scroll-distance="9"
+  >
     <div class="whole_box">
-      <div class="row">
-        <div class="item">
-          <div class="body_img_box">
-            <img class="body_img" :src="images[1]" alt />
-            <div class="body_img_hover">
-              <div class="body_img_info">
-                <i class="fas fa-heart"></i>
-                <span>0</span>
-                <i class="fas fa-comment"></i>
-                <span>0</span>
-              </div>
+      <div class="item" v-for="(item, idx) in userModels" :key="`item${idx}`">
+        <div class="body_img_box">
+          <img class="body_img" :src="item.images" alt />
+          <div class="body_img_hover">
+            <div class="body_img_info">
+              <i class="fas fa-heart"></i>
+              <span>0</span>
+              <i class="fas fa-comment"></i>
+              <span>0</span>
             </div>
           </div>
         </div>
@@ -23,23 +26,39 @@
 import { mapActions, mapState } from "vuex";
 export default {
   data() {
-    return {};
-  },
-  mounted() {
-    const params = {
-      id: Number(localStorage.getItem("pk")),
-      nickname: localStorage.getItem("nickname"),
-      image: localStorage.getItem("image")
+    return {
+      loading: true
     };
-    this.getModels(params);
+  },
+  async mounted() {
+    const params = {
+      page: 1,
+      append: false,
+      id: this.$route.params.user_id
+    };
+    await this.getUserModels(params);
   },
   computed: {
     ...mapState({
-      myModels: state => state.myModels
+      userModels: state => state.mypage.userModelList,
+      page: state => state.mypage.userModelPage
     })
   },
   methods: {
-    ...mapActions("mypage", ["getModels"])
+    ...mapActions("mypage", ["getUserModels"]),
+    async loadMore() {
+      this.loading = true;
+      const params = {
+        page: this.page,
+        append: true,
+        id: this.$route.params.user_id
+      };
+
+      await this.getUserModels(params);
+      setTimeout(() => {
+        this.loading = false;
+      }, 1000);
+    }
   }
 };
 </script>
@@ -48,20 +67,13 @@ export default {
 .whole_box {
   height: 100%;
   width: 100%;
-}
-.row {
   display: flex;
-  flex-flow: row nowrap;
-  border-style: none;
-  height: fit-content;
-  margin-bottom: 30px;
-  justify-content: center;
+  flex-flow: row wrap;
 }
 .item {
   width: 260px;
   height: 250px;
-  margin-left: 15px;
-  margin-right: 15px;
+  margin: 18px;
 }
 .body_img_box {
   width: 100%;

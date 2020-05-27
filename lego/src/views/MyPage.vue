@@ -7,7 +7,6 @@
           :image="userInfo.image"
           :nickname="userInfo.nickname"
           :comment="userInfo.comment"
-          :legoSet="userInfo.lego_sets.length"
         ></MyPageHeader>
       </div>
       <hr />
@@ -34,7 +33,7 @@
 </template>
 
 <script>
-import MyPageHeader from "@/components/MyPage/MyPageHeader.vue";
+import MyPageHeader from "@/components/MyPage/MyPageHeader/MyPageHeader.vue";
 import Models from "@/components/MyPage/MyPageBody/Models.vue";
 import Like from "@/components/MyPage/MyPageBody/Like.vue";
 import Parts from "@/components/MyPage/MyPageBody/Parts.vue";

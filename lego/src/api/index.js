@@ -61,12 +61,19 @@ export default {
     return http.post(`${apiUrl}/token/verify/`, params);
   },
   getFollower(params) {
-    return http.get(`${apiUrl}/Follower/${params}`, { headers });
+    return http.get(`${apiUrl}/Follower/${params}`, {
+      headers
+    });
   },
   getFollowing(params) {
-    return http.get(`${apiUrl}/Following/${params}`, { headers });
+    return http.get(`${apiUrl}/Following/${params}`, {
+      headers
+    });
   },
   getUserInfo(params) {
     return http.get(`${apiUrl}/User/${params}`);
+  },
+  getUserModels(params) {
+    return http.get(`${apiUrl}/UserLegoSet/${params.id}`, params);
   }
 };
