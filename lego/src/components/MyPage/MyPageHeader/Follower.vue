@@ -32,16 +32,25 @@
               >
                 {{ follower.nickname }}
               </div>
-              <div class="follow_card_btn" v-if="follower.isFollow === false">
+              <div
+                class="follow_card_btn"
+                v-if="follower.isFollow === false"
+                @click="pushFollow(i, follower.id)"
+              >
                 팔로우
               </div>
               <div
                 class="follow_card_btn"
                 v-else-if="follower.isFollow === true"
+                @click="pushFollow(i, follower.id)"
               >
                 팔로우취소
               </div>
-              <div class="follow_card_btn" v-else>
+              <div
+                class="follow_card_btn"
+                v-else
+                @click="pushFollow(i, follower.id)"
+              >
                 It's Me
               </div>
             </div>
@@ -53,7 +62,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import router from "../../../router";
 
 export default {
@@ -90,11 +99,25 @@ export default {
     }
   },
   methods: {
+    ...mapActions("mypage", ["onFollowInModal"]),
     close() {
       this.follower = false;
     },
     goYourPage(value) {
       router.push("/mypage/" + value);
+    },
+    async pushFollow(idx, user_id) {
+      const params = {
+        user_id: user_id
+      };
+      const result = await this.onFollowInModal(params);
+      if (result === "팔로우") {
+        this.followerList[idx]["isFollow"] = true;
+      } else if (result === "팔로우 취소") {
+        this.followerList[idx]["isFollow"] = false;
+      } else {
+        alert("문제가 발생했습니다.");
+      }
     }
   }
 };
@@ -138,5 +161,14 @@ export default {
 }
 .follow_card_btn {
   padding: 13px 0;
+  background-color: gold;
+  font-weight: 600;
+  width: 100px;
+  text-align: center;
+  line-height: 12px;
+  height: 40px;
+  margin-top: 7px;
+  border-radius: 10px;
+  cursor: pointer;
 }
 </style>

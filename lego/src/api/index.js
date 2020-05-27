@@ -68,5 +68,8 @@ export default {
   },
   getUserInfo(params) {
     return http.get(`${apiUrl}/User/${params}`);
+  },
+  searchModels(params) {
+    return http.get(`${apiUrl}/LegoSet`, params);
   }
 };
