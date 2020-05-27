@@ -182,3 +182,6 @@ for p in object_position:
 
 
 
+hsv 방식
+
+선 제거
