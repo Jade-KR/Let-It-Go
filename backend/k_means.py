@@ -7,7 +7,6 @@ from backend import settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE',
  'backend.settings')
 django.setup()
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import requests
