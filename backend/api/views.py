@@ -72,6 +72,13 @@ class ThemeViewSet(viewsets.ModelViewSet):
     pagination_class = SmallPagination
 
 class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+    '''
+    GET params
+    name
+    tag
+    theme
+    
+    '''
     # queryset = LegoSet.objects.all()
     serializer_class = serializers.LegoSetSerializer2
     pagination_class = SmallPagination
@@ -87,6 +94,7 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
                     if legoset.id not in tmp:
                         tmp.add(legoset.id)
                         queryset.append(legoset)
+            queryset.sort(key=lambda x:-x.id)
             return queryset
         elif self.request.query_params.get("tag"):
             for word in self.request.query_params["tag"].split(' '):
@@ -94,12 +102,12 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
                     if legoset.id not in tmp:
                         tmp.add(legoset.id)
                         queryset.append(legoset)
+            queryset.sort(key=lambda x:-x.id)
             return queryset
         elif self.request.query_params.get("theme"):
             queryset = LegoSet.objects.filter(theme_id=self.request.query_params["theme"]).order_by("-id")
             return queryset
-
-        return LegoSet.objects.all()
+        return LegoSet.objects.all().order_by("-id")
 
     def list(self, request):
         queryset = self.get_queryset()

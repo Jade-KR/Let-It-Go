@@ -12,6 +12,19 @@ class ThemeSerializer(serializers.ModelSerializer):
             "name",
         ]
 
+class ReviewSerializer(serializers.ModelSerializer):
+    nickname = serializers.SerializerMethodField()
+    class Meta:
+        model = Review
+        fields = [
+            "user_id",
+            "nickname",
+            "content",
+            "score",
+        ]
+    def get_nickname(self, obj):
+        return obj.user.nickname
+
 class SetPartSerializer(serializers.ModelSerializer):
     class Meta:
         model = SetPart
@@ -39,10 +52,8 @@ class LegoSetSerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         return obj.images[0] if obj.images else ""
 
-
 class LegoSetSerializer2(serializers.ModelSerializer):
-    # theme_detail = ThemeSerializer(source="theme")
-    # set_pk, set_name, image,user_name, user_like
+    reviews = ReviewSerializer(source="review_set", many=True)
     nickname = serializers.SerializerMethodField()
     parts = serializers.SerializerMethodField()
     class Meta:
@@ -54,7 +65,7 @@ class LegoSetSerializer2(serializers.ModelSerializer):
             "user_id",
             "images",
             "parts",
-            # "reviews",
+            "reviews",
             "description",
             "tags",
             "theme",
@@ -111,18 +122,6 @@ class CustomRegisterSerializer(RegisterSerializer):
         data_dict['gender'] = self.validated_data.get('gender', '')
         return data_dict
 
-class ReviewSerializer(serializers.ModelSerializer):
-    nickname = serializers.SerializerMethodField()
-    class Meta:
-        model = Review
-        fields = [
-            "user_id",
-            "nickname",
-            "content",
-            "score",
-        ]
-    def get_nickname(self, obj):
-        return obj.user.nickname
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -143,4 +142,5 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "nickname",
             "image",
             "lego_sets",
+            "comment",
         ]
