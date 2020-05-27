@@ -18,6 +18,19 @@ const actions = {
       .setFollow(params)
       .then(res => res.data)
       .catch(err => err);
+    const user_id = location.pathname.slice(8, 9);
+    // console.log(user_id);
+    actions.follower({ commit }, user_id);
+    actions.following({ commit }, user_id);
+    actions.myFollowing({ commit });
+    return resp;
+  },
+  async onFollowInModal({ commit }, params) {
+    commit;
+    const resp = await api
+      .setFollow(params)
+      .then(res => res.data)
+      .catch(err => err);
     return resp;
   },
   async follower({

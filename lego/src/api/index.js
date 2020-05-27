@@ -73,7 +73,7 @@ export default {
   getUserInfo(params) {
     return http.get(`${apiUrl}/User/${params}`);
   },
-  getUserModels(params) {
-    return http.get(`${apiUrl}/UserLegoSet/${params.id}`, params);
+  searchModels(params) {
+    return http.get(`${apiUrl}/LegoSet`, params);
   }
 };

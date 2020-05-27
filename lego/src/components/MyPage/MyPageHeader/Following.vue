@@ -32,16 +32,25 @@
               >
                 {{ following.nickname }}
               </div>
-              <div class="follow_card_btn" v-if="following.isFollow === false">
+              <div
+                class="follow_card_btn"
+                v-if="following.isFollow === false"
+                @click="pushFollow(i, following.id)"
+              >
                 팔로우
               </div>
               <div
                 class="follow_card_btn"
                 v-else-if="following.isFollow === true"
+                @click="pushFollow(i, following.id)"
               >
                 팔로우취소
               </div>
-              <div class="follow_card_btn" v-else>
+              <div
+                class="follow_card_btn"
+                v-else
+                @click="pushFollow(i, following.id)"
+              >
                 It's Me
               </div>
             </div>
@@ -53,7 +62,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import router from "../../../router";
 
 export default {
@@ -91,13 +100,29 @@ export default {
       }
     }
   },
-  mounted() {},
   methods: {
+    ...mapActions("mypage", ["onFollowInModal"]),
     close() {
       this.following = false;
     },
     goYourPage(value) {
       router.push("/mypage/" + value);
+    },
+    async pushFollow(idx, user_id) {
+      const params = {
+        user_id: user_id
+      };
+      const result = await this.onFollowInModal(params);
+      console.log(result);
+      if (result === "팔로우") {
+        this.followingList[idx]["isFollow"] = true;
+        console.log(this.followingList);
+      } else if (result === "팔로우 취소") {
+        this.followingList[idx]["isFollow"] = false;
+        console.log(this.followingList);
+      } else {
+        alert("문제가 발생했습니다.");
+      }
     }
   }
 };
@@ -124,29 +149,31 @@ export default {
   padding: 10px;
 }
 .follow_card {
+  display: flex;
   margin-bottom: 5px;
-  height: 50px;
-  margin-right: 5px;
 }
 .follow_card_img {
-  display: inline-block;
   width: 50px;
   height: 50px;
   border-radius: 50%;
+  margin-right: 5px;
   cursor: pointer;
 }
 .follow_card_nickname {
-  display: inline-block;
+  padding: 13px 0;
+  flex: 1;
   cursor: pointer;
-  vertical-align: middle;
 }
 .follow_card_btn {
-  display: inline-block;
   padding: 13px 0;
   background-color: gold;
   font-weight: 600;
-  width: 70px;
+  width: 100px;
   text-align: center;
-  float: right;
+  line-height: 12px;
+  height: 40px;
+  margin-top: 7px;
+  border-radius: 10px;
+  cursor: pointer;
 }
 </style>
