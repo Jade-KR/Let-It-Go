@@ -72,12 +72,14 @@ const router = new VueRouter({
 
 router.beforeEach(function(to, from, next) {
   const user_pk = localStorage.getItem("pk");
+  const token = localStorage.getItem("token");
+  const email = localStorage.getItem("email");
   if (
     to.matched.some(function(routeInfo) {
       return routeInfo.meta.authRequired;
     })
   ) {
-    if (user_pk) {
+    if (user_pk && token && email) {
       next();
     } else {
       alert("로그인을 해주세요");

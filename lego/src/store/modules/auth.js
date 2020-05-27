@@ -6,9 +6,30 @@ const state = {
 };
 
 const actions = {
-  async register({
-    commit
-  }, params) {
+  async isTokenVerify({ commit }) {
+    commit;
+    const params = {
+      token: localStorage.getItem("token")
+    };
+    if (!params["token"]) {
+      router.push("/login");
+      return false;
+    }
+    const result = await api
+      .tokenVerify(params)
+      .then(res => res.status)
+      .catch(err => err.response.status);
+    // console.log(result);
+    if (result === 400) {
+      alert("정보 변조의 위험이 있어, 로그아웃합니다.");
+      await api.logout();
+      localStorage.clear();
+      router.push("/login");
+      return false;
+    }
+    return true;
+  },
+  async register({ commit }, params) {
     commit;
     await api
       .register(params)
@@ -29,9 +50,7 @@ const actions = {
         }
       });
   },
-  async login({
-    commit
-  }, params) {
+  async login({ commit }, params) {
     commit;
     await api
       .login(params)
@@ -61,9 +80,7 @@ const actions = {
         }
       });
   },
-  SHA256({
-    commit
-  }, s) {
+  SHA256({ commit }, s) {
     commit;
     var chrsz = 8;
     var hexcase = 0;
@@ -286,19 +303,15 @@ const actions = {
     s = Utf8Encode(s);
     return binb2hex(core_sha256(str2binb(s), s.length * chrsz));
   },
-  async changePassword({
-    commit
-  }, params) {
+  async changePassword({ commit }, params) {
     commit;
-    await api.changePasssword(params)
+    await api.changePasssword(params);
   },
-  async logout({
-    commit
-  }) {
+  async logout({ commit }) {
     commit;
-    await api.logout()
-    localStorage.clear()
-    router.push('Login')
+    await api.logout();
+    localStorage.clear();
+    router.push("Login");
   }
 };
 

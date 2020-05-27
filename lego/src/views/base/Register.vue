@@ -79,7 +79,7 @@
             </div>
           </ValidationProvider>
 
-          <ValidationProvider name="닉네임" rules="required|nickname">
+          <ValidationProvider name="닉네임" rules="required|nickname|max:12">
             <div slot-scope="{ errors }" style="margin-bottom: 20px;">
               <input
                 type="text"
