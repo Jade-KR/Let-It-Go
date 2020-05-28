@@ -25,12 +25,12 @@ const state = {
 const actions = {
   async getModels({ commit }, params) {
     const append = params.append;
-    const resp = await api.searchModels({ params }).then(res => res.data);
+    const resp = await api.searchModels(params).then(res => res.data);
     if (resp.count === 0) {
       return false;
     }
     const models = resp.results.map(e => e);
-
+    console.log(models);
     if (append) {
       commit("addModelList", models);
     } else {

@@ -25,7 +25,26 @@ const actions = {
     const append = params.append;
     const resp = await api.getModels(params).then(res => res.data);
     const models = resp.results.map(e => e);
-
+    if (append) {
+      commit("addModelList", models);
+    } else {
+      commit("setModels", models);
+    }
+    commit("setModelPage", resp.next);
+  },
+  async onLike({ commit }, params) {
+    commit;
+    const resp = await api
+      .setLike(params)
+      .then(res => res.data)
+      .catch(err => err);
+    return resp;
+  },
+  async getLikeModels({ commit }, params) {
+    const append = params.append;
+    const resp = await api.getLikeModels(params).then(res => res.data);
+    const models = resp.results.map(e => e);
+    console.log(models);
     if (append) {
       commit("addModelList", models);
     } else {

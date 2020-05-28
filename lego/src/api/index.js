@@ -2,8 +2,9 @@ import http from "./http";
 
 const apiUrl = "/api";
 
+const token = localStorage.getItem("token");
 const headers = {
-  Authorization: "jwt " + localStorage.getItem("token")
+  Authorization: token !== null ? "jwt " + token : null
 };
 export default {
   register(params) {
@@ -18,9 +19,10 @@ export default {
     });
   },
   getModels(params) {
-    return http.get(`${apiUrl}/LegoSet`, {
-      params
-    });
+    return http.get(`${apiUrl}/LegoSet`, { params, headers });
+  },
+  getLikeModels(params) {
+    return http.get(`${apiUrl}/LegoSetRanking`, { params, headers });
   },
   getModelDetail(params) {
     return http.get(`${apiUrl}/LegoSet/${params}`, {
@@ -74,6 +76,9 @@ export default {
     return http.get(`${apiUrl}/User/${params}`);
   },
   searchModels(params) {
-    return http.get(`${apiUrl}/LegoSet`, params);
+    return http.get(`${apiUrl}/LegoSet`, { params, headers });
+  },
+  reviewWrite(params) {
+    return http.post(`${apiUrl}/Review`, params, { headers });
   }
 };

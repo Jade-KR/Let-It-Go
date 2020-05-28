@@ -1,18 +1,12 @@
 <template>
-  <div class="detail-review-card">
-    <div class="detail-review-show">
+  <div class="detail_review_card">
+    <div class="detail_review_show">
       <img
         src="../../../../public/images/user.png"
         alt="img"
-        class="detail-review-img"
+        class="detail_review_img"
       />
       <div class="rating">
-        <div @click="rating()">
-          asdf
-        </div>
-        <div @click="input()">
-          zxcv
-        </div>
         <fieldset class="rating">
           <input
             type="radio"
@@ -57,81 +51,95 @@
         </fieldset>
       </div>
     </div>
-    <div class="detail-review-desc">
-      <div class="detail-review-info">
-        <div class="detail-review-id">
-          빨갛게빛나는나까무라상
+    <div class="detail_review_desc">
+      <div class="detail_review_info">
+        <div class="detail_review_id" @click="goYourPage()">
+          {{ nickname }}
         </div>
-        <div class="detail-review-date">
+        <div class="detail_review_date">
           2020-05-13
         </div>
       </div>
-      <div class="detail-review-content">
-        Lorem Ipsum is simply dummy text of the printing and typesetting
-        industry. Lorem Ipsum has been the industry's standard dummy text ever
-        since the 1500s, when an unknown printer took a galley of type and
-        scrambled it to make a type specimen book. It has survived not only five
-        centuries, but also the leap into electronic typesetting, remaining
-        essentially unchanged. It was popularised in the 1960s with the release
-        of Letraset sheets containing Lorem Ipsum passages, and more recently
-        with desktop publishing software like Aldus PageMaker including versions
-        of Lorem Ipsum
+      <div class="detail_review_content">
+        {{ content }}
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import router from "../../../router";
+
 export default {
+  props: {
+    content: {
+      type: String,
+      default: ""
+    },
+    nickname: {
+      type: String,
+      default: ""
+    },
+    score: {
+      type: Number,
+      default: 0
+    },
+    user_id: {
+      type: Number,
+      default: 0
+    }
+    // 시간, 이미지
+  },
   data() {
     return {
       ratingTest: 0
     };
   },
+  mounted() {
+    console.log("score", this.score);
+    this.ratingTest = this.score;
+  },
   methods: {
-    rating() {
-      console.log(this.ratingTest);
-    },
-    input() {
-      this.ratingTest = 3;
-      console.log(this.ratingTest);
+    goYourPage() {
+      router.push("/mypage/" + this.user_id);
     }
   }
 };
 </script>
 
 <style scoped>
-.detail-review-card {
+.detail_review_card {
   display: flex;
   padding: 10px;
   border: 1px solid gold;
 }
-.detail-review-show {
+.detail_review_show {
   flex: 1;
 }
-.detail-review-img {
+.detail_review_img {
   width: 100px;
   height: 100px;
   margin-right: 10px;
   border-radius: 50%;
 }
-.detail-review-desc {
+.detail_review_desc {
   flex: 9;
 }
-.detail-review-info {
+.detail_review_info {
   display: block;
   margin-bottom: 5px;
 }
-.detail-review-id {
+.detail_review_id {
   display: inline-block;
   font-size: 20px;
   margin-right: 10px;
+  cursor: pointer;
 }
-.detail-review-date {
+.detail_review_date {
   display: inline-block;
   color: rgba(128, 128, 128, 0.7);
 }
-.detail-review-content {
+.detail_review_content {
   display: inline-block;
 }
 

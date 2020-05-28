@@ -15,6 +15,9 @@
           :image="model.images"
           :name="model.name"
           :nickname="model.nickname"
+          :isLike="model.is_like"
+          :likeCount="model.like_count"
+          :reviewCount="model.review_count"
         ></search-card>
       </div>
     </div>
@@ -44,6 +47,9 @@ export default {
       page: state => state.search.modelPage,
       endPoint: state => state.search.endPoint
     })
+  },
+  beforeDestroy() {
+    this.resetModelList();
   },
   methods: {
     ...mapActions("search", ["getModels"]),

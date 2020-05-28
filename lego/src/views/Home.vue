@@ -28,6 +28,7 @@
           :images="model.images"
           :nickname="model.nickname"
           :name="model.name"
+          :isLike="model.is_like"
           :styleFlag="styleFlag"
         />
       </div>
@@ -76,19 +77,38 @@ export default {
       page: state => state.home.modelPage
     })
   },
+  watch: {
+    async homeCate() {
+      await this.resetModels();
+      const params = {
+        page: 1,
+        append: false
+      };
+      if (this.homeCate === 1) {
+        await this.getModels(params);
+      } else if (this.homeCate === 2) {
+        await this.getLikeModels(params);
+      }
+      this.loading = false;
+    }
+  },
   async mounted() {
     const params = {
       page: 1,
       append: false
     };
-    await this.getModels(params);
+    if (this.homeCate === 1) {
+      await this.getModels(params);
+    } else if (this.homeCate === 2) {
+      await this.getLikeModels(params);
+    }
     this.loading = false;
   },
   beforeDestroy() {
     this.resetModels();
   },
   methods: {
-    ...mapActions("home", ["getModels"]),
+    ...mapActions("home", ["getModels", "getLikeModels"]),
     ...mapMutations("home", ["resetModels"]),
     styleCheck() {
       if (this.styleFlag === false) {
