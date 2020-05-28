@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, SetPart
 from api import models, serializers
+from allauth.account.models import EmailAddress
 from rest_framework import viewsets, mixins
 from rest_framework.schemas import AutoSchema
 from rest_framework.decorators import api_view, action, authentication_classes, permission_classes
@@ -248,7 +249,7 @@ class FollowingUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = serializers.LegoSetSerializer(followings, many=True)
         return Response(serializer.data)
 
-class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserSerializer
     pagination_class = SmallPagination
     queryset = CustomUser.objects.all()
@@ -257,6 +258,38 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         user = get_object_or_404(get_user_model(), id=pk)
         serializer = serializers.UserDetailSerializer(user)
         return Response(serializer.data)
+
+    def update(self, request, pk=None):
+        user = get_object_or_404(get_user_model(), id=pk)
+        emailaddress = get_object_or_404(EmailAddress, user_id=pk)
+        if request.user.is_authenticated and request.user == user:
+            data = request.data
+            user.nickname = data["nickname"]
+            user.comment = data["comment"]
+            user.email = data["email"]
+            emailaddress.email = data["email"]
+            user.save()
+            emailaddress.save()
+            return Response("수정 완료")
+        return Response("수정 실패")
+
+    def destroy(self, request, pk=None):
+        user = get_object_or_404(get_user_model(), id=pk)
+        if request.user.is_authenticated and request.user == user:
+            user.is_active = False
+            user.save()
+            return Response("탈퇴 완료")
+        return Response("탈퇴 실패")
+
+@api_view(['PUT'])
+def UpdateUserProfile(self):
+    user = self.user
+    if user.is_authenticated:
+        print(self.data["profile_url"])
+        user.image = self.data["profile_url"]
+        user.save()
+        return Response("프로필 수정 완료")
+    return Response("프로필 수정 실패")
 
 class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
