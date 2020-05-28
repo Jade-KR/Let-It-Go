@@ -45,7 +45,7 @@ class LegoSetSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "nickname",
-            "image",
+            "images",
             "review_count",
             "like_count",
         ]
