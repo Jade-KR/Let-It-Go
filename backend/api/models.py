@@ -134,3 +134,11 @@ class SetPart(models.Model):
     part = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
     color = models.ForeignKey(Color, on_delete=models.CASCADE)
     quantity = models.IntegerField(null=True)
+
+class UserLikeLegoSet(models.Model):
+    id = models.IntegerField(primary_key=True)
+    customuser = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    legoset = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
+    class Meta:
+        managed = False
+        db_table = 'api_legoset_like_users'

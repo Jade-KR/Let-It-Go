@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, SetPart
+from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, SetPart, UserLikeLegoSet
 from api import models, serializers
 from rest_framework import viewsets, mixins
 from rest_framework.schemas import AutoSchema
@@ -115,12 +115,16 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
         page = self.paginate_queryset(queryset)
 
         if page is not None:
-            serializer = serializers.LegoSetSerializer(page, many=True)
-            # k = serializer.data
-            # for kk in k:
-            #     kk['is_like'] = 1
-            # print(k)
-            return self.get_paginated_response(serializer.data)
+            serializer_data = serializers.LegoSetSerializer(page, many=True).data
+            if request.user.is_authenticated:
+                user_id = request.user.id
+                for legoset in serializer_data:
+                    legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
+                return self.get_paginated_response(serializer_data)
+            else:
+                for legoset in serializer_data:
+                    legoset["is_like"] = 0
+                return self.get_paginated_response(serializer_data)
 
         serializer = serializers.LegoSetSerializer(queryset, many=True)
         return Response(serializer.data)
@@ -128,10 +132,12 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
     def retrieve(self, request, pk=None):
         legoset = get_object_or_404(LegoSet, id=pk)
         serializer_data = serializers.LegoSetSerializer2(legoset).data
-        if request.user.is_authenticated:
-            serializer_data["is_like"] = 1 if legoset.like_users.filter(id=request.user.id) else 0
+        if request.user.is_authenticated and UserLikeLegoSet.objects.filter(legoset_id=pk, customuser_id=request.user.id):
+            serializer_data["is_like"] = 1
         else:
             serializer_data["is_like"] = 0
+        reviews = ReviewSerializer(legoset.review_set.all(), many=True)
+        serializer_data["reviews"] = reviews
         return Response(serializer_data)
 
 class LegoPartViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -312,6 +318,16 @@ class LegoSetRankingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         page = self.paginate_queryset(queryset)
 
         if page is not None:
+            serializer_data = serializers.LegoSetSerializer(page, many=True).data
+            if request.user.is_authenticated:
+                user_id = request.user.id
+                for legoset in serializer_data:
+                    legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
+                return self.get_paginated_response(serializer_data)
+            else:
+                for legoset in serializer_data:
+                    legoset["is_like"] = 0
+                return self.get_paginated_response(serializer_data)
             serializer = serializers.LegoSetSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
