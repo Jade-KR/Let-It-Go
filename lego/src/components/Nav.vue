@@ -54,10 +54,17 @@ export default {
       this.profilePic = localStorage.getItem("image");
     }
   },
+  created() {
+    window.addEventListener("scroll", this.scrollEvent);
+  },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.scrollEvent);
+  },
   methods: {
     ...mapActions("auth", ["isTokenVerify", "logout", "login", "register"]),
     ...mapMutations("home", ["setHomeCate"]),
     async goMyPage() {
+      window.scrollTo(0, 0);
       const isVerify = await this.isTokenVerify();
       if (isVerify === false) {
         return;
@@ -69,6 +76,7 @@ export default {
       }
     },
     goSearch() {
+      window.scrollTo(0, 0);
       const locationNow = location.pathname;
       if (locationNow !== "/search") {
         this.$router.push("/search");
@@ -81,12 +89,14 @@ export default {
       this.$router.push("/register");
     },
     goHome() {
+      window.scrollTo(0, 0);
       const locationNow = location.pathname;
       if (locationNow !== "/") {
         this.$router.push("/");
       }
     },
     async goWrite() {
+      window.scrollTo(0, 0);
       const isVerify = await this.isTokenVerify();
       if (isVerify === false) {
         return;
@@ -97,11 +107,35 @@ export default {
       }
     },
     async onHomeCate(value) {
+      window.scrollTo(0, 0);
       await this.setHomeCate(value);
       const locationLength = location.origin.length + 1;
       const locationNow = location.href.length;
       if (locationLength !== locationNow) {
         router.push("/");
+      }
+    },
+    scrollEvent() {
+      if (document.documentElement.scrollTop >= 100) {
+        document.getElementById("logo_box_img").style.width = "100px";
+        const icons = document.getElementsByClassName("right_icon");
+        icons.forEach(e => {
+          e.style.fontSize = "18px";
+        });
+        const button = document.getElementsByClassName("button");
+        button.forEach(e => {
+          e.style.fontSize = "18px";
+        });
+      } else if (document.documentElement.scrollTop === 0) {
+        document.getElementById("logo_box_img").style.width = "230px";
+        const icons = document.getElementsByClassName("right_icon");
+        icons.forEach(e => {
+          e.style.fontSize = "30px";
+        });
+        const button = document.getElementsByClassName("button");
+        button.forEach(e => {
+          e.style.fontSize = "30px";
+        });
       }
     }
   }
@@ -116,21 +150,19 @@ export default {
   height: fit-content;
   border-bottom: rgb(255, 213, 26) solid 4px;
   position: fixed;
-  z-index: 10;
+  z-index: 20;
   background: white;
   padding: 10px 12vw;
 }
 .nav_left {
   width: 100%;
 }
-.logo_box {
-  height: 70px;
-}
 .logo_box:hover {
   cursor: pointer;
 }
 .logo_box > img {
   width: 230px;
+  transition: 0.3s ease-in-out all;
 }
 .nav_middle {
   width: 100%;
@@ -152,6 +184,7 @@ export default {
 .icons_box > i {
   font-size: 30px;
   margin-right: 20px;
+  transition: 0.3s ease-in-out all;
 }
 .icons_box > i:hover {
   cursor: pointer;

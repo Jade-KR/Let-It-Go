@@ -6,7 +6,13 @@
     infinite-scroll-distance="10"
   >
     <div id="home_show">
-      <div @click="styleCheck()" v-if="styleFlag === false" class="home_show_btn">모아보기</div>
+      <div
+        @click="styleCheck()"
+        v-if="styleFlag === false"
+        class="home_show_btn"
+      >
+        모아보기
+      </div>
       <div v-else @click="styleCheck()" class="home_show_btn">크게보기</div>
     </div>
     <div :style="styleFlag ? matrixWidth : instaWidth">
@@ -22,6 +28,7 @@
           :images="model.images"
           :nickname="model.nickname"
           :name="model.name"
+          :isLike="model.is_like"
           :styleFlag="styleFlag"
         />
       </div>
@@ -31,7 +38,7 @@
 
 <script>
 import HomeCard from "@/components/Home/HomeCard";
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
   name: "Home",
@@ -70,17 +77,39 @@ export default {
       page: state => state.home.modelPage
     })
   },
+  watch: {
+    async homeCate() {
+      await this.resetModels();
+      const params = {
+        page: 1,
+        append: false
+      };
+      if (this.homeCate === 1) {
+        await this.getModels(params);
+      } else if (this.homeCate === 2) {
+        await this.getLikeModels(params);
+      }
+      this.loading = false;
+    }
+  },
   async mounted() {
     const params = {
       page: 1,
       append: false
     };
-    await this.getModels(params);
+    if (this.homeCate === 1) {
+      await this.getModels(params);
+    } else if (this.homeCate === 2) {
+      await this.getLikeModels(params);
+    }
     this.loading = false;
-    // console.log("aaa", this.models);
+  },
+  beforeDestroy() {
+    this.resetModels();
   },
   methods: {
-    ...mapActions("home", ["getModels"]),
+    ...mapActions("home", ["getModels", "getLikeModels"]),
+    ...mapMutations("home", ["resetModels"]),
     styleCheck() {
       if (this.styleFlag === false) {
         this.styleFlag = true;
@@ -89,10 +118,8 @@ export default {
       }
     },
     async loadMore() {
-      // console.log(this.page);
       this.loading = true;
       const params = {
-        name: this.models[this.models.length - 1]["id"],
         page: this.page,
         append: true
       };
@@ -116,12 +143,12 @@ export default {
   padding: 10px;
   text-align: center;
   position: sticky;
-  top: 20px;
+  top: 70px;
   float: right;
 }
 .home_show_btn {
   cursor: pointer;
-  background-color: skyblue;
+  background-color: gold;
   line-height: 50px;
   color: white;
   font-weight: 600;

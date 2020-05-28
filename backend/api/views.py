@@ -26,6 +26,13 @@ def crawling_part_data(pk):
         while True:
             res = requests.get(url='https://rebrickable.com/api/v3/lego/sets/{}/parts/?page={}&page_size=1000'.format(set_name, cur_page), headers=headers).json()
             parts = res["results"]
+            part = parts[0]
+            test = SetPart(
+                    lego_set_id=pk,
+                    part_id=part["part"]["part_num"],
+                    color_id=part["color"]["id"],
+                    quantity=part["quantity"]
+            )
             part_bulk = [
                 SetPart(
                     lego_set_id=pk,
@@ -35,7 +42,8 @@ def crawling_part_data(pk):
                 )
                 for part in parts
             ]
-            SetPart.objects.bulk_create(part_bulk)
+            SetPart.objects.bulk_create(part_bulk, ignore_conflicts=True)
+
             if not res["next"]:
                 break
             cur_page += 1
@@ -137,9 +145,8 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
             serializer_data["is_like"] = 1
         else:
             serializer_data["is_like"] = 0
-        reviews = serializers.ReviewSerializer(legoset.review_set.all(), many=True).data
+        reviews = serializers.ReviewSerializer(legoset.review_set.all().order_by("-created_at"), many=True).data
         serializer_data["reviews"] = reviews
-        print(serializer_data)
         return Response(serializer_data)
 
 class LegoPartViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -330,6 +337,7 @@ class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 class UserLikeLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
     pagination_class = SmallPagination
+
     def retrieve(self, request, pk=None):
         user = get_object_or_404(get_user_model(), id=pk)
         queryset = user.like_sets.all().order_by('-created_at')

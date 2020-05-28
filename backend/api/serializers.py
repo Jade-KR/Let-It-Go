@@ -14,16 +14,23 @@ class ThemeSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     nickname = serializers.SerializerMethodField()
+    user_image = serializers.SerializerMethodField()
+
     class Meta:
         model = Review
         fields = [
+            "id",
             "user_id",
             "nickname",
             "content",
             "score",
+            "user_image",
+            "updated_at",
         ]
     def get_nickname(self, obj):
         return obj.user.nickname
+    def get_user_image(self, obj):
+        return obj.user.image
 
 class SetPartSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,9 +42,16 @@ class SetPartSerializer(serializers.ModelSerializer):
             "quantity"
         ]
 
+class SetPartSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = SetPart
+        fields = [
+            "part_id",
+            "color_id",
+            "quantity"
+        ]
+
 class LegoSetSerializer(serializers.ModelSerializer):
-    # theme_detail = ThemeSerializer(source="theme")
-    # set_pk, set_name, image,user_name, user_like
     nickname = serializers.SerializerMethodField()
     class Meta:
         model = LegoSet
@@ -79,8 +93,9 @@ class LegoSetSerializer2(serializers.ModelSerializer):
     def get_image(self, obj):
         return obj.images[0] if obj.images else ""
     def get_parts(self, obj):
-        views.crawling_part_data(obj.id)
-        return SetPartSerializer(LegoSet.objects.get(id=obj.id).setpart_set.all(), many=True).data
+        if not SetPart.objects.filter(lego_set=obj):
+            views.crawling_part_data(obj.id)
+        return SetPartSerializer2(obj.setpart_set.all(), many=True).data
 
 class LegoPartSerializer(serializers.ModelSerializer):
     class Meta:

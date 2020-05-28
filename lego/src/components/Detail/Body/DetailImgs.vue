@@ -21,7 +21,7 @@
         <img
           class="demo cursor"
           :src="url"
-          @click="currentSlide(1)"
+          @click="currentSlide(i + 1)"
           v-if="images"
         />
       </div>
@@ -43,13 +43,13 @@ export default {
       imageList: ["images/icons/no_img.jpg"]
     };
   },
-  watch: {
-    async images() {
-      if (this.images) {
-        this.imageList = await this.images.split("|");
-      }
-    }
-  },
+  // watch: {
+  //   async images() {
+  //     if (this.images) {
+  //       this.imageList = await this.images.split("|");
+  //     }
+  //   }
+  // },
   async mounted() {
     if (this.images) {
       this.imageList = await this.images.split("|");

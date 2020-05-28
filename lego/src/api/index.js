@@ -2,8 +2,9 @@ import http from "./http";
 
 const apiUrl = "/api";
 
+const token = localStorage.getItem("token");
 const headers = {
-  Authorization: "jwt " + localStorage.getItem("token")
+  Authorization: token !== null ? "jwt " + token : null
 };
 export default {
   register(params) {
@@ -18,9 +19,10 @@ export default {
     });
   },
   getModels(params) {
-    return http.get(`${apiUrl}/LegoSet`, {
-      params
-    });
+    return http.get(`${apiUrl}/LegoSet`, { params, headers });
+  },
+  getLikeModels(params) {
+    return http.get(`${apiUrl}/LegoSetRanking`, { params, headers });
   },
   getModelDetail(params) {
     return http.get(`${apiUrl}/LegoSet/${params}`, {
@@ -74,32 +76,15 @@ export default {
     return http.get(`${apiUrl}/User/${params}`);
   },
   searchModels(params) {
-    return http.get(`${apiUrl}/LegoSet`, params);
+    return http.get(`${apiUrl}/LegoSet`, { params, headers });
   },
-  getUserModels(params) {
-    return http.get(`${apiUrl}/UserLegoSet/${params.id}?page_size=12`, {
-      params
-    });
+  reviewWrite(params) {
+    return http.post(`${apiUrl}/Review`, params, { headers });
   },
-  changProfilePic(params) {
-    return http.put(`${apiUrl}/UpdateUserProfile`, params, {
-      headers
-    })
+  reviewUpdate(params) {
+    return http.put(`${apiUrl}/Review/${params}`);
   },
-  updateUserInfo(params) {
-    const info = {
-      nickname: params.nickname,
-      email: params.email,
-      comment: params.comment
-    }
-    return http.put(`${apiUrl}/User/${params.id}`, info, {
-      headers
-    })
-  },
-  getLikeModels(params) {
-    return http.get(`${apiUrl}/UserLikeLegoSet/${params.id}?page_size=12`, {
-      params
-    });
-  },
-
-}
+  reviewDelete(params) {
+    return http.delete(`${apiUrl}/Review/${params}`, { headers });
+  }
+};
