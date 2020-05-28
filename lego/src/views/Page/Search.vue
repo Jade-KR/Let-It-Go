@@ -24,7 +24,7 @@
 <script>
 import SearchBar from "../../components/Search/SearchBar.vue";
 import SearchCard from "../../components/Search/SearchCard.vue";
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
   components: {
@@ -33,25 +33,34 @@ export default {
   },
   data() {
     return {
-      loading: true
+      loading: true,
+      selectedCate: 0,
+      selectedTheme: 0
     };
   },
   computed: {
     ...mapState({
       models: state => state.search.modelList,
-      page: state => state.search.modelPage
+      page: state => state.search.modelPage,
+      endPoint: state => state.search.endPoint
     })
   },
   methods: {
     ...mapActions("search", ["getModels"]),
-    setCate() {
+    ...mapMutations("search", ["resetEndPoint", "resetModelList"]),
+    setCate(value) {
       this.loading = true;
+      this.selectedCate = value;
     },
     async onSubmit(words, cate) {
       if (words === " " || words === "  " || words.length === 0) {
         alert("검색어를 입력해주세요.");
         return;
       }
+      window.scrollTo(0, 0);
+      this.resetEndPoint();
+      this.resetModelList();
+      this.selectedTheme = words;
       const params = {
         append: false,
         page: 1
@@ -63,15 +72,21 @@ export default {
       } else if (cate === 2) {
         params["theme"] = words;
       }
-      // console.log(params);
       const result = await this.getModels(params);
       if (result === false) {
         alert("검색결과 없음");
+        return;
+      }
+      if (this.endPoint === true) {
+        return;
       }
       this.loading = false;
     },
     async loadMore() {
       this.loading = true;
+      if (this.models.length === 0) {
+        return;
+      }
       const setName = this.models[this.models.length - 1]["name"];
       const params = {
         page: this.page,
@@ -82,9 +97,12 @@ export default {
       } else if (this.selectedCate === 1) {
         params["tag"] = setName;
       } else if (this.selectedCate === 2) {
-        params["theme"] = setName;
+        params["theme"] = this.selectedTheme;
       }
       await this.getModels(params);
+      if (this.endPoint === true) {
+        return;
+      }
       setTimeout(() => {
         this.loading = false;
       }, 1000);

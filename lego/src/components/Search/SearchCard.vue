@@ -1,7 +1,13 @@
 <template>
   <div class="item">
     <div class="body_img_box">
-      <img class="body_img" :src="image" alt />
+      <img class="body_img" :src="image" alt="image" v-if="image !== null" />
+      <img
+        class="body_img"
+        src="../../assets/icons/no_img.jpg"
+        alt="no_image"
+        v-else
+      />
       <div class="body_img_hover">
         <div class="body_img_info">
           <i class="fas fa-heart"></i>

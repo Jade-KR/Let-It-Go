@@ -21,12 +21,9 @@ const state = {
 };
 
 const actions = {
-  async getModels({
-    commit
-  }, params) {
+  async getModels({ commit }, params) {
     const append = params.append;
     const resp = await api.getModels(params).then(res => res.data);
-    console.log(resp)
     const models = resp.results.map(e => e);
 
     if (append) {
@@ -34,7 +31,6 @@ const actions = {
     } else {
       commit("setModels", models);
     }
-    // console.log(resp.next);
     commit("setModelPage", resp.next);
   }
 };
@@ -50,7 +46,6 @@ const mutations = {
     state.modelList = state.modelList.concat(model);
   },
   setModelPage(state, url) {
-    console.log(url)
     state.modelPage = new URL(url).searchParams.get("page");
   }
 };

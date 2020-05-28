@@ -46,13 +46,31 @@
         placeholder="검색어를 입력해주세요."
         v-model="searchWords"
         @keypress.enter="onSubmit()"
+        v-if="selectedCate === 0 || selectedCate === 1"
       />
+      <div v-else id="theme_autocomplete">
+        <v-autocomplete
+          v-model="searchWords"
+          :items="themes"
+          outlined
+          hide-details
+          placeholder="검색어를 입력해주세요."
+          color="rgb(255, 215, 0)"
+          background-color="white"
+          item-text="name"
+          item-value="id"
+          height="40px"
+        >
+        </v-autocomplete>
+      </div>
       <button id="search_bar_btn" @click="onSubmit()">검색!</button>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   data() {
     return {
@@ -67,8 +85,22 @@ export default {
           color: "gray",
           fontSize: "18px"
         }
-      ]
+      ],
+      themes: []
     };
+  },
+  computed: {
+    ...mapState({
+      themesRows: state => state.search.themes
+    })
+  },
+  mounted() {
+    this.themesRows.forEach(e => {
+      this.themes.push({
+        id: e[0],
+        name: e[2]
+      });
+    });
   },
   methods: {
     setCate(value) {
@@ -80,7 +112,7 @@ export default {
         this.selectedCate = 2;
       }
       this.searchWords = "";
-      this.$emit("setCate");
+      this.$emit("setCate", this.selectedCate);
     },
     onSubmit() {
       if (
@@ -118,27 +150,6 @@ export default {
   font-weight: 600;
   color: gray;
 }
-/* #search_bar_model {
-  border: 1px solid gold;
-}
-#search_bar_tag {
-  border: 1px solid green;
-}
-#search_bar_theme {
-  border: 1px solid red;
-} */
-/* #search_bar_model:hover {
-  background-color: gold;
-  color: white;
-}
-#search_bar_tag:hover {
-  background-color: green;
-  color: white;
-}
-#search_bar_theme:hover {
-  background-color: red;
-  color: white;
-} */
 #search_bar_divied_line {
   width: 80%;
   margin: auto;
@@ -163,5 +174,11 @@ export default {
 }
 #search_bar_btn:hover {
   background-color: green;
+}
+#theme_autocomplete {
+  display: inline-block;
+  width: 500px;
+  /* line-height: 40px; */
+  font-size: 20px;
 }
 </style>
