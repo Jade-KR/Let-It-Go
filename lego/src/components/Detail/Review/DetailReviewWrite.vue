@@ -55,7 +55,6 @@ export default {
       target.style.height = 12 + target.scrollHeight + "px";
     },
     async onSubmit() {
-      console.log(this.params);
       const verify = await this.isTokenVerify();
       if (verify === false) {
         alert("로그인 정보를 확인해 주세요");

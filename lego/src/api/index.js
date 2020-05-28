@@ -80,5 +80,11 @@ export default {
   },
   reviewWrite(params) {
     return http.post(`${apiUrl}/Review`, params, { headers });
+  },
+  reviewUpdate(params) {
+    return http.put(`${apiUrl}/Review/${params}`);
+  },
+  reviewDelete(params) {
+    return http.delete(`${apiUrl}/Review/${params}`, { headers });
   }
 };

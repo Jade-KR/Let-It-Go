@@ -42,12 +42,16 @@
       <div id="detail_desc">
         <div v-if="btnFlag == 'reviews'">
           <detail-review-write :id="model.id"></detail-review-write>
-          <div v-for="(review, i) in reviewList" :key="`review-${i}`">
+          <div v-for="(review, i) in reviewList" :key="`review-${i}`" id="test">
             <detail-review
               :content="review.content"
               :nickname="review.nickname"
               :score="review.score"
-              :user_id="review.user_id"
+              :userId="review.user_id"
+              :reviewId="review.id"
+              :updatedAt="review.updated_at"
+              :userImage="review.user_image"
+              :setId="model.id"
             ></detail-review>
           </div>
         </div>
@@ -110,6 +114,11 @@ export default {
   watch: {
     reviews() {
       this.reviewList = this.reviews;
+      var scoreSum = 0;
+      this.reviewList.forEach(e => {
+        scoreSum += e.score;
+      });
+      this.avgScore = Number((scoreSum / this.reviewList.length).toFixed(1));
     }
   },
   beforeDestroy() {
@@ -119,11 +128,15 @@ export default {
     this.loading = true;
     const modelId = this.$route.params.modelId;
     await this.getModelDetail(modelId);
-    var scoreSum = 0;
-    this.reviewList.forEach(e => {
-      scoreSum += e.score;
-    });
-    this.avgScore = Number((scoreSum / this.model.review_count).toFixed(1));
+    if (this.model.review_count !== 0) {
+      var scoreSum = 0;
+      this.reviewList.forEach(e => {
+        scoreSum += e.score;
+      });
+      this.avgScore = Number((scoreSum / this.model.review_count).toFixed(1));
+    } else {
+      this.avgScore = 0;
+    }
     this.loading = false;
   },
   methods: {

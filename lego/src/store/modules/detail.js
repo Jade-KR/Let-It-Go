@@ -21,13 +21,9 @@ const state = {
 
 const actions = {
   async getModelDetail({ commit }, params) {
-    commit;
-    console.log("getmodel params", params);
     const resp = await api.getModelDetail(params).then(res => res.data);
-    state.model = resp;
-    state.reviews = resp.reviews;
-    console.log(state.model);
-    console.log(state.reviews);
+    commit("setModel", resp);
+    commit("setReviews", resp.reviews);
   },
   async onLike({ commit }, params) {
     commit;
@@ -38,19 +34,33 @@ const actions = {
     return resp;
   },
   async reviewWrite({ commit }, params) {
-    commit;
-    console.log(params);
     await api.reviewWrite(params).then(res => {
       res;
+      commit("resetReviews");
       api.getModelDetail(params.lego_set_id).then(resp => {
-        console.log(resp.data.reviews);
-        state.reviews = resp.data.reviews;
+        commit("setReviews", resp.data.reviews);
+      });
+    });
+  },
+  async reviewUpdate({ commit }, params) {
+    commit;
+    console.log(params);
+  },
+  async reviewDelete({ commit }, params) {
+    api.reviewDelete(params.id).then(res => {
+      res;
+      commit("resetReviews");
+      api.getModelDetail(params.lego_set_id).then(resp => {
+        commit("setReviews", resp.data.reviews);
       });
     });
   }
 };
 
 const mutations = {
+  setModel(state, model) {
+    state.model = model;
+  },
   resetModel(state) {
     state.model = {
       id: 0,
@@ -66,6 +76,12 @@ const mutations = {
       updated_at: "",
       parts: []
     };
+  },
+  setReviews(state, reviews) {
+    state.reviews = reviews;
+  },
+  resetReviews(state) {
+    state.reviews = [];
   }
 };
 
