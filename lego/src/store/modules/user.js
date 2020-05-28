@@ -49,7 +49,7 @@ const actions = {
     commit
   }, params) {
     commit;
-    await api.updateUserInfo(params)
+    await api.updateUserInfo(params).then(res => console.log(res))
   }
 }
 

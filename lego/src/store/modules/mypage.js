@@ -92,7 +92,7 @@ const actions = {
   }, params) {
     commit;
     const append = params.append;
-    const resp = await api.getLikeModels(params).then(res => res.data);
+    const resp = await api.getUserLikeModels(params).then(res => res.data);
     const models = resp.results.map(e => e);
     // console.log(models)
     if (append) {
