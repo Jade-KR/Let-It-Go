@@ -121,7 +121,6 @@ export default {
     await this.getModelDetail(modelId);
     var scoreSum = 0;
     this.reviewList.forEach(e => {
-      console.log("scores", e.score);
       scoreSum += e.score;
     });
     this.avgScore = Number((scoreSum / this.model.review_count).toFixed(1));

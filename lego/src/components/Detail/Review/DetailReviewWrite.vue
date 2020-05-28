@@ -67,6 +67,8 @@ export default {
         score: this.params["score"]
       };
       await this.reviewWrite(params);
+      this.params.score = 0;
+      this.params.content = "";
     }
   }
 };

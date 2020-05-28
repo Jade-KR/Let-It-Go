@@ -7,48 +7,48 @@
         class="detail_review_img"
       />
       <div class="rating">
-        <fieldset class="rating">
-          <input
-            type="radio"
-            id="star5"
-            name="rating"
-            value="5"
-            v-model="ratingTest"
-            disabled
-          /><label class="full" for="star5" title="5 stars"></label>
-          <input
-            type="radio"
-            id="star4"
-            name="rating"
-            value="4"
-            v-model="ratingTest"
-            disabled
-          /><label class="full" for="star4" title="4 stars"></label>
-          <input
-            type="radio"
-            id="star3"
-            name="rating"
-            value="3"
-            v-model="ratingTest"
-            disabled
-          /><label class="full" for="star3" title="3 stars"></label>
-          <input
-            type="radio"
-            id="star2"
-            name="rating"
-            value="2"
-            v-model="ratingTest"
-            disabled
-          /><label class="full" for="star2" title="2 stars"></label>
-          <input
-            type="radio"
-            id="star1"
-            name="rating"
-            value="1"
-            v-model="ratingTest"
-            disabled
-          /><label class="full" for="star1" title="1 star"></label>
-        </fieldset>
+        <div v-if="ratingTest === 5">
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+        </div>
+        <div v-if="ratingTest === 4">
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gray_star"></i>
+        </div>
+        <div v-if="ratingTest === 3">
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+        </div>
+        <div v-if="ratingTest === 2">
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+        </div>
+        <div v-if="ratingTest === 1">
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+        </div>
+        <div v-if="ratingTest === 0">
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+        </div>
       </div>
     </div>
     <div class="detail_review_desc">
@@ -62,6 +62,14 @@
       </div>
       <div class="detail_review_content">
         {{ content }}
+      </div>
+    </div>
+    <div>
+      <div>
+        수정
+      </div>
+      <div>
+        삭제
       </div>
     </div>
   </div>
@@ -96,7 +104,6 @@ export default {
     };
   },
   mounted() {
-    console.log("score", this.score);
     this.ratingTest = this.score;
   },
   methods: {
@@ -142,34 +149,10 @@ export default {
 .detail_review_content {
   display: inline-block;
 }
-
-@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
-.rating {
-  border: none;
-  float: left;
-}
-.rating > input {
-  display: none;
-}
-.rating > label:before {
-  font-size: 1.25em;
-  font-family: FontAwesome;
-  display: inline-block;
-  content: "\f005";
-}
-.rating > label {
-  color: #ddd;
-  float: right;
-}
-.rating > input:checked ~ label,
-.rating:not(:checked) > label,
-.rating:not(:checked) > label ~ label {
-  color: #ddd;
-}
-.rating > input:checked + label,
-.rating > input:checked ~ label,
-.rating > label ~ input:checked ~ label,
-.rating > input:checked ~ label ~ label {
+.gold_star {
   color: gold;
+}
+.gray_star {
+  color: gray;
 }
 </style>

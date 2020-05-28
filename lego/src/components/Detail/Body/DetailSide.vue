@@ -229,8 +229,6 @@ export default {
 
 <style scoped>
 #detail_side_box {
-  /* border: 1px solid black; */
-  /* background-color: rgba(255, 215, 0, 0.6); */
   border: 3px solid gold;
   padding: 10px;
 }
