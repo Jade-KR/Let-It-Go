@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="search_bar_category">
+    <div id="search_bar_category" v-if="!scrollFlag">
       <div
         id="search_bar_model"
         @click="setCate(0)"
@@ -38,7 +38,7 @@
         테마
       </div>
     </div>
-    <hr id="search_bar_divied_line" />
+    <hr id="search_bar_divied_line" v-if="!scrollFlag" />
     <div id="serch_bar_main">
       <input
         type="text"
@@ -86,13 +86,20 @@ export default {
           fontSize: "18px"
         }
       ],
-      themes: []
+      themes: [],
+      scrollFlag: false
     };
   },
   computed: {
     ...mapState({
       themesRows: state => state.search.themes
     })
+  },
+  created() {
+    window.addEventListener("scroll", this.scrollEvent);
+  },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.scrollEvent);
   },
   mounted() {
     this.themesRows.forEach(e => {
@@ -115,15 +122,16 @@ export default {
       this.$emit("setCate", this.selectedCate);
     },
     onSubmit() {
-      if (
-        this.searchWords === " " ||
-        this.searchWords === "  " ||
-        this.searchWords.length === 0
-      ) {
-        alert("검색어를 입력해주세요.");
-        return;
-      }
       this.$emit("onSubmit", this.searchWords, this.selectedCate);
+    },
+    scrollEvent() {
+      if (document.documentElement.scrollTop >= 100) {
+        this.scrollFlag = true;
+        document.getElementById("serch_bar_main").style.width = "100%";
+      } else if (document.documentElement.scrollTop === 0) {
+        this.scrollFlag = false;
+        document.getElementById("serch_bar_main").style.width = "70%";
+      }
     }
   }
 };
@@ -156,9 +164,14 @@ export default {
   border: 1px dashed gold;
   margin-bottom: 20px;
 }
+#serch_bar_main {
+  width: 70%;
+  margin: auto;
+}
 #search_bar_input {
   border: 1px solid gold;
-  width: 500px;
+  /* width: 500px; */
+  width: 85%;
   line-height: 40px;
   font-size: 20px;
   padding-left: 20px;
@@ -167,7 +180,8 @@ export default {
   border: 1px solid gold;
   background-color: gold;
   color: white;
-  width: 100px;
+  /* width: 100px; */
+  width: 15%;
   line-height: 40px;
   font-size: 20px;
   font-weight: 700;
@@ -177,8 +191,8 @@ export default {
 }
 #theme_autocomplete {
   display: inline-block;
-  width: 500px;
-  /* line-height: 40px; */
+  /* width: 500px; */
+  width: 85%;
   font-size: 20px;
 }
 </style>

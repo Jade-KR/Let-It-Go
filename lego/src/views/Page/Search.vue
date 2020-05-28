@@ -123,9 +123,10 @@ export default {
   text-align: center;
   margin-bottom: 20px;
   position: sticky;
-  top: 90px;
+  top: 50px;
   background-color: white;
   z-index: 10;
+  transition: 0.3s ease-in-out all;
 }
 #search_card_box {
   width: 100%;

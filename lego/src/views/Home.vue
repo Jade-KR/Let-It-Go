@@ -37,7 +37,7 @@
 
 <script>
 import HomeCard from "@/components/Home/HomeCard";
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
   name: "Home",
@@ -77,7 +77,6 @@ export default {
     })
   },
   async mounted() {
-    window.scrollTo(0, 0);
     const params = {
       page: 1,
       append: false
@@ -85,8 +84,12 @@ export default {
     await this.getModels(params);
     this.loading = false;
   },
+  beforeDestroy() {
+    this.resetModels();
+  },
   methods: {
     ...mapActions("home", ["getModels"]),
+    ...mapMutations("home", ["resetModels"]),
     styleCheck() {
       if (this.styleFlag === false) {
         this.styleFlag = true;
@@ -120,12 +123,12 @@ export default {
   padding: 10px;
   text-align: center;
   position: sticky;
-  top: 20px;
+  top: 70px;
   float: right;
 }
 .home_show_btn {
   cursor: pointer;
-  background-color: skyblue;
+  background-color: gold;
   line-height: 50px;
   color: white;
   font-weight: 600;

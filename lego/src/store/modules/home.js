@@ -47,6 +47,9 @@ const mutations = {
   },
   setModelPage(state, url) {
     state.modelPage = new URL(url).searchParams.get("page");
+  },
+  resetModels(state) {
+    state.modelList = [];
   }
 };
 

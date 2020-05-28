@@ -194,6 +194,7 @@ export default {
       }
     },
     goDetail() {
+      window.scrollTo(0, 0);
       router.push("/detail" + "/" + this.id);
     },
     pushLike() {
