@@ -40,6 +40,7 @@ class Command(BaseCommand):
         cur_file = Path(settings.BASE_DIR) / "crawling" / "data" / "color.p"
         with open(cur_file, 'rb') as f:
             color_list = pickle.load(f)["results"]
+            color_list.append()
         print("complete")
         print("Loading part_categories data")
         cur_file = Path(settings.BASE_DIR) / "crawling" / "data" / "part_categories.p"
@@ -92,6 +93,7 @@ class Command(BaseCommand):
             for color in color_list
         ]
         models.Color.objects.bulk_create(colors_bulk)
+        models.Color.objects.create(id=9999, name="not a color", rgb="000000")
         print("[+] Done")
 
         print("[*] Initializing themes...")
