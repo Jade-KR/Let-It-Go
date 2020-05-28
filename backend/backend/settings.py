@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'rest_auth.registration',
     'allauth.socialaccount',
+    'corsheaders',
 ]
 
 SITE_ID = 1
