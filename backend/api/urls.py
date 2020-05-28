@@ -26,6 +26,13 @@ router.register(r"LegoSet", views.LegoSetViewSet, basename="LegoSet")
 router.register(r"LegoPart", views.LegoPartViewSet, basename="LegoPart")
 router.register(r"UserPart", views.UserPartViewSet, basename="UserPart")
 router.register(r"SetPart", views.SetPartViewSet, basename="SetPart")
+router.register(r"Review", views.ReviewViewSet, basename="Review")
+router.register(r"Follower", views.FollowUserViewSet, basename="Follower")
+router.register(r"Following", views.FollowingUserViewSet, basename="Following")
+router.register(r"User", views.UserViewSet, basename="User")
+router.register(r"UserLegoSet", views.UserLegoSetViewSet, basename="UserLegoSet")
+router.register(r"UserLikeLegoSet", views.UserLikeLegoSetViewSet, basename="UserLikeLegoSet")
+router.register(r"LegoSetRanking", views.LegoSetRankingViewSet, basename="LegoSetRanking")
 
 urlpatterns = [
     *router.urls,

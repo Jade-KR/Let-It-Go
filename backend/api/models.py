@@ -9,6 +9,7 @@ class CustomUser(AbstractUser):
     age = models.IntegerField(null=True)
     gender = models.IntegerField(null=True)
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followings')
+    review_count = models.IntegerField(default=0)
 
 class Theme(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -31,6 +32,8 @@ class LegoSet(models.Model):
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="like_sets", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    review_count = models.IntegerField(default=0)
+    like_count = models.IntegerField(default=0)
 
     @property
     def tag_list(self):
@@ -63,7 +66,7 @@ class Category(models.Model):
 
 class Review(models.Model):
     id = models.IntegerField(primary_key=True)
-    set_id = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
+    lego_set = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
     score = models.IntegerField()
@@ -131,3 +134,11 @@ class SetPart(models.Model):
     part = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
     color = models.ForeignKey(Color, on_delete=models.CASCADE)
     quantity = models.IntegerField(null=True)
+
+class UserLikeLegoSet(models.Model):
+    id = models.IntegerField(primary_key=True)
+    customuser = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    legoset = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
+    class Meta:
+        managed = False
+        db_table = 'api_legoset_like_users'
