@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "k02d1081.p.ssafy.io",
     "127.0.0.1",
+    "192.168.0.220",
 ]
 
 
