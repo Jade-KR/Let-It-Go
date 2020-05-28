@@ -9,6 +9,7 @@ class CustomUser(AbstractUser):
     age = models.IntegerField(null=True)
     gender = models.IntegerField(null=True)
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followings')
+    review_count = models.IntegerField(default=0)
 
 class Theme(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -31,6 +32,8 @@ class LegoSet(models.Model):
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="like_sets", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    review_count = models.IntegerField(default=0)
+    like_count = models.IntegerField(default=0)
 
     @property
     def tag_list(self):

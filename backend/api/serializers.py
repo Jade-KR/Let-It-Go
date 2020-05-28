@@ -46,6 +46,8 @@ class LegoSetSerializer(serializers.ModelSerializer):
             "name",
             "nickname",
             "image",
+            "review_count",
+            "like_count",
         ]
     def get_nickname(self, obj):
         return obj.user.nickname if obj.user else "Official Set"
@@ -69,6 +71,8 @@ class LegoSetSerializer2(serializers.ModelSerializer):
             "description",
             "tags",
             "theme",
+            "review_count",
+            "like_count",
         ]
     def get_nickname(self, obj):
         return obj.user.nickname if obj.user else "Official Set"
