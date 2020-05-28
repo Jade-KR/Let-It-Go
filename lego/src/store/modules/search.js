@@ -1,3 +1,5 @@
+import LegoThemes from "../../../jsonData/LegoThemes.json";
+
 import api from "../../api";
 
 const state = {
@@ -15,26 +17,26 @@ const state = {
     updated_at: ""
   },
   modelList: [],
-  modelPage: "1"
+  modelPage: "1",
+  themes: LegoThemes["rows"],
+  endPoint: false
 };
 
 const actions = {
   async getModels({ commit }, params) {
-    console.log(params);
     const append = params.append;
-    const resp = await api.searchModels({ params }).then(res => res.data);
+    const resp = await api.searchModels(params).then(res => res.data);
     if (resp.count === 0) {
       return false;
     }
     const models = resp.results.map(e => e);
-
+    console.log(models);
     if (append) {
       commit("addModelList", models);
     } else {
       commit("setModels", models);
     }
-    // console.log(resp.next);
-    commit("setModelPage", resp.next);
+    await commit("setModelPage", resp.next);
   }
 };
 
@@ -46,7 +48,17 @@ const mutations = {
     state.modelList = state.modelList.concat(model);
   },
   setModelPage(state, url) {
+    if (url === null) {
+      state.endPoint = true;
+      return;
+    }
     state.modelPage = new URL(url).searchParams.get("page");
+  },
+  resetEndPoint(state) {
+    state.endPoint = false;
+  },
+  resetModelList(state) {
+    state.modelList = [];
   }
 };
 

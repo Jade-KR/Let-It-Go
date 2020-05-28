@@ -66,6 +66,7 @@
 
 <script>
 import router from "../../router";
+import { mapActions } from "vuex";
 
 export default {
   props: {
@@ -92,6 +93,10 @@ export default {
     nickname: {
       type: String,
       default: ""
+    },
+    isLike: {
+      type: Number,
+      default: -1
     }
   },
   data() {
@@ -156,11 +161,17 @@ export default {
     }
   },
   async mounted() {
+    if (this.isLike === 0) {
+      this.like = false;
+    } else {
+      this.like = true;
+    }
     if (this.images) {
       this.imageList = await this.images.split("|");
     }
   },
   methods: {
+    ...mapActions("home", ["onLike"]),
     onResizeHeight() {
       if (this.styleFlag == true) {
         for (let i = 0; i < this.imageList.length; ++i) {
@@ -194,12 +205,17 @@ export default {
       }
     },
     goDetail() {
+      window.scrollTo(0, 0);
       router.push("/detail" + "/" + this.id);
     },
-    pushLike() {
-      if (this.like === false) {
+    async pushLike() {
+      const params = {
+        set_id: this.id
+      };
+      const result = await this.onLike(params);
+      if (result === "좋아요") {
         this.like = true;
-      } else {
+      } else if (result === "좋아요 취소") {
         this.like = false;
       }
     },
@@ -256,6 +272,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-align: start;
 }
 .home_card_like {
   color: red;

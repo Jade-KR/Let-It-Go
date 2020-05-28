@@ -1,19 +1,31 @@
 <template>
-  <div class="item">
+  <div class="item" @click="goDetail()">
     <div class="body_img_box">
-      <img class="body_img" :src="image" alt />
+      <img class="body_img" :src="image" alt="image" v-if="image !== null" />
+      <img
+        class="body_img"
+        src="../../assets/icons/no_img.jpg"
+        alt="no_image"
+        v-else
+      />
       <div class="body_img_hover">
         <div class="body_img_info">
-          <i class="fas fa-heart"></i>
-          <span>0</span>
+          <i
+            class="fas fa-heart"
+            :style="isLike === 1 ? likeStyle[0] : likeStyle[1]"
+          ></i>
+          <span>{{ likeCount }}</span>
           <i class="fas fa-comment"></i>
-          <span>0</span>
+          <span>{{ reviewCount }}</span>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <script>
+import router from "../../router";
+
 export default {
   props: {
     id: {
@@ -31,10 +43,36 @@ export default {
     nickname: {
       type: String,
       default: ""
+    },
+    isLike: {
+      type: Number,
+      default: 0
+    },
+    likeCount: {
+      type: Number,
+      default: 0
+    },
+    reviewCount: {
+      type: Number,
+      default: 0
     }
   },
   data() {
-    return {};
+    return {
+      likeStyle: [
+        {
+          color: "red"
+        },
+        {
+          color: "white"
+        }
+      ]
+    };
+  },
+  methods: {
+    goDetail() {
+      router.push("/detail/" + this.id);
+    }
   }
 };
 </script>

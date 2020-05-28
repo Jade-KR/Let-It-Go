@@ -1,51 +1,71 @@
 <template>
   <div>
-    <div id="detail_main">
-      <div id="detail_imgs">
-        <detail-imgs :images="model.images"></detail-imgs>
+    <div v-if="loading === false">
+      <div id="detail_main">
+        <div id="detail_imgs">
+          <detail-imgs :images="model.images"></detail-imgs>
+        </div>
+        <div id="detail_side">
+          <detail-side
+            :id="model.id"
+            :setName="model.name"
+            :nickname="model.nickname"
+            :parts="model.parts.length"
+            :tags="model.tags"
+            :theme="model.theme"
+            :userId="model.user_id"
+            :isLike="model.is_like"
+            :likeCount="model.like_count"
+            :avgScore="avgScore"
+          ></detail-side>
+        </div>
       </div>
-      <div id="detail_side">
-        <detail-side
-          :id="model.id"
+      <div id="detail_desc">
+        <detail-desc :description="model.description"></detail-desc>
+      </div>
+      <div id="detail_btns">
+        <div
+          class="detail_btn"
+          :style="btnFlag == 'reviews' ? btnStyle[0] : btnStyle[1]"
+          @click="onReviews()"
+        >
+          <i class="fas fa-scroll"></i>&nbsp; 댓글
+        </div>
+        <div
+          class="detail_btn"
+          :style="btnFlag == 'parts' ? btnStyle[0] : btnStyle[1]"
+          @click="onParts()"
+        >
+          <i class="fas fa-cubes"></i>&nbsp; 부품
+        </div>
+      </div>
+      <div id="detail_desc">
+        <div v-if="btnFlag == 'reviews'">
+          <detail-review-write :id="model.id"></detail-review-write>
+          <div v-for="(review, i) in reviewList" :key="`review-${i}`" id="test">
+            <detail-review
+              :content="review.content"
+              :nickname="review.nickname"
+              :score="review.score"
+              :userId="review.user_id"
+              :reviewId="review.id"
+              :updatedAt="review.updated_at"
+              :userImage="review.user_image"
+              :setId="model.id"
+            ></detail-review>
+          </div>
+        </div>
+        <detail-part
+          v-if="btnFlag == 'parts'"
+          :parts="model.parts"
           :setName="model.name"
-          :nickname="model.nickname"
-          :parts="model.parts.length"
-          :tags="model.tags"
-          :theme="model.theme"
-          :userId="model.user_id"
-          :isLike="model.is_like"
-        ></detail-side>
+        ></detail-part>
       </div>
     </div>
-    <div id="detail_desc">
-      <detail-desc :description="model.description"></detail-desc>
-    </div>
-    <div id="detail_btns">
-      <div
-        class="detail_btn"
-        :style="btnFlag == 'reviews' ? btnStyle[0] : btnStyle[1]"
-        @click="onReviews()"
-      >
-        <i class="fas fa-scroll"></i>&nbsp; 댓글
+    <div v-else>
+      <div id="loading">
+        <i class="fa fa-spinner fa-spin"></i>
       </div>
-      <div
-        class="detail_btn"
-        :style="btnFlag == 'parts' ? btnStyle[0] : btnStyle[1]"
-        @click="onParts()"
-      >
-        <i class="fas fa-cubes"></i>&nbsp; 부품
-      </div>
-    </div>
-    <div id="detail_desc">
-      <div v-if="btnFlag == 'reviews'">
-        <detail-review-write></detail-review-write>
-        <detail-review></detail-review>
-      </div>
-      <detail-part
-        v-if="btnFlag == 'parts'"
-        :parts="model.parts"
-        :setName="model.name"
-      ></detail-part>
     </div>
   </div>
 </template>
@@ -57,7 +77,7 @@ import DetailSide from "../../components/Detail/Body/DetailSide.vue";
 import DetailReviewWrite from "../../components/Detail/Review/DetailReviewWrite.vue";
 import DetailReview from "../../components/Detail/Review/DetailReview.vue";
 import DetailPart from "../../components/Detail/Part/DetailPart.vue";
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
   components: {
@@ -70,6 +90,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       btnFlag: "reviews",
       btnStyle: [
         {
@@ -79,21 +100,48 @@ export default {
         {
           fontSize: "20px"
         }
-      ]
+      ],
+      reviewList: [],
+      avgScore: 0
     };
   },
   computed: {
     ...mapState({
-      model: state => state.detail.model
+      model: state => state.detail.model,
+      reviews: state => state.detail.reviews
     })
   },
+  watch: {
+    reviews() {
+      this.reviewList = this.reviews;
+      var scoreSum = 0;
+      this.reviewList.forEach(e => {
+        scoreSum += e.score;
+      });
+      this.avgScore = Number((scoreSum / this.reviewList.length).toFixed(1));
+    }
+  },
+  beforeDestroy() {
+    this.resetModel();
+  },
   async mounted() {
+    this.loading = true;
     const modelId = this.$route.params.modelId;
     await this.getModelDetail(modelId);
-    console.log(this.model);
+    if (this.model.review_count !== 0) {
+      var scoreSum = 0;
+      this.reviewList.forEach(e => {
+        scoreSum += e.score;
+      });
+      this.avgScore = Number((scoreSum / this.model.review_count).toFixed(1));
+    } else {
+      this.avgScore = 0;
+    }
+    this.loading = false;
   },
   methods: {
     ...mapActions("detail", ["getModelDetail"]),
+    ...mapMutations("detail", ["resetModel"]),
     onReviews() {
       this.btnFlag = "reviews";
     },
@@ -149,5 +197,10 @@ export default {
   width: 1000px;
   margin: 10px auto;
   /* border: 1px solid gold; */
+}
+#loading {
+  text-align: center;
+  margin-top: 200px;
+  font-size: 100px;
 }
 </style>

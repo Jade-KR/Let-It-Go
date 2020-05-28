@@ -3,7 +3,7 @@
     <div class="nav">
       <div class="nav_left">
         <div class="logo_box" @click="goHome">
-          <img src="../assets/logo.png" alt />
+          <img src="../assets/logo.png" alt id="logo_box_img" />
         </div>
       </div>
       <div class="nav_middle">
@@ -16,9 +16,9 @@
       </div>
       <div class="nav_right">
         <div class="icons_box">
-          <i class="fas fa-search" @click="goSearch"></i>
-          <i class="fas fa-plus" @click="goWrite"></i>
-          <i class="fas fa-user-alt" @click="goMyPage"></i>
+          <i class="fas fa-search right_icon" @click="goSearch"></i>
+          <i class="fas fa-plus right_icon" @click="goWrite"></i>
+          <i class="fas fa-user-alt right_icon" @click="goMyPage"></i>
         </div>
       </div>
     </div>
@@ -33,10 +33,17 @@ export default {
   data() {
     return {};
   },
+  created() {
+    window.addEventListener("scroll", this.scrollEvent);
+  },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.scrollEvent);
+  },
   methods: {
     ...mapActions("auth", ["isTokenVerify", "logout"]),
     ...mapMutations("home", ["setHomeCate"]),
     async goMyPage() {
+      window.scrollTo(0, 0);
       const isVerify = await this.isTokenVerify();
       if (isVerify === false) {
         return;
@@ -48,18 +55,21 @@ export default {
       }
     },
     goSearch() {
+      window.scrollTo(0, 0);
       const locationNow = location.pathname;
       if (locationNow !== "/search") {
         this.$router.push("/search");
       }
     },
     goHome() {
+      window.scrollTo(0, 0);
       const locationNow = location.pathname;
       if (locationNow !== "/") {
         this.$router.push("/");
       }
     },
     async goWrite() {
+      window.scrollTo(0, 0);
       const isVerify = await this.isTokenVerify();
       if (isVerify === false) {
         return;
@@ -70,11 +80,35 @@ export default {
       }
     },
     async onHomeCate(value) {
+      window.scrollTo(0, 0);
       await this.setHomeCate(value);
       const locationLength = location.origin.length + 1;
       const locationNow = location.href.length;
       if (locationLength !== locationNow) {
         router.push("/");
+      }
+    },
+    scrollEvent() {
+      if (document.documentElement.scrollTop >= 100) {
+        document.getElementById("logo_box_img").style.width = "100px";
+        const icons = document.getElementsByClassName("right_icon");
+        icons.forEach(e => {
+          e.style.fontSize = "18px";
+        });
+        const button = document.getElementsByClassName("button");
+        button.forEach(e => {
+          e.style.fontSize = "18px";
+        });
+      } else if (document.documentElement.scrollTop === 0) {
+        document.getElementById("logo_box_img").style.width = "230px";
+        const icons = document.getElementsByClassName("right_icon");
+        icons.forEach(e => {
+          e.style.fontSize = "30px";
+        });
+        const button = document.getElementsByClassName("button");
+        button.forEach(e => {
+          e.style.fontSize = "30px";
+        });
       }
     }
   }
@@ -89,21 +123,19 @@ export default {
   height: fit-content;
   border-bottom: rgb(255, 213, 26) solid 4px;
   position: fixed;
-  z-index: 10;
+  z-index: 20;
   background: white;
   padding: 10px 12vw;
 }
 .nav_left {
   width: 100%;
 }
-.logo_box {
-  height: 70px;
-}
 .logo_box:hover {
   cursor: pointer;
 }
 .logo_box > img {
   width: 230px;
+  transition: 0.3s ease-in-out all;
 }
 .nav_middle {
   width: 100%;
@@ -124,24 +156,10 @@ export default {
 .icons_box > i {
   font-size: 30px;
   margin-right: 20px;
+  transition: 0.3s ease-in-out all;
 }
 .icons_box > i:hover {
   cursor: pointer;
-}
-.icons_box > button:nth-child(1) {
-  width: 66px;
-  height: 35px;
-  margin-right: 20px;
-  color: white;
-  background: rgb(138, 211, 89);
-  border-radius: 15%;
-}
-.icons_box > button:nth-child(2) {
-  width: 66px;
-  height: 35px;
-  margin-right: 20px;
-  color: rgb(138, 211, 89);
-  font: bolder;
 }
 
 .button {

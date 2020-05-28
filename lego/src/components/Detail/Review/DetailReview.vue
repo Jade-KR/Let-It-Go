@@ -1,167 +1,226 @@
 <template>
-  <div class="detail-review-card">
-    <div class="detail-review-show">
+  <div class="detail_review_card">
+    <div class="detail_review_show">
+      <img
+        :src="userImage"
+        alt="user_image"
+        class="detail_review_img"
+        v-if="userImage !== 'null'"
+      />
       <img
         src="../../../../public/images/user.png"
         alt="img"
-        class="detail-review-img"
+        class="detail_review_img"
+        v-else
       />
       <div class="rating">
-        <div @click="rating()">
-          asdf
+        <div v-if="ratingTest === 5">
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
         </div>
-        <div @click="input()">
-          zxcv
+        <div v-if="ratingTest === 4">
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gray_star"></i>
         </div>
-        <fieldset class="rating">
-          <input
-            type="radio"
-            id="star5"
-            name="rating"
-            value="5"
-            v-model="ratingTest"
-            disabled
-          /><label class="full" for="star5" title="5 stars"></label>
-          <input
-            type="radio"
-            id="star4"
-            name="rating"
-            value="4"
-            v-model="ratingTest"
-            disabled
-          /><label class="full" for="star4" title="4 stars"></label>
-          <input
-            type="radio"
-            id="star3"
-            name="rating"
-            value="3"
-            v-model="ratingTest"
-            disabled
-          /><label class="full" for="star3" title="3 stars"></label>
-          <input
-            type="radio"
-            id="star2"
-            name="rating"
-            value="2"
-            v-model="ratingTest"
-            disabled
-          /><label class="full" for="star2" title="2 stars"></label>
-          <input
-            type="radio"
-            id="star1"
-            name="rating"
-            value="1"
-            v-model="ratingTest"
-            disabled
-          /><label class="full" for="star1" title="1 star"></label>
-        </fieldset>
+        <div v-if="ratingTest === 3">
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+        </div>
+        <div v-if="ratingTest === 2">
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+        </div>
+        <div v-if="ratingTest === 1">
+          <i class="fas fa-star gold_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+        </div>
+        <div v-if="ratingTest === 0">
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+          <i class="fas fa-star gray_star"></i>
+        </div>
       </div>
     </div>
-    <div class="detail-review-desc">
-      <div class="detail-review-info">
-        <div class="detail-review-id">
-          빨갛게빛나는나까무라상
+    <div class="detail_review_desc">
+      <div class="detail_review_info">
+        <div class="detail_review_id" @click="goYourPage()">
+          {{ nickname }}
         </div>
-        <div class="detail-review-date">
-          2020-05-13
+        <div class="detail_review_date">
+          {{ time }}
+        </div>
+        <div class="review_update" v-if="isMe === true">
+          <i class="fas fa-pen" @click="isUpdate()"></i>
+        </div>
+        <div class="review_delete" v-if="isMe === true">
+          <i class="fas fa-trash-alt" @click="onDelete()"></i>
         </div>
       </div>
-      <div class="detail-review-content">
-        Lorem Ipsum is simply dummy text of the printing and typesetting
-        industry. Lorem Ipsum has been the industry's standard dummy text ever
-        since the 1500s, when an unknown printer took a galley of type and
-        scrambled it to make a type specimen book. It has survived not only five
-        centuries, but also the leap into electronic typesetting, remaining
-        essentially unchanged. It was popularised in the 1960s with the release
-        of Letraset sheets containing Lorem Ipsum passages, and more recently
-        with desktop publishing software like Aldus PageMaker including versions
-        of Lorem Ipsum
+      <div class="detail_review_content" v-if="updateFlag === false">
+        <div v-for="(sentence, i) in sentences" :key="i">
+          {{ sentence }}
+        </div>
+      </div>
+      <div class="detail_review_content" v-else>
+        <textarea
+          cols="100"
+          rows="2"
+          id="detail-review-textarea"
+          v-model="sentences"
+        >
+        </textarea>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import router from "../../../router";
+import { mapActions } from "vuex";
+
 export default {
+  props: {
+    content: {
+      type: String,
+      default: ""
+    },
+    nickname: {
+      type: String,
+      default: ""
+    },
+    score: {
+      type: Number,
+      default: 0
+    },
+    userId: {
+      type: Number,
+      default: 0
+    },
+    reviewId: {
+      type: Number,
+      default: 0
+    },
+    updatedAt: {
+      type: String,
+      default: ""
+    },
+    userImage: {
+      type: String,
+      default: ""
+    },
+    setId: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
-      ratingTest: 0
+      ratingTest: 0,
+      time: "",
+      sentences: "",
+      isMe: false,
+      updateFlag: false
     };
   },
+  mounted() {
+    this.ratingTest = this.score;
+    this.time =
+      this.updatedAt.slice(0, 10) + " " + this.updatedAt.slice(11, 19);
+    if (this.content !== null) {
+      this.sentences = this.content.split("\n");
+    }
+    if (this.userId === Number(localStorage.getItem("pk"))) {
+      this.isMe = true;
+    }
+  },
   methods: {
-    rating() {
-      console.log(this.ratingTest);
+    ...mapActions("detail", ["reviewUpdate", "reviewDelete"]),
+    goYourPage() {
+      router.push("/mypage/" + this.userId);
     },
-    input() {
-      this.ratingTest = 3;
-      console.log(this.ratingTest);
+    isUpdate() {
+      this.updateFlag = true;
+    },
+    async onUpdate() {
+      const params = {
+        id: this.reviewId
+      };
+      await this.reviewUpdate(params);
+    },
+    async onDelete() {
+      const params = {
+        id: this.reviewId,
+        lego_set_id: this.setId
+      };
+      await this.reviewDelete(params);
     }
   }
 };
 </script>
 
 <style scoped>
-.detail-review-card {
+.detail_review_card {
   display: flex;
   padding: 10px;
   border: 1px solid gold;
 }
-.detail-review-show {
+.detail_review_show {
   flex: 1;
 }
-.detail-review-img {
+.detail_review_img {
   width: 100px;
   height: 100px;
   margin-right: 10px;
   border-radius: 50%;
 }
-.detail-review-desc {
+.detail_review_desc {
   flex: 9;
 }
-.detail-review-info {
+.detail_review_info {
   display: block;
   margin-bottom: 5px;
 }
-.detail-review-id {
+.detail_review_id {
   display: inline-block;
   font-size: 20px;
   margin-right: 10px;
+  cursor: pointer;
 }
-.detail-review-date {
+.detail_review_date {
   display: inline-block;
   color: rgba(128, 128, 128, 0.7);
+  margin-right: 10px;
 }
-.detail-review-content {
+.detail_review_content {
   display: inline-block;
 }
-
-@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
-.rating {
-  border: none;
-  float: left;
-}
-.rating > input {
-  display: none;
-}
-.rating > label:before {
-  font-size: 1.25em;
-  font-family: FontAwesome;
-  display: inline-block;
-  content: "\f005";
-}
-.rating > label {
-  color: #ddd;
-  float: right;
-}
-.rating > input:checked ~ label,
-.rating:not(:checked) > label,
-.rating:not(:checked) > label ~ label {
-  color: #ddd;
-}
-.rating > input:checked + label,
-.rating > input:checked ~ label,
-.rating > label ~ input:checked ~ label,
-.rating > input:checked ~ label ~ label {
+.gold_star {
   color: gold;
+}
+.gray_star {
+  color: gray;
+}
+.review_update,
+.review_delete {
+  cursor: pointer;
+  display: inline-block;
+  margin-right: 10px;
 }
 </style>

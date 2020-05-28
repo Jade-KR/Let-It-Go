@@ -1,5 +1,5 @@
 <template>
-  <div id="detail-review-write">
+  <div id="detail-review-write" v-if="isLogin">
     <input
       type="Number"
       step="1"
@@ -15,30 +15,59 @@
       @keydown="textareaResize()"
       @keyup="textareaResize()"
       v-model="params.content"
-      placeholder=" 리뷰리뷰리뷰"
+      placeholder=" 리뷰를 작성해 보세요."
     ></textarea>
     <input type="submit" @click="onSubmit()" id="detail-review-submit" />
   </div>
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
+  props: {
+    id: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
       params: {
         score: 0,
         content: ""
-      }
+      },
+      isLogin: false
     };
   },
+  async mounted() {
+    const token = localStorage.getItem("token");
+    if (token !== null) {
+      this.isLogin = true;
+    }
+  },
   methods: {
+    ...mapActions("detail", ["reviewWrite"]),
+    ...mapActions("auth", ["isTokenVerify"]),
     textareaResize() {
       const target = document.getElementById("detail-review-textarea");
       target.style.height = "20px";
       target.style.height = 12 + target.scrollHeight + "px";
     },
-    onSubmit() {
-      console.log(this.params);
+    async onSubmit() {
+      const verify = await this.isTokenVerify();
+      if (verify === false) {
+        alert("로그인 정보를 확인해 주세요");
+        return;
+      }
+      const params = {
+        lego_set_id: this.id,
+        content: this.params["content"],
+        score: this.params["score"]
+      };
+      await this.reviewWrite(params);
+      this.params.score = 0;
+      this.params.content = "";
     }
   }
 };

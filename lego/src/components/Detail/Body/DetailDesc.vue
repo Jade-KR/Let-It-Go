@@ -21,11 +21,9 @@ export default {
       sentences: ""
     };
   },
-  watch: {
-    description() {
-      if (this.description !== null) {
-        this.sentences = this.description.split("\n");
-      }
+  mounted() {
+    if (this.description !== null) {
+      this.sentences = this.description.split("\n");
     }
   }
 };

@@ -57,7 +57,7 @@
             Score
           </div>
           <div id="detail_side_score_num">
-            5.0
+            {{ avgScore }}
           </div>
         </div>
         <div
@@ -69,7 +69,7 @@
             Like
           </div>
           <div id="detail_side_like_num">
-            12
+            {{ likeCount }}
           </div>
         </div>
         <button id="detail_side_onlikes" @click="pushLike()" v-else>
@@ -134,6 +134,14 @@ export default {
     isLike: {
       type: Number,
       default: -1
+    },
+    likeCount: {
+      type: Number,
+      default: 0
+    },
+    avgScore: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -221,8 +229,6 @@ export default {
 
 <style scoped>
 #detail_side_box {
-  /* border: 1px solid black; */
-  /* background-color: rgba(255, 215, 0, 0.6); */
   border: 3px solid gold;
   padding: 10px;
 }
