@@ -3,7 +3,7 @@
     <div class="nav">
       <div class="nav_left">
         <div class="logo_box" @click="goHome">
-          <img src="../assets/logo.png" alt />
+          <img src="@/assets/logo.png" alt />
         </div>
       </div>
       <div class="nav_middle">
@@ -18,7 +18,12 @@
         <div class="icons_box">
           <i class="fas fa-search" @click="goSearch"></i>
           <i class="fas fa-plus" @click="goWrite"></i>
-          <i class="fas fa-user-alt" @click="goMyPage"></i>
+          <div class="mypage" @click="goMyPage" v-show="checkLogin">
+            <img :src="profilePic" alt="noImage" class="picture" />
+          </div>
+          <span class="login_btn" v-if="checkLogin === false" @click="goLogin()">로그인</span>
+          <span class="register_btn" v-if="checkLogin === false" @click="goRegister()">회원가입</span>
+          <!-- <i class="fas fa-user-alt" @click="goMyPage"></i> -->
         </div>
       </div>
     </div>
@@ -26,15 +31,31 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 import router from "../router";
 
 export default {
   data() {
-    return {};
+    return {
+      profilePic:
+        localStorage.getItem("image") != "null"
+          ? localStorage.getItem("image")
+          : require("@/../public/images/user.png"),
+      checkLogin: localStorage.getItem("token") != null ? true : false
+    };
+  },
+  computed: {
+    ...mapState({
+      photoFlag: state => state.user.photoFlag
+    })
+  },
+  watch: {
+    photoFlag() {
+      this.profilePic = localStorage.getItem("image");
+    }
   },
   methods: {
-    ...mapActions("auth", ["isTokenVerify", "logout"]),
+    ...mapActions("auth", ["isTokenVerify", "logout", "login", "register"]),
     ...mapMutations("home", ["setHomeCate"]),
     async goMyPage() {
       const isVerify = await this.isTokenVerify();
@@ -52,6 +73,12 @@ export default {
       if (locationNow !== "/search") {
         this.$router.push("/search");
       }
+    },
+    goLogin() {
+      this.$router.push("/login");
+    },
+    goRegister() {
+      this.$router.push("/register");
     },
     goHome() {
       const locationNow = location.pathname;
@@ -120,6 +147,7 @@ export default {
 .icons_box {
   display: flex;
   justify-content: flex-end;
+  transform: translateY(5px);
 }
 .icons_box > i {
   font-size: 30px;
@@ -128,20 +156,30 @@ export default {
 .icons_box > i:hover {
   cursor: pointer;
 }
-.icons_box > button:nth-child(1) {
+.login_btn {
   width: 66px;
   height: 35px;
   margin-right: 20px;
   color: white;
   background: rgb(138, 211, 89);
   border-radius: 15%;
+  text-align: center;
+  line-height: 35px;
+  font-weight: bold;
+  cursor: pointer;
+  transform: translateY(-4px);
+  margin-left: 20px;
 }
-.icons_box > button:nth-child(2) {
+.register_btn {
   width: 66px;
   height: 35px;
   margin-right: 20px;
   color: rgb(138, 211, 89);
-  font: bolder;
+  text-align: center;
+  line-height: 35px;
+  font-weight: bold;
+  cursor: pointer;
+  transform: translateY(-4px);
 }
 
 .button {
@@ -186,5 +224,17 @@ export default {
 }
 .button:hover span {
   transform: translate3d(0px, 0px, -30px) rotateX(90deg);
+}
+.mypage {
+  width: 33px;
+  height: 33px;
+  border-radius: 50%;
+  cursor: pointer;
+  transform: translateY(-3px);
+}
+.picture {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 </style>

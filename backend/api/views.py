@@ -137,8 +137,9 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
             serializer_data["is_like"] = 1
         else:
             serializer_data["is_like"] = 0
-        reviews = ReviewSerializer(legoset.review_set.all(), many=True)
+        reviews = serializers.ReviewSerializer(legoset.review_set.all(), many=True).data
         serializer_data["reviews"] = reviews
+        print(serializer_data)
         return Response(serializer_data)
 
 class LegoPartViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -314,7 +315,7 @@ def UpdateUserProfile(self):
 class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
     pagination_class = SmallPagination
-    
+
     def retrieve(self, request, pk=None):
         queryset = LegoSet.objects.filter(user_id=pk)
         page = self.paginate_queryset(queryset)
@@ -329,7 +330,6 @@ class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 class UserLikeLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
     pagination_class = SmallPagination
-    
     def retrieve(self, request, pk=None):
         user = get_object_or_404(get_user_model(), id=pk)
         queryset = user.like_sets.all().order_by('-created_at')
@@ -396,17 +396,6 @@ def UpdateUserPart(self):
     # user = CustomUser.objects.get(id=self.user)
     if user.is_authenticated:
         update_d = self.data.get("UpdateList")
-        # 요청 들어온 데이터 정리하기
-        # update_dict = dict()
-        # for update_part in self.data.get("LegoList"):
-        #     if update_dict.get(update_part["part_id"]):
-        #         if update_dict[update_part["part_id"]].get(update_part["color_id"]):
-        #             update_dict[update_part["part_id"]][update_part["color_id"]] += update_part["qte"]
-        #         else:
-        #             update_dict[update_part["part_id"]][update_part["color_id"]] = update_part["qte"]
-        #     else:
-        #         update_dict[update_part["part_id"]] = {update_part["color_id"]: update_part["qte"]}
-        
         # 유저 보유 데이터 정리하기
         inventory_dict = dict()
         for userpart in UserPart.objects.filter(user=user):

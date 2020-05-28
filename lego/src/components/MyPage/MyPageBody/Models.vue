@@ -3,18 +3,25 @@
     id="model_body"
     v-infinite-scroll="loadMore"
     infinite-scroll-disabled="loading"
-    infinite-scroll-distance="9"
+    infinite-scroll-distance="10"
   >
-    <div class="whole_box">
-      <div class="item" v-for="(item, idx) in userModels" :key="`item${idx}`">
-        <div class="body_img_box">
-          <img class="body_img" :src="item.images" alt />
-          <div class="body_img_hover">
-            <div class="body_img_info">
-              <i class="fas fa-heart"></i>
-              <span>0</span>
-              <i class="fas fa-comment"></i>
-              <span>0</span>
+    <div class="main">
+      <div class="whole_box">
+        <div
+          class="item"
+          v-for="(item, idx) in userModels"
+          :key="`item${idx}`"
+          @click="goDetail(item)"
+        >
+          <div class="body_img_box">
+            <img class="body_img" :src="item.images" alt />
+            <div class="body_img_hover">
+              <div class="body_img_info">
+                <i class="fas fa-heart"></i>
+                <span>{{item.like_count}}</span>
+                <i class="fas fa-comment"></i>
+                <span>{{item.review_count}}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -37,6 +44,7 @@ export default {
       id: this.$route.params.user_id
     };
     await this.getUserModels(params);
+    this.loading = false;
   },
   computed: {
     ...mapState({
@@ -53,27 +61,36 @@ export default {
         append: true,
         id: this.$route.params.user_id
       };
-
       await this.getUserModels(params);
       setTimeout(() => {
         this.loading = false;
-      }, 1000);
+      }, 3000);
+    },
+    goDetail(item) {
+      this.$router.push({
+        path: `/detail/${item.id}`
+      });
     }
   }
 };
 </script>
 
 <style scoped>
+.main {
+  display: flex;
+  justify-content: center;
+}
 .whole_box {
   height: 100%;
-  width: 100%;
+  width: 95%;
   display: flex;
   flex-flow: row wrap;
+  margin: auto;
 }
 .item {
   width: 260px;
   height: 250px;
-  margin: 18px;
+  margin: 14px;
 }
 .body_img_box {
   width: 100%;

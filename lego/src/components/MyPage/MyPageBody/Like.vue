@@ -1,42 +1,26 @@
 <template>
-  <div>
-    <div class="whole_box" v-for="i in images.length / 3" :key="i">
-      <div class="row">
-        <div class="item">
+  <div
+    id="model_body"
+    v-infinite-scroll="loadMore"
+    infinite-scroll-disabled="loading"
+    infinite-scroll-distance="10"
+  >
+    <div class="main">
+      <div class="whole_box">
+        <div
+          class="item"
+          v-for="(item, idx) in userModels"
+          :key="`item${idx}`"
+          @click="goDetail(item)"
+        >
           <div class="body_img_box">
-            <img class="body_img" :src="images[i*3 -3]" alt />
+            <img class="body_img" :src="item.images" alt />
             <div class="body_img_hover">
               <div class="body_img_info">
                 <i class="fas fa-heart"></i>
-                <span>0</span>
+                <span>{{item.like_count}}</span>
                 <i class="fas fa-comment"></i>
-                <span>0</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="item">
-          <div class="body_img_box">
-            <img class="body_img" :src="images[i*3 -2]" alt />
-            <div class="body_img_hover">
-              <div class="body_img_info">
-                <i class="fas fa-heart"></i>
-                <span>0</span>
-                <i class="fas fa-comment"></i>
-                <span>0</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="item">
-          <div class="body_img_box">
-            <img class="body_img" :src="images[i*3 -1]" alt />
-            <div class="body_img_hover">
-              <div class="body_img_info">
-                <i class="fas fa-heart"></i>
-                <span>0</span>
-                <i class="fas fa-comment"></i>
-                <span>0</span>
+                <span>{{item.review_count}}</span>
               </div>
             </div>
           </div>
@@ -46,40 +30,67 @@
   </div>
 </template>
 <script>
+import { mapActions, mapState } from "vuex";
 export default {
   data() {
     return {
-      images: [
-        "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-        "https://www.lego.com/cdn/cs/set/assets/blt13e6e2a178c38704/Spiderman-Sidekick-Tall-1.jpg?fit=crop&width=800&height=600&quality=80",
-        "https://images.unsplash.com/photo-1542410613-d073472c3135?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-        "https://images.unsplash.com/photo-1472457974886-0ebcd59440cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-        "https://images.unsplash.com/photo-1526505262320-81542978f63b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-        "https://images.unsplash.com/photo-1560167016-022b78a0258e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-      ]
+      loading: true
     };
+  },
+  async mounted() {
+    const params = {
+      page: 1,
+      append: false,
+      id: this.$route.params.user_id
+    };
+    await this.getLikeModels(params);
+    this.loading = false;
+  },
+  computed: {
+    ...mapState({
+      userModels: state => state.mypage.likeModelList,
+      page: state => state.mypage.likeModelPage
+    })
+  },
+  methods: {
+    ...mapActions("mypage", ["getLikeModels"]),
+    async loadMore() {
+      this.loading = true;
+      const params = {
+        page: this.page,
+        append: true,
+        id: this.$route.params.user_id
+      };
+      await this.getLikeModels(params);
+      setTimeout(() => {
+        this.loading = false;
+      }, 3000);
+    },
+    goDetail(item) {
+      this.$router.push({
+        path: `/detail/${item.id}`
+      });
+    }
   }
 };
 </script>
 
 <style scoped>
+.main {
+  display: flex;
+  justify-content: center;
+}
 .whole_box {
   height: 100%;
-  width: 100%;
-}
-.row {
+  width: 95%;
   display: flex;
-  flex-flow: row nowrap;
-  border-style: none;
-  height: fit-content;
-  margin-bottom: 30px;
-  justify-content: center;
+  flex-flow: row wrap;
+  margin: auto;
 }
 .item {
   width: 260px;
   height: 250px;
-  margin-left: 15px;
-  margin-right: 15px;
+  margin: 14px;
 }
 .body_img_box {
   width: 100%;

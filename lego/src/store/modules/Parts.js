@@ -108,7 +108,6 @@ const actions = {
     commit
   }, page) {
     const resp = await api.getUserParts(page)
-    console.log(resp)
     commit("setUserParts", resp.data)
   },
   async deleteAll({

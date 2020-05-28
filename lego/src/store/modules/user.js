@@ -1,15 +1,22 @@
 // import api from "../../api";
 
-const state = {};
+import api from "../../api";
 
-const mutations = {};
+const state = {
+  photoFlag: false
+};
+
+const mutations = {
+  setFlag(state, params) {
+    state.photoFlag = params
+  }
+};
 
 const actions = {
-  updateImg({
+  async updateImg({
     commit
   }, params) {
     commit;
-    console.log(params)
     var modelImgUrl = ''
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
@@ -24,14 +31,25 @@ const actions = {
       redirect: "follow"
     };
 
-    fetch("https://api.imgur.com/3/image", requestOptions)
+    await fetch("https://api.imgur.com/3/image", requestOptions)
       .then(response => response.text())
-      .then(result => {
+      .then(async result => {
         const test = JSON.parse(result);
         modelImgUrl = test.data.link;
+        params = {
+          profile_url: modelImgUrl
+        }
+        await api.changProfilePic(params).then(res => console.log(res)).catch(err => console.log(err))
         localStorage.setItem("image", modelImgUrl)
+        commit("setFlag", state.photoFlag === false ? true : false)
       })
       .catch(error => console.log("error", error));
+  },
+  async updateInfo({
+    commit
+  }, params) {
+    commit;
+    await api.updateUserInfo(params)
   }
 }
 

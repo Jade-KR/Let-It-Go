@@ -75,5 +75,31 @@ export default {
   },
   searchModels(params) {
     return http.get(`${apiUrl}/LegoSet`, params);
-  }
-};
+  },
+  getUserModels(params) {
+    return http.get(`${apiUrl}/UserLegoSet/${params.id}?page_size=12`, {
+      params
+    });
+  },
+  changProfilePic(params) {
+    return http.put(`${apiUrl}/UpdateUserProfile`, params, {
+      headers
+    })
+  },
+  updateUserInfo(params) {
+    const info = {
+      nickname: params.nickname,
+      email: params.email,
+      comment: params.comment
+    }
+    return http.put(`${apiUrl}/User/${params.id}`, info, {
+      headers
+    })
+  },
+  getLikeModels(params) {
+    return http.get(`${apiUrl}/UserLikeLegoSet/${params.id}?page_size=12`, {
+      params
+    });
+  },
+
+}

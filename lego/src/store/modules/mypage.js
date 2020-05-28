@@ -6,7 +6,9 @@ const state = {
   followerList: [],
   myFollowingList: [],
   userModelList: [],
-  userModelPage: "1"
+  userModelPage: "1",
+  likeModelList: [],
+  likeModelPage: "1"
 };
 
 const actions = {
@@ -20,12 +22,20 @@ const actions = {
       .catch(err => err);
     const user_id = location.pathname.slice(8, 9);
     // console.log(user_id);
-    actions.follower({ commit }, user_id);
-    actions.following({ commit }, user_id);
-    actions.myFollowing({ commit });
+    actions.follower({
+      commit
+    }, user_id);
+    actions.following({
+      commit
+    }, user_id);
+    actions.myFollowing({
+      commit
+    });
     return resp;
   },
-  async onFollowInModal({ commit }, params) {
+  async onFollowInModal({
+    commit
+  }, params) {
     commit;
     const resp = await api
       .setFollow(params)
@@ -69,13 +79,28 @@ const actions = {
     const append = params.append;
     const resp = await api.getUserModels(params).then(res => res.data);
     const models = resp.results.map(e => e);
-    console.log(models)
+    // console.log(models)
     if (append) {
       commit("addUserModelList", models);
     } else {
       commit("setUserModels", models);
     }
     commit("setUserModelPage", resp.next);
+  },
+  async getLikeModels({
+    commit
+  }, params) {
+    commit;
+    const append = params.append;
+    const resp = await api.getLikeModels(params).then(res => res.data);
+    const models = resp.results.map(e => e);
+    // console.log(models)
+    if (append) {
+      commit("addLikeModelList", models);
+    } else {
+      commit("setLikeModels", models);
+    }
+    commit("setLikeModelPage", resp.next);
   }
 };
 
@@ -97,7 +122,17 @@ const mutations = {
   },
   setUserModelPage(state, url) {
     console.log(url)
-    state.userModelPage = url
+    state.userModelPage = new URL(url).searchParams.get("page");
+  },
+  addLikeModelList(state, model) {
+    state.likeModelList = state.likeModelList.concat(model);
+  },
+  setLikeModels(state, model) {
+    state.likeModelList = model.map(e => e);
+  },
+  setLikeModelPage(state, url) {
+    console.log(url)
+    state.likeModelPage = new URL(url).searchParams.get("page");
   },
 };
 

@@ -16,7 +16,7 @@
         >
           <p class="menu_name">{{menu}}</p>
         </div>
-        <div class="menu">
+        <div class="menu" @click="logout()">
           <p class="menu_name">로그아웃</p>
         </div>
         <div class="menu" @click="dialog=false">
@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -36,6 +37,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions("auth", ["logout"]),
     goSetting(title, idx) {
       this.$router.push({
         name: "UserSetting",
