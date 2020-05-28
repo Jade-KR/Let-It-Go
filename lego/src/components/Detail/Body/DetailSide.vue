@@ -10,33 +10,25 @@
         <hr class="divide_line" />
 
         <div id="detail_side_designers">
-          <div id="detail_side_designer">
-            Designer
-          </div>
+          <div id="detail_side_designer">Designer</div>
           <div id="detail_side_designer_id" @click="goMypage()">
             <b>{{ nickname }}</b>
           </div>
         </div>
         <div id="detail_side_bricks">
-          <div id="detail_side_brick">
-            Bricks
-          </div>
+          <div id="detail_side_brick">Bricks</div>
           <div id="detail_side_part">
             <b>{{ parts }} Parts</b>
           </div>
         </div>
         <div id="detail_side_themes">
-          <div id="detail_side_theme">
-            Theme
-          </div>
+          <div id="detail_side_theme">Theme</div>
           <div id="detail_side_theme_name">
             <b>{{ themeName }}</b>
           </div>
         </div>
         <div id="detail_side_tags">
-          <div id="detail_side_tag">
-            Tags
-          </div>
+          <div id="detail_side_tag">Tags</div>
           <div id="detail_side_taglist">
             <div
               v-for="(tag, i) in tagList"
@@ -80,18 +72,12 @@
       <hr class="divide_line" />
 
       <div id="detail_side_similar">
-        <div id="detail_side_similar_text">
-          You Can Make
-        </div>
-        <div id="detail_side_similar_percent">
-          86%
-        </div>
+        <div id="detail_side_similar_text">You Can Make</div>
+        <div id="detail_side_similar_percent">86%</div>
       </div>
     </div>
     <div id="detail_side_ad">
-      <div id="detail_side_content">
-        레고레일로 분류를 해보세요!
-      </div>
+      <div id="detail_side_content">레고레일로 분류를 해보세요!</div>
     </div>
   </div>
 </template>

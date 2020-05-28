@@ -4,77 +4,99 @@
       <div class="photo_box">
         <div class="label_box">
           <div class="photo_frame">
-            <img
-              src="https://images.unsplash.com/photo-1472457974886-0ebcd59440cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-              alt
-              class="photo"
-            />
+            <img :src="profilePic" alt class="photo" />
           </div>
         </div>
         <div class="input_box">
           <div class="photo_desc">
-            <h1 class="user_id">Jade</h1>
-            <div class="file_input_div">
-              <input
-                id="fileName"
-                class="file_input_button"
-                type="button"
-                readonly
-                value="프로필 사진 변경"
-              />
-              <input type="file" class="file_input_hidden" title @change="changeToUrl" />
+            <h1 class="user_id">{{name}}</h1>
+            <div class="filebox">
+              <label for="ex_file">프로필 사진 변경</label>
+              <input type="file" id="ex_file" @change="changeToUrl" />
             </div>
           </div>
         </div>
       </div>
-      <div class="form_box">
-        <div class="label_box">
-          <p class="label_name">닉네임</p>
+      <ValidationObserver ref="obs" v-slot="{ invalid, validated }">
+        <div class="form_box">
+          <div class="label_box">
+            <p class="label_name">닉네임</p>
+          </div>
+          <div class="input_box">
+            <ValidationProvider name="닉네임" rules="nickname|max:12">
+              <div
+                slot-scope="{ errors }"
+                style="margin-bottom: 20px; height:20px; position:relative"
+              >
+                <div class="value_box">
+                  <input type="text" v-model="nickname" />
+                </div>
+                <br />
+                <span v-if="errors" class="error_box">{{ errors[0] }}</span>
+              </div>
+            </ValidationProvider>
+          </div>
         </div>
-        <div class="input_box">
-          <v-col cols="12" sm="6" md="10" class="text_box">
-            <v-text-field solo dense></v-text-field>
-          </v-col>
+        <div class="form_box">
+          <div class="label_box">
+            <p class="label_name">소개</p>
+          </div>
+          <div class="input_box">
+            <div class="value_box_textarea">
+              <textarea v-model="comment" rows="3" cols="20" />
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="form_box">
-        <div class="label_box">
-          <p class="label_name">소개</p>
+
+        <div class="form_box">
+          <div class="label_box">
+            <p class="label_name">이메일</p>
+          </div>
+          <div class="input_box">
+            <ValidationProvider name="이메일" rules="email|max:50">
+              <div
+                slot-scope="{ errors }"
+                style="margin-bottom: 20px; height:20px; position:relative"
+              >
+                <div class="value_box">
+                  <input type="text" v-model="email" />
+                </div>
+                <br />
+                <span v-if="errors" class="error_box">{{ errors[0] }}</span>
+              </div>
+            </ValidationProvider>
+          </div>
         </div>
-        <div class="input_box">
-          <v-col cols="12" md="10" class="text_box">
-            <v-textarea solo name="input-7-4" rows="3"></v-textarea>
-          </v-col>
+        <div class="form_box">
+          <div class="label_box"></div>
+          <div class="input_box">
+            <button class="submit_btn" @click="onSubmit()" :disabled="invalid || !validated">제출</button>
+          </div>
         </div>
-      </div>
-      <div class="form_box">
-        <div class="label_box">
-          <p class="label_name">이메일</p>
-        </div>
-        <div class="input_box">
-          <v-col cols="12" sm="6" md="10" class="text_box">
-            <v-text-field solo dense></v-text-field>
-          </v-col>
-        </div>
-      </div>
-      <div class="form_box">
-        <div class="label_box"></div>
-        <div class="input_box">
-          <button class="submit_btn">제출</button>
-        </div>
-      </div>
+      </ValidationObserver>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { ValidationProvider, ValidationObserver } from "vee-validate";
+import { mapActions, mapState } from "vuex";
 export default {
+  components: {
+    ValidationProvider,
+    ValidationObserver
+  },
   data() {
-    return {};
+    return {
+      profilePic: localStorage.getItem("image"),
+      nickname: localStorage.getItem("nickname"),
+      comment: localStorage.getItem("comment"),
+      email: localStorage.getItem("email"),
+      name: localStorage.getItem("username")
+    };
   },
   methods: {
-    ...mapActions("user", ["updateImg"]),
+    ...mapActions("user", ["updateImg", "updateInfo"]),
     async changeToUrl(e) {
       let file = e.target.files[0];
       let reader = new FileReader();
@@ -84,6 +106,25 @@ export default {
       if (file) {
         reader.readAsDataURL(file);
       }
+    },
+    onSubmit() {
+      const params = {
+        nickname: this.nickname,
+        comment: this.comment,
+        email: this.email,
+        id: localStorage.getItem("pk")
+      };
+      this.updateInfo(params).then(alert("변경이 완료되었습니다."));
+    }
+  },
+  computed: {
+    ...mapState({
+      photoFlag: state => state.user.photoFlag
+    })
+  },
+  watch: {
+    photoFlag() {
+      this.profilePic = localStorage.getItem("image");
     }
   }
 };
@@ -106,6 +147,7 @@ export default {
 .form_box {
   display: flex;
   width: 100%;
+  margin-bottom: 30px;
 }
 .label_box {
   width: 30%;
@@ -127,7 +169,19 @@ input,
 textarea {
   width: 80%;
   height: 100%;
-  border: silver 1px solid;
+  width: 97%;
+}
+.value_box {
+  border: 1px solid silver;
+  width: 25vw;
+  height: 40px;
+  background: rgb(248, 248, 248);
+}
+.value_box_textarea {
+  border: 1px solid silver;
+  width: 25vw;
+  height: 100px;
+  background: rgb(248, 248, 248);
 }
 .photo_frame {
   width: 50px;
@@ -156,38 +210,46 @@ textarea {
 .text_box {
   padding: 0;
 }
-.submit_btn {
+.submit_btn:disabled {
   background: lightblue;
+}
+.submit_btn {
+  background: rgb(96, 187, 218);
   color: white;
-  width: 50px;
+  width: 60px;
   height: 30px;
   border-radius: 10%;
 }
-.file_input_div {
-  position: relative;
-  width: 100px;
-  height: 23px;
-  overflow: hidden;
-  cursor: pointer;
-}
-.file_input_button {
-  position: absolute;
-  width: 100px;
-  height: 23px;
-  font-size: 13px;
+.filebox label {
+  display: inline-block;
+  padding: 0;
   color: rgb(0, 140, 255);
-  font-weight: bold;
-  top: 0px;
-  left: 0px;
-  border-style: none;
+  font-size: 13px;
+  vertical-align: middle;
   cursor: pointer;
+  border: none;
+  text-align: left;
+  font-weight: bold;
 }
-.file_input_hidden {
-  font-size: 30px;
+
+.filebox input[type="file"] {
   position: absolute;
-  width: 100px;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.error_box {
+  width: 100%;
+  position: absolute;
+  color: red;
+  background-color: unset;
+  right: 50%;
+  top: 50px;
   left: 0px;
-  top: 0px;
-  opacity: 0;
+  font-size: 13px;
 }
 </style>
