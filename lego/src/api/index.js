@@ -93,7 +93,7 @@ export default {
     });
   },
   reviewUpdate(params) {
-    return http.put(`${apiUrl}/Review/${params}`);
+    return http.put(`${apiUrl}/Review/${params.id}`, params.info, { headers });
   },
   reviewDelete(params) {
     return http.delete(`${apiUrl}/Review/${params}`, {
@@ -108,22 +108,21 @@ export default {
   changProfilePic(params) {
     return http.put(`${apiUrl}/UpdateUserProfile`, params, {
       headers
-    })
+    });
   },
   updateUserInfo(params) {
     const info = {
       nickname: params.nickname,
       email: params.email,
       comment: params.comment
-    }
+    };
     return http.put(`${apiUrl}/User/${params.id}`, info, {
       headers
-    })
+    });
   },
   getUserLikeModels(params) {
     return http.get(`${apiUrl}/UserLikeLegoSet/${params.id}?page_size=12`, {
       params
     });
-  },
-
+  }
 };

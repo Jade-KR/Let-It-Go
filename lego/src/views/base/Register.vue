@@ -79,6 +79,36 @@
             </div>
           </ValidationProvider>
 
+          <ValidationProvider name="나이" rules="required">
+            <div
+              slot-scope="{ errors }"
+              style="margin-bottom: 20px;"
+              id="regi-age-box"
+            >
+              <input
+                type="number"
+                step="1"
+                min="1"
+                max="100"
+                id="regi-age"
+                placeholder="나이"
+                v-model="userInfo.age"
+              />
+              <div class="regi-gender-label" @click="selectGender(0)" id="male">
+                남
+              </div>
+              <div
+                class="regi-gender-label"
+                @click="selectGender(1)"
+                id="female"
+              >
+                여
+              </div>
+              <br />
+              <span v-if="errors" class="error_box">{{ errors[0] }}</span>
+            </div>
+          </ValidationProvider>
+
           <ValidationProvider name="닉네임" rules="required|nickname|max:12">
             <div slot-scope="{ errors }" style="margin-bottom: 20px;">
               <input
@@ -129,7 +159,9 @@ export default {
         password1: "",
         password2: "",
         email: "",
-        nickname: ""
+        nickname: "",
+        age: "",
+        gender: -1
       },
       randomNickNoun: [
         "뽀로로",
@@ -177,6 +209,7 @@ export default {
   },
   mounted() {
     this.setAuthFlag(true);
+    this.userInfo.gender = -1;
   },
   methods: {
     ...mapActions("auth", ["SHA256", "register"]),
@@ -185,6 +218,10 @@ export default {
       this.SHA256(pwd);
     },
     async onSubmit() {
+      if (this.userInfo.gender === -1) {
+        alert("성별을 선택해 주세요");
+        return;
+      }
       this.loading = true;
       let hashPwd = "";
       await this.SHA256(String(this.userInfo.password1)).then(res => {
@@ -198,10 +235,13 @@ export default {
         nickname: this.userInfo.nickname,
         image: "null",
         comment: "null",
-        age: 0,
-        gender: 0
+        age: this.userInfo.age,
+        gender: this.userInfo.gender
       };
-      await this.register(params);
+      const result = await this.register(params);
+      if (result === false) {
+        this.loading = false;
+      }
     },
     goLogin() {
       router.push("/login");
@@ -224,6 +264,16 @@ export default {
         this.randomNickAdv[randomNumAdv] +
         this.randomNickAdj[randomNumAdj] +
         this.randomNickNoun[randomNumNoun];
+    },
+    selectGender(value) {
+      this.userInfo.gender = value;
+      if (value === 0) {
+        document.getElementById("male").style.backgroundColor = "blue";
+        document.getElementById("female").style.backgroundColor = "";
+      } else {
+        document.getElementById("female").style.backgroundColor = "blue";
+        document.getElementById("male").style.backgroundColor = "";
+      }
     }
   }
 };
@@ -274,6 +324,7 @@ export default {
 #regi-pwd,
 #regi-pwd2,
 #regi-email,
+#regi-age,
 #regi-nickname {
   border: 1px solid gold;
   color: white;
@@ -287,6 +338,7 @@ export default {
 #regi-pwd::placeholder,
 #regi-pwd2::placeholder,
 #regi-email::placeholder,
+#regi-age::placeholder,
 #regi-nickname::placeholder {
   color: white;
 }
@@ -294,7 +346,7 @@ export default {
   background-color: red;
 }
 #regi-pwd:focus {
-  background-color: gold;
+  background-color: orange;
 }
 #regi-pwd2:focus {
   background-color: gold;
@@ -302,14 +354,17 @@ export default {
 #regi-email:focus {
   background-color: green;
 }
-#regi-nickname:focus {
+#regi-age:focus {
   background-color: blue;
+}
+#regi-nickname:focus {
+  background-color: navy;
 }
 #regi-id:hover {
   background-color: red;
 }
 #regi-pwd:hover {
-  background-color: gold;
+  background-color: orange;
 }
 #regi-pwd2:hover {
   background-color: gold;
@@ -317,8 +372,11 @@ export default {
 #regi-email:hover {
   background-color: green;
 }
-#regi-nickname:hover {
+#regi-age:hover {
   background-color: blue;
+}
+#regi-nickname:hover {
+  background-color: navy;
 }
 #regi-nickname {
   width: 60%;
@@ -326,7 +384,7 @@ export default {
 #regi-random-nick {
   cursor: pointer;
   display: inline-block;
-  background-color: green;
+  background-color: rgba(255, 215, 0, 0.7);
   color: white;
   line-height: 40px;
   font-size: 25px;
@@ -358,5 +416,25 @@ export default {
 #loading {
   font-size: 50px;
   margin: 50px auto;
+}
+#regi-age {
+  width: 50%;
+}
+.regi-gender-label {
+  cursor: pointer;
+  display: inline-block;
+  background-color: rgba(255, 215, 0, 0.7);
+  color: white;
+  line-height: 40px;
+  font-size: 25px;
+  text-align: center;
+  width: 15%;
+  border: 1px solid gold;
+}
+.regi-gender-label:hover {
+  background-color: blue;
+}
+.regi-gender-label:focus {
+  background-color: blue;
 }
 </style>

@@ -74,7 +74,8 @@ export default {
     ...mapState({
       homeCate: state => state.home.homeCate,
       models: state => state.home.modelList,
-      page: state => state.home.modelPage
+      page: state => state.home.modelPage,
+      likePage: state => state.home.likeModelPage
     })
   },
   watch: {
@@ -120,11 +121,15 @@ export default {
     async loadMore() {
       this.loading = true;
       const params = {
-        page: this.page,
         append: true
       };
-
-      await this.getModels(params);
+      if (this.homeCate === 1) {
+        params["page"] = this.page;
+        await this.getModels(params);
+      } else if (this.homeCate === 2) {
+        params["page"] = this.likePage;
+        await this.getLikeModels(params);
+      }
       setTimeout(() => {
         this.loading = false;
       }, 1000);

@@ -44,7 +44,13 @@ const actions = {
   },
   async reviewUpdate({ commit }, params) {
     commit;
-    console.log(params);
+    api.reviewUpdate(params).then(res => {
+      res;
+      commit("resetReviews");
+      api.getModelDetail(params.lego_set_id).then(resp => {
+        commit("setReviews", resp.data.reviews);
+      });
+    });
   },
   async reviewDelete({ commit }, params) {
     api.reviewDelete(params.id).then(res => {
