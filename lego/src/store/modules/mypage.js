@@ -8,7 +8,8 @@ const state = {
   userModelList: [],
   userModelPage: "1",
   likeModelList: [],
-  likeModelPage: "1"
+  likeModelPage: "1",
+  stopScroll: false,
 };
 
 const actions = {
@@ -121,7 +122,9 @@ const mutations = {
     state.userModelList = model.map(e => e);
   },
   setUserModelPage(state, url) {
-    console.log(url)
+    if (url == null) {
+      return state.stopScroll = true
+    }
     state.userModelPage = new URL(url).searchParams.get("page");
   },
   addLikeModelList(state, model) {
@@ -131,7 +134,9 @@ const mutations = {
     state.likeModelList = model.map(e => e);
   },
   setLikeModelPage(state, url) {
-    console.log(url)
+    if (url == null) {
+      return state.stopScroll = true
+    }
     state.likeModelPage = new URL(url).searchParams.get("page");
   },
 };

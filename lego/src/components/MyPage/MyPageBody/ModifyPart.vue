@@ -33,15 +33,7 @@
           </div>
           <div class="input_box">
             <v-col cols="12" sm="6" md="5" class="text_box">
-              <v-text-field
-                v-model="quantity"
-                solo
-                dense
-                type="number"
-                step="1"
-                :value="quantity"
-                min="0"
-              ></v-text-field>
+              <v-text-field v-model="cnt" solo dense type="number" step="1" :value="cnt" min="0"></v-text-field>
             </v-col>
           </div>
         </div>
@@ -70,30 +62,32 @@ export default {
   mounted() {
     this.originalCnt = this.quantity;
     this.check = this.quantity;
+    this.cnt = this.quantity;
   },
   data() {
     return {
       dialog: false,
       loading: false,
       originalCnt: 0,
-      check: 0
+      check: 0,
+      cnt: 0
     };
   },
   watch: {
-    quantity() {
-      this.originalCnt = this.quantity;
+    cnt() {
+      this.originalCnt = this.cnt;
     }
   },
   methods: {
     ...mapActions("Parts", ["updateParts", "getUserParts"]),
     async submit() {
       let num = 0;
-      if (this.quantity <= 0) {
+      if (this.cnt <= 0) {
         num = -Number(this.check);
-      } else if (this.quantity > this.check) {
-        num = Number(this.quantity - this.check);
+      } else if (this.cnt > this.check) {
+        num = Number(this.cnt - this.check);
       } else {
-        num = -Number(this.check - this.quantity);
+        num = -Number(this.check - this.cnt);
       }
       const params = [
         {
@@ -105,8 +99,8 @@ export default {
       await this.updateParts({ UpdateList: params });
       await this.getUserParts(this.page);
       this.dialog = false;
-      this.originalCnt = this.quantity;
-      this.check = this.quantity;
+      this.originalCnt = this.cnt;
+      this.check = this.cnt;
     },
     async deleteItem() {
       const params = [
@@ -124,7 +118,7 @@ export default {
         this.$emit("pageDown");
       }
       this.dialog = false;
-      this.originalCnt = this.quantity;
+      this.originalCnt = this.cnt;
     }
   }
 };

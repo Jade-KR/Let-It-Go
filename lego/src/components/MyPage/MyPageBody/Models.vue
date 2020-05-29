@@ -44,12 +44,16 @@ export default {
       id: this.$route.params.user_id
     };
     await this.getUserModels(params);
+    if (this.stopScroll === true) {
+      return;
+    }
     this.loading = false;
   },
   computed: {
     ...mapState({
       userModels: state => state.mypage.userModelList,
-      page: state => state.mypage.userModelPage
+      page: state => state.mypage.userModelPage,
+      stopScroll: state => state.mypage.stopScroll
     })
   },
   methods: {
@@ -62,9 +66,12 @@ export default {
         id: this.$route.params.user_id
       };
       await this.getUserModels(params);
+      if (this.stopScroll === true) {
+        return;
+      }
       setTimeout(() => {
         this.loading = false;
-      }, 3000);
+      }, 1000);
     },
     goDetail(item) {
       this.$router.push({

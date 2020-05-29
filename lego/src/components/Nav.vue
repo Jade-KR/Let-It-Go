@@ -3,7 +3,7 @@
     <div class="nav">
       <div class="nav_left">
         <div class="logo_box" @click="goHome">
-          <img src="@/assets/logo.png" alt />
+          <img src="@/assets/logo.png" alt id="logo_box_img" />
         </div>
       </div>
       <div class="nav_middle">
@@ -16,8 +16,8 @@
       </div>
       <div class="nav_right">
         <div class="icons_box">
-          <i class="fas fa-search" @click="goSearch"></i>
-          <i class="fas fa-plus" @click="goWrite"></i>
+          <i class="fas fa-search right_icon" @click="goSearch"></i>
+          <i class="fas fa-plus right_icon" @click="goWrite"></i>
           <div class="mypage" @click="goMyPage" v-show="checkLogin">
             <img :src="profilePic" alt="noImage" class="picture" />
           </div>

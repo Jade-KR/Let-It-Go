@@ -20,6 +20,7 @@
           :page="page"
           @pageDown="page -= 1"
         >
+          <div class="item_box"></div>
           <div class="body_img_box" slot="click">
             <img
               class="body_img"
@@ -75,10 +76,16 @@ export default {
     }
   },
   computed: {
-    ...mapState("Parts", ["userParts", "partPageLength", "originalCnt", "page"])
+    ...mapState({
+      userParts: state => state.Parts.userParts,
+      partPageLength: state => state.Parts.partPageLength,
+      originalCnt: state => state.Parts.originalCnt,
+      page: state => state.Parts.page
+    })
   },
   watch: {
     page() {
+      console.log(this.page);
       this.getUserParts(this.page);
     }
   }
@@ -147,7 +154,7 @@ export default {
   margin: auto;
 }
 .submit_btn {
-  background: lightblue;
+  background: rgb(120, 187, 209);
   color: white;
   width: 120px;
   height: 30px;

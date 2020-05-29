@@ -15,6 +15,7 @@ const state = {
   userParts: [],
   partPageLength: 1,
   originalCnt: 0,
+  page: 1,
 
 }
 
