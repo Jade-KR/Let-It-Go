@@ -60,6 +60,14 @@ const actions = {
         commit("setReviews", resp.data.reviews);
       });
     });
+  },
+  async getUserPartsAll({ commit }) {
+    commit;
+    const resp = api
+      .getUserPartsAll()
+      .then(res => res.data.results)
+      .catch(err => err);
+    return resp;
   }
 };
 

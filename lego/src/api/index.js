@@ -124,5 +124,10 @@ export default {
     return http.get(`${apiUrl}/UserLikeLegoSet/${params.id}?page_size=12`, {
       params
     });
+  },
+  getUserPartsAll() {
+    return http.get(`${apiUrl}/UserPart?page_size=10000`, {
+      headers
+    });
   }
 };

@@ -2,7 +2,8 @@ import api from "../../api";
 import router from "../../router";
 
 const state = {
-  authFlag: false
+  authFlag: false,
+  isCategory: false
 };
 
 const actions = {
@@ -69,7 +70,13 @@ const actions = {
         localStorage.setItem("image", user.image);
         localStorage.setItem("gender", user.gender);
         localStorage.setItem("age", user.age);
+        localStorage.setItem("category", "null");
         commit("setAuthFlag", false);
+        if (localStorage.getItem("category") === "null") {
+          commit("setIsCategory", false);
+        } else {
+          commit("setIsCategory", true);
+        }
         router.push("/");
       })
       .catch(err => {
@@ -321,6 +328,9 @@ const actions = {
 const mutations = {
   setAuthFlag(state, value) {
     state.authFlag = value;
+  },
+  setIsCategory(state, value) {
+    state.isCategory = value;
   }
 };
 
