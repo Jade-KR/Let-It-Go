@@ -95,14 +95,14 @@ const actions = {
     const append = params.append;
     const resp = await api.getUserLikeModels(params).then(res => res.data);
     const models = resp.results.map(e => e);
-    // console.log(models)
+    // console.log(resp)
     if (append) {
       commit("addLikeModelList", models);
     } else {
       commit("setLikeModels", models);
     }
     commit("setLikeModelPage", resp.next);
-  }
+  },
 };
 
 const mutations = {

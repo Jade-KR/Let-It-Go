@@ -19,7 +19,7 @@
             item-value="idx"
             hide-details
             label="부품"
-            :placeholder="partId"
+            :placeholder="String(partId)"
             disabled
           />
         </div>
@@ -81,7 +81,7 @@
             <v-text-field
               label="수량"
               type="number"
-              min="1"
+              min="0"
               step="1"
               v-model="partQuantity"
               hide-details
@@ -91,21 +91,22 @@
             ></v-text-field>
           </div>
         </div>
-        <input type="submit" value="수정 완료" id="enroll_btn" @click="addList()" />
+        <input type="submit" value="수정 완료" id="enroll_btn" @click="changeInfo()" />
       </div>
     </v-dialog>
   </div>
 </template>
 
 <script>
-import LegoParts from "../../../../jsonData/LegoParts.json";
 import LegoColors from "../../../../jsonData/LegoColors.json";
 import { mapActions, mapState } from "vuex";
 
 export default {
   props: {
     partId: Number,
-    colorId: Number
+    colorId: Number,
+    quantity: Number,
+    idx: Number
   },
   data() {
     return {
@@ -120,16 +121,16 @@ export default {
         };
       }),
       selectedColor: "",
+      index: "",
       dialog: false
     };
   },
+  created() {
+    this.index = this.idx;
+  },
   mounted() {
-    for (let i = 0; i < LegoParts.rows.length; i++) {
-      if (LegoParts.rows[i][0] === this.pickedPart) {
-        this.partIdx = i;
-        break;
-      }
-    }
+    this.selectedColor = this.colorId;
+    this.partQuantity = this.quantity;
   },
   computed: {
     ...mapState({
@@ -148,42 +149,18 @@ export default {
       "updateParts",
       "getUserParts"
     ]),
-    addList() {
-      if (
-        this.pickedPart === "" ||
-        this.selectedColor === "" ||
-        this.partQuantity <= 0
-      ) {
+    changeInfo() {
+      if (this.selectedColor === "" || this.partQuantity <= 0) {
         return alert("필수 정보를 입력해주세요.");
       }
-      let partInfo = {
-        partId: LegoParts.rows[this.partIdx][0],
-        partImg: LegoParts.rows[this.partIdx][2],
-        colorId: LegoColors.rows[this.selectedColor][0],
-        rgb: LegoColors.rows[this.selectedColor][2],
-        quantity: Number(this.partQuantity)
+      const info = {
+        idx: this.index,
+        colorId: Number(this.selectedColor),
+        quantity: Number(this.partQuantity),
+        partId: this.partId
       };
-      this.addBasket(partInfo);
-    },
-    deleteItem(idx) {
-      this.deleteBasket(idx);
-    },
-    back() {
-      this.changeStep("back");
-    },
-    async onSubmit() {
-      const newBasket = [];
-      this.basket.forEach(item => {
-        let info = {
-          part_id: item.partId,
-          color_id: Number(item.colorId),
-          qte: Number(item.quantity)
-        };
-        newBasket.push(info);
-      });
-      const params = { UpdateList: newBasket };
-      this.updateParts(params);
-      await this.getUserParts(1).then(this.$emit("close"));
+      this.$emit("changedInfo", info);
+      this.dialog = false;
     }
   }
 };
@@ -216,7 +193,6 @@ export default {
 #enroll_btn {
   display: inline-block;
 }
-
 #color_input {
   width: 80%;
 }
@@ -228,6 +204,7 @@ export default {
   padding: 10px;
   background-color: gold;
   width: 20%;
+  margin-bottom: 20px;
 }
 .enroll_img {
   width: 100px;

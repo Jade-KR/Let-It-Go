@@ -35,8 +35,8 @@ export default {
       headers
     });
   },
-  getUserParts(page) {
-    return http.get(`${apiUrl}/UserPart?page=${page}&page_size=21`, {
+  getUserParts(params) {
+    return http.get(`${apiUrl}/UserPart?page=${params.page}&page_size=21`, {
       headers
     });
   },

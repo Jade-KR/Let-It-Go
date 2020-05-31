@@ -197,7 +197,7 @@ export default {
       });
       const params = { UpdateList: newBasket };
       await this.updateParts(params);
-      await this.getUserParts(1).then(this.$emit("close"));
+      this.$emit("close");
     }
   }
 };

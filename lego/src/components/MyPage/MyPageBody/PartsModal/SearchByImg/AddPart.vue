@@ -178,7 +178,7 @@ export default {
       "deleteBasket",
       "changeStep",
       "updateParts",
-      "getUserParts"
+      "getParts"
     ]),
     addList() {
       if (
@@ -213,9 +213,9 @@ export default {
         };
         newBasket.push(info);
       });
-      const params = { UpdateList: newBasket };
-      this.updateParts(params);
-      await this.getUserParts(1).then(this.$emit("close"));
+      const info = { UpdateList: newBasket };
+      this.updateParts(info);
+      this.$emit("close");
     }
   }
 };

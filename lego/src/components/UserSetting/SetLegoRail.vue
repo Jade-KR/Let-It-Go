@@ -1,11 +1,17 @@
 <template>
   <div class="right_body_box">
     <h1 class="header">레고레일 분류 현황</h1>
-    <button class="send_btn">내 부품에 넣기</button>
+    <button class="send_btn" @click="onSubmit()">내 부품에 넣기</button>
     <button class="delete_all_btn">모두 삭제</button>
     <div class="classified_list">
       <div v-for="(item, idx) in realList" :key="`item${idx}`">
-        <ModifyPart :partId="item.part_id" :colorId="item.color_id">
+        <ModifyPart
+          :partId="item.part_id"
+          :colorId="item.color_id"
+          :quantity="item.quantity"
+          :idx="idx"
+          @changedInfo="change"
+        >
           <div class="items_container" slot="click">
             <div class="img_box">
               <img :src="item.part_img" alt="noImage" class="part_img" />
@@ -27,6 +33,7 @@
 <script>
 import LegoSort from "../../../jsonData/LegoSort.json";
 import ModifyPart from "./SetLegoRail/ModifyPart";
+import { mapActions } from "vuex";
 export default {
   components: {
     ModifyPart
@@ -37,38 +44,16 @@ export default {
         { part_id: 10057, color_id: 2, quantity: 3 },
         { part_id: 10058, color_id: 1, quantity: 3 },
         { part_id: 10057, color_id: 3, quantity: 3 },
-        { part_id: 10058, color_id: 4, quantity: 3 },
-        { part_id: 10057, color_id: 5, quantity: 3 },
-        { part_id: 10058, color_id: 6, quantity: 3 },
-        { part_id: 10057, color_id: 7, quantity: 3 },
-        { part_id: 10057, color_id: 2, quantity: 3 },
-        { part_id: 10058, color_id: 1, quantity: 3 },
-        { part_id: 10057, color_id: 3, quantity: 3 },
-        { part_id: 10058, color_id: 4, quantity: 3 },
-        { part_id: 10057, color_id: 5, quantity: 3 },
-        { part_id: 10058, color_id: 6, quantity: 3 },
-        { part_id: 10057, color_id: 2, quantity: 3 },
-        { part_id: 10058, color_id: 1, quantity: 3 },
-        { part_id: 10057, color_id: 3, quantity: 3 },
-        { part_id: 10058, color_id: 4, quantity: 3 },
-        { part_id: 10057, color_id: 5, quantity: 3 },
-        { part_id: 10058, color_id: 6, quantity: 3 },
-        { part_id: 10057, color_id: 7, quantity: 3 },
-        { part_id: 10057, color_id: 2, quantity: 3 },
-        { part_id: 10058, color_id: 1, quantity: 3 },
-        { part_id: 10057, color_id: 3, quantity: 3 },
-        { part_id: 10058, color_id: 4, quantity: 3 },
-        { part_id: 10057, color_id: 5, quantity: 3 },
-        { part_id: 10058, color_id: 6, quantity: 3 }
+        { part_id: 10058, color_id: 2, quantity: 3 }
       ],
       check: LegoSort,
-      realList: []
+      realList: [],
+      dialog: false
     };
   },
   mounted() {
     let realList = [];
     this.mockList.forEach(item => {
-      console.log(item);
       let tmp = {
         part_id: item.part_id,
         color_id: item.color_id,
@@ -79,6 +64,43 @@ export default {
       realList.push(tmp);
     });
     this.realList = realList;
+  },
+  methods: {
+    ...mapActions("Parts", ["updateParts"]),
+    change(info) {
+      this.realList.forEach((item, i) => {
+        if (
+          item.color_id === info.colorId &&
+          item.part_id === info.partId &&
+          i !== info.idx
+        ) {
+          item.quantity += info.quantity;
+          this.realList.splice(info.idx, 1);
+          this.dialog = false;
+          return;
+        } else {
+          this.realList[info.idx]["color_id"] = info.colorId;
+          this.realList[info.idx]["rgb"] = LegoSort.colors[info.colorId];
+          this.realList[info.idx]["quantity"] = info.quantity;
+        }
+      });
+      this.dialog = false;
+    },
+    async onSubmit() {
+      const newBasket = [];
+      this.realList.forEach(item => {
+        let info = {
+          part_id: item.part_id,
+          color_id: Number(item.color_id),
+          qte: Number(item.quantity)
+        };
+        newBasket.push(info);
+      });
+      const params = { UpdateList: newBasket };
+      await this.updateParts(params);
+      alert("부품이 등록되었습니다");
+      this.$router.push("mypage/" + localStorage.getItem("pk"));
+    }
   }
 };
 </script>
