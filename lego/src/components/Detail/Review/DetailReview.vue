@@ -13,7 +13,7 @@
         class="detail_review_img"
         v-else
       />
-      <div class="rating">
+      <div class="rating" v-if="updateFlag === false">
         <div v-if="ratingTest === 5">
           <i class="fas fa-star gold_star"></i>
           <i class="fas fa-star gold_star"></i>
@@ -57,6 +57,33 @@
           <i class="fas fa-star gray_star"></i>
         </div>
       </div>
+      <div class="rating" v-else>
+        <i
+          class="fas fa-star"
+          @click="ratingUpdate(1)"
+          :style="updateRating <= 0 ? ratingStyle[1] : ratingStyle[0]"
+        ></i>
+        <i
+          class="fas fa-star"
+          @click="ratingUpdate(2)"
+          :style="updateRating <= 1 ? ratingStyle[1] : ratingStyle[0]"
+        ></i>
+        <i
+          class="fas fa-star"
+          @click="ratingUpdate(3)"
+          :style="updateRating <= 2 ? ratingStyle[1] : ratingStyle[0]"
+        ></i>
+        <i
+          class="fas fa-star"
+          @click="ratingUpdate(4)"
+          :style="updateRating <= 3 ? ratingStyle[1] : ratingStyle[0]"
+        ></i>
+        <i
+          class="fas fa-star"
+          @click="ratingUpdate(5)"
+          :style="updateRating <= 4 ? ratingStyle[1] : ratingStyle[0]"
+        ></i>
+      </div>
     </div>
     <div class="detail_review_desc">
       <div class="detail_review_info">
@@ -80,12 +107,20 @@
       </div>
       <div class="detail_review_content" v-else>
         <textarea
-          cols="100"
-          rows="2"
-          id="detail-review-textarea"
+          cols="95"
+          rows="5"
+          class="detail_review_modi"
           v-model="sentences"
         >
         </textarea>
+        <div class="update_btn">
+          <div @click="onUpdate()" class="update_on">
+            완료
+          </div>
+          <div @click="updateCancle()" class="update_cancle">
+            취소
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -135,8 +170,19 @@ export default {
       ratingTest: 0,
       time: "",
       sentences: "",
+      tempSentences: "",
       isMe: false,
-      updateFlag: false
+      updateFlag: false,
+      updateRating: 0,
+      updateDesc: "",
+      ratingStyle: [
+        {
+          color: "gold"
+        },
+        {
+          color: "black"
+        }
+      ]
     };
   },
   mounted() {
@@ -157,10 +203,27 @@ export default {
     },
     isUpdate() {
       this.updateFlag = true;
+      this.tempSentences = this.sentences;
+    },
+    updateCancle() {
+      this.updateFlag = false;
+      this.updateRating = 0;
+      this.sentences = this.tempSentences;
+    },
+    ratingUpdate(value) {
+      this.updateRating = value;
     },
     async onUpdate() {
+      if (typeof this.sentences === "object") {
+        this.sentences = this.sentences.join("\n");
+      }
       const params = {
-        id: this.reviewId
+        lego_set_id: this.setId,
+        id: this.reviewId,
+        info: {
+          score: this.updateRating,
+          content: this.sentences
+        }
       };
       await this.reviewUpdate(params);
     },
@@ -192,6 +255,7 @@ export default {
 }
 .detail_review_desc {
   flex: 9;
+  overflow: hidden;
 }
 .detail_review_info {
   display: block;
@@ -223,4 +287,24 @@ export default {
   display: inline-block;
   margin-right: 10px;
 }
+.detail_review_modi {
+  border: 1px solid black;
+}
+.update_btn {
+  float: right;
+  margin-right: 18px;
+}
+.update_on,
+.update_cancle {
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 0 5px;
+  background-color: gold;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+/* .update_cancle {
+  display: inline-block;
+} */
 </style>

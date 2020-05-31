@@ -114,8 +114,6 @@ export default {
 
     this.pageLength = Math.ceil(this.sortedParts.length / 27);
     this.slicedParts = this.sortedParts.slice(this.start * 27, this.page * 27);
-
-    // console.log(this.sortedParts);
     this.json_data = this.sortedParts.map(e => ({
       part_id: e[0],
       part_name: e[4],
@@ -123,7 +121,6 @@ export default {
       color_rgb: e[2],
       quantity: e[3]
     }));
-    console.log(this.json_data);
   },
   computed: {
     start: function() {

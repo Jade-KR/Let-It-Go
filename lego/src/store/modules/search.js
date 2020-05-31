@@ -30,7 +30,6 @@ const actions = {
       return false;
     }
     const models = resp.results.map(e => e);
-    console.log(models);
     if (append) {
       commit("addModelList", models);
     } else {

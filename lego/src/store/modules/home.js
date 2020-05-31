@@ -17,7 +17,8 @@ const state = {
     updated_at: ""
   },
   modelList: [],
-  modelPage: "1"
+  modelPage: "1",
+  likeModelPage: "1"
 };
 
 const actions = {
@@ -44,13 +45,12 @@ const actions = {
     const append = params.append;
     const resp = await api.getLikeModels(params).then(res => res.data);
     const models = resp.results.map(e => e);
-    console.log(models);
     if (append) {
       commit("addModelList", models);
     } else {
       commit("setModels", models);
     }
-    commit("setModelPage", resp.next);
+    commit("setLikeModelPage", resp.next);
   }
 };
 
@@ -67,8 +67,13 @@ const mutations = {
   setModelPage(state, url) {
     state.modelPage = new URL(url).searchParams.get("page");
   },
+  setLikeModelPage(state, url) {
+    state.likeModelPage = new URL(url).searchParams.get("page");
+  },
   resetModels(state) {
     state.modelList = [];
+    state.modelPage = "1";
+    state.likeModelPage = "1";
   }
 };
 

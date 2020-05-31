@@ -3,7 +3,6 @@
     <div id="detail_side_box">
       <div id="detail_side_desc">
         <div id="detail_side_title">
-          <!-- <b>WHATISTHISWHATIST HISWHATISTHI SWHATISTHISWHATISTHIS</b> -->
           <b>{{ setName }}</b>
         </div>
 
@@ -11,14 +10,21 @@
 
         <div id="detail_side_designers">
           <div id="detail_side_designer">Designer</div>
-          <div id="detail_side_designer_id" @click="goMypage()">
+          <div
+            id="detail_side_designer_id"
+            @click="goMypage()"
+            v-if="nickname !== 'Official Set'"
+          >
+            <b>{{ nickname }}</b>
+          </div>
+          <div id="detail_side_designer_id" @click="goOfficial()" v-else>
             <b>{{ nickname }}</b>
           </div>
         </div>
         <div id="detail_side_bricks">
           <div id="detail_side_brick">Bricks</div>
           <div id="detail_side_part">
-            <b>{{ parts }} Parts</b>
+            <b>{{ partsLength }} Parts</b>
           </div>
         </div>
         <div id="detail_side_themes">
@@ -73,7 +79,7 @@
 
       <div id="detail_side_similar">
         <div id="detail_side_similar_text">You Can Make</div>
-        <div id="detail_side_similar_percent">86%</div>
+        <div id="detail_side_similar_percent">{{ makePercent }}%</div>
       </div>
     </div>
     <div id="detail_side_ad">
@@ -101,9 +107,12 @@ export default {
       type: String,
       default: ""
     },
-    parts: {
+    partsLength: {
       type: Number,
       default: 0
+    },
+    parts: {
+      type: Array
     },
     tags: {
       type: String,
@@ -132,7 +141,7 @@ export default {
   },
   data() {
     return {
-      tagList: ["태그가 없습니다."],
+      tagList: [],
       themeName: "",
       legoThemeList: LegoThemes["rows"],
       likeFlag: false,
@@ -148,7 +157,8 @@ export default {
           backgroundColor: "rgba(0,0,0,0)",
           color: "black"
         }
-      ]
+      ],
+      makePercent: ""
     };
   },
   watch: {
@@ -178,9 +188,42 @@ export default {
     } else if (this.isLike === 0) {
       this.likeFlag = false;
     }
+
+    const myparts = await this.getUserPartsAll();
+    var allPartSum = 0;
+    const sortedParts = Object();
+    this.parts.forEach(e => {
+      let part_id = e.part_id;
+      let color_id = e.color_id;
+      let quantity = e.quantity;
+      allPartSum += quantity;
+      let temp = Object();
+      temp[color_id] = quantity;
+      sortedParts[part_id] = temp;
+    });
+
+    var myPartSum = 0;
+    for (let i = 0; i < myparts.length; ++i) {
+      if (sortedParts[myparts[i].part_id]) {
+        if (sortedParts[myparts[i].part_id][myparts[i].color_id]) {
+          if (
+            sortedParts[myparts[i].part_id][myparts[i].color_id] >=
+            myparts[i].quantity
+          ) {
+            myPartSum += myparts[i].quantity;
+          } else {
+            myPartSum += sortedParts[myparts[i].part_id][myparts[i].color_id];
+          }
+        }
+      }
+    }
+    this.makePercent = ((myPartSum / allPartSum) * 100).toFixed(1);
+    if (this.makePercent === "100.0") {
+      this.makePercent = "100";
+    }
   },
   methods: {
-    ...mapActions("detail", ["onLike"]),
+    ...mapActions("detail", ["onLike", "getUserPartsAll"]),
     goMypage() {
       if (this.userId === null) {
         var user_id = localStorage.getItem("pk");
@@ -188,6 +231,9 @@ export default {
         user_id = this.userId;
       }
       router.push("/mypage" + "/" + user_id);
+    },
+    goOfficial() {
+      window.open("https://www.lego.com/ko-kr");
     },
     async pushLike() {
       const params = {

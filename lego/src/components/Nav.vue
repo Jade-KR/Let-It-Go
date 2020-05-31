@@ -19,10 +19,25 @@
           <i class="fas fa-search right_icon" @click="goSearch"></i>
           <i class="fas fa-plus right_icon" @click="goWrite"></i>
           <div class="mypage" @click="goMyPage" v-show="checkLogin">
-            <img :src="profilePic" alt="noImage" class="picture" />
+            <img
+              :src="profilePic"
+              alt="noImage"
+              class="picture"
+              id="right_img"
+            />
           </div>
-          <span class="login_btn" v-if="checkLogin === false" @click="goLogin()">로그인</span>
-          <span class="register_btn" v-if="checkLogin === false" @click="goRegister()">회원가입</span>
+          <span
+            class="login_btn right_icon"
+            v-if="checkLogin === false"
+            @click="goLogin()"
+            >로그인</span
+          >
+          <span
+            class="register_btn right_icon"
+            v-if="checkLogin === false"
+            @click="goRegister()"
+            >회원가입</span
+          >
           <!-- <i class="fas fa-user-alt" @click="goMyPage"></i> -->
         </div>
       </div>
@@ -118,6 +133,8 @@ export default {
     scrollEvent() {
       if (document.documentElement.scrollTop >= 100) {
         document.getElementById("logo_box_img").style.width = "100px";
+        document.getElementById("right_img").style.width = "25px";
+        document.getElementById("right_img").style.height = "25px";
         const icons = document.getElementsByClassName("right_icon");
         icons.forEach(e => {
           e.style.fontSize = "18px";
@@ -128,6 +145,8 @@ export default {
         });
       } else if (document.documentElement.scrollTop === 0) {
         document.getElementById("logo_box_img").style.width = "230px";
+        document.getElementById("right_img").style.width = "33px";
+        document.getElementById("right_img").style.height = "33px";
         const icons = document.getElementsByClassName("right_icon");
         icons.forEach(e => {
           e.style.fontSize = "30px";
@@ -269,5 +288,6 @@ export default {
   width: 100%;
   height: 100%;
   border-radius: 50%;
+  transition: 0.3s ease-in-out all;
 }
 </style>

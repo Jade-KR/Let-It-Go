@@ -2,13 +2,12 @@ import api from "../../api";
 import router from "../../router";
 
 const state = {
-  authFlag: false
+  authFlag: false,
+  isCategory: false
 };
 
 const actions = {
-  async isTokenVerify({
-    commit
-  }) {
+  async isTokenVerify({ commit }) {
     commit;
     const params = {
       token: localStorage.getItem("token")
@@ -31,17 +30,16 @@ const actions = {
     }
     return true;
   },
-  async register({
-    commit
-  }, params) {
+  async register({ commit }, params) {
     commit;
-    await api
+    const resp = await api
       .register(params)
       .then(res => {
         if (res.status == 201) {
           alert("인증 이메일을 발송하였습니다. 확인해주세요.");
           commit("setAuthFlag", false);
           router.push("/");
+          return true;
         }
       })
       .catch(err => {
@@ -52,11 +50,11 @@ const actions = {
         } else if (err.response.data.email) {
           alert("이메일이 중복되었습니다.");
         }
+        return false;
       });
+    return resp;
   },
-  async login({
-    commit
-  }, params) {
+  async login({ commit }, params) {
     commit;
     await api
       .login(params)
@@ -72,7 +70,13 @@ const actions = {
         localStorage.setItem("image", user.image);
         localStorage.setItem("gender", user.gender);
         localStorage.setItem("age", user.age);
+        localStorage.setItem("category", "null");
         commit("setAuthFlag", false);
+        if (localStorage.getItem("category") === "null") {
+          commit("setIsCategory", false);
+        } else {
+          commit("setIsCategory", true);
+        }
         router.push("/");
       })
       .catch(err => {
@@ -86,9 +90,7 @@ const actions = {
         }
       });
   },
-  SHA256({
-    commit
-  }, s) {
+  SHA256({ commit }, s) {
     commit;
     var chrsz = 8;
     var hexcase = 0;
@@ -311,15 +313,11 @@ const actions = {
     s = Utf8Encode(s);
     return binb2hex(core_sha256(str2binb(s), s.length * chrsz));
   },
-  async changePassword({
-    commit
-  }, params) {
+  async changePassword({ commit }, params) {
     commit;
     await api.changePasssword(params);
   },
-  async logout({
-    commit
-  }) {
+  async logout({ commit }) {
     commit;
     await api.logout();
     localStorage.clear();
@@ -330,6 +328,9 @@ const actions = {
 const mutations = {
   setAuthFlag(state, value) {
     state.authFlag = value;
+  },
+  setIsCategory(state, value) {
+    state.isCategory = value;
   }
 };
 

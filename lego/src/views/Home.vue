@@ -6,6 +6,11 @@
     infinite-scroll-distance="10"
   >
     <div id="home_show">
+      <div>
+        <user-category>
+          <span slot="userCategory" id="userCategory" />
+        </user-category>
+      </div>
       <div
         @click="styleCheck()"
         v-if="styleFlag === false"
@@ -38,12 +43,14 @@
 
 <script>
 import HomeCard from "@/components/Home/HomeCard";
+import UserCategory from "../components/Home/UserCategory";
 import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
   name: "Home",
   components: {
-    HomeCard
+    HomeCard,
+    UserCategory
   },
   data() {
     return {
@@ -74,7 +81,9 @@ export default {
     ...mapState({
       homeCate: state => state.home.homeCate,
       models: state => state.home.modelList,
-      page: state => state.home.modelPage
+      page: state => state.home.modelPage,
+      likePage: state => state.home.likeModelPage,
+      isCategory: state => state.auth.isCategory
     })
   },
   watch: {
@@ -93,6 +102,9 @@ export default {
     }
   },
   async mounted() {
+    if (this.isCategory === false) {
+      document.getElementById("userCategory").click();
+    }
     const params = {
       page: 1,
       append: false
@@ -120,11 +132,15 @@ export default {
     async loadMore() {
       this.loading = true;
       const params = {
-        page: this.page,
         append: true
       };
-
-      await this.getModels(params);
+      if (this.homeCate === 1) {
+        params["page"] = this.page;
+        await this.getModels(params);
+      } else if (this.homeCate === 2) {
+        params["page"] = this.likePage;
+        await this.getLikeModels(params);
+      }
       setTimeout(() => {
         this.loading = false;
       }, 1000);
