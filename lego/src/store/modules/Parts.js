@@ -15,6 +15,9 @@ const state = {
   userParts: [],
   partPageLength: 1,
   originalCnt: 0,
+  stopScroll: false,
+  partList: [],
+  partPage: "1"
 
 }
 
@@ -64,7 +67,19 @@ const mutations = {
   },
   deleteAllParts(state) {
     state.userParts = new Array()
-  }
+  },
+  setParts(state, model) {
+    state.partList = model.map(e => e);
+  },
+  setPartPage(state, url) {
+    if (url == null) {
+      return state.stopScroll = true
+    }
+    state.partPage = new URL(url).searchParams.get("page");
+  },
+  addPartList(state, model) {
+    state.partList = state.partList.concat(model);
+  },
 }
 
 
@@ -100,7 +115,7 @@ const actions = {
   async updateParts({
     commit
   }, params) {
-    console.log(params)
+    // console.log(params)
     await api.addUserParts(params)
     commit("resetBasket")
   },
@@ -114,7 +129,27 @@ const actions = {
     commit
   }) {
     commit("deleteAllParts")
+  },
+  async getParts({
+    commit
+  }, params) {
+    commit;
+    // console.log(params)
+    const append = params.append;
+    const resp = await api.getUserParts(params).then(res => res.data);
+    const models = resp.results.map(e => e);
+    // console.log(resp)
+    if (append) {
+      commit("addPartList", models);
+    } else {
+      commit("setParts", models);
+    }
+    commit("setPartPage", resp.next);
+  },
+  resetStop() {
+    state.stopScroll = false
   }
+
 }
 
 export default {

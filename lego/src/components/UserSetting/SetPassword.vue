@@ -4,16 +4,12 @@
       <div class="photo_box">
         <div class="label_box">
           <div class="photo_frame">
-            <img
-              src="https://images.unsplash.com/photo-1472457974886-0ebcd59440cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-              alt
-              class="photo"
-            />
+            <img :src="profilePic" alt class="photo" />
           </div>
         </div>
         <div class="input_box">
           <div class="photo_desc">
-            <h1 class="user_id">Jade</h1>
+            <h1 class="user_id">{{name}}</h1>
           </div>
         </div>
       </div>
@@ -86,7 +82,7 @@
 
 <script>
 import { ValidationProvider, ValidationObserver } from "vee-validate";
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 export default {
   components: {
     ValidationProvider,
@@ -96,8 +92,20 @@ export default {
     return {
       currentPw: "",
       newPw: "",
-      checkPw: ""
+      checkPw: "",
+      profilePic: localStorage.getItem("image"),
+      name: localStorage.getItem("username")
     };
+  },
+  computed: {
+    ...mapState({
+      photoFlag: state => state.user.photoFlag
+    })
+  },
+  watch: {
+    photoFlag() {
+      this.profilePic = localStorage.getItem("image");
+    }
   },
   methods: {
     ...mapActions("auth", ["changePassword", "SHA256", "logout"]),
@@ -178,7 +186,7 @@ textarea {
 .photo {
   width: 100%;
   height: 100%;
-  border-radius: 180%;
+  border-radius: 50%;
 }
 .user_id {
   text-align: left;

@@ -33,7 +33,7 @@ export default {
   data() {
     return {
       dialog: false,
-      menus: ["프로필 편집", "비밀번호 변경", "레고레일 설정"]
+      menus: ["프로필 편집", "비밀번호 변경", "레고레일"]
     };
   },
   methods: {

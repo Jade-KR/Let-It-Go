@@ -44,12 +44,16 @@ export default {
       id: this.$route.params.user_id
     };
     await this.getLikeModels(params);
+    if (this.stopScroll === true) {
+      return;
+    }
     this.loading = false;
   },
   computed: {
     ...mapState({
       userModels: state => state.mypage.likeModelList,
-      page: state => state.mypage.likeModelPage
+      page: state => state.mypage.likeModelPage,
+      stopScroll: state => state.mypage.stopScroll
     })
   },
   methods: {
@@ -62,9 +66,12 @@ export default {
         id: this.$route.params.user_id
       };
       await this.getLikeModels(params);
+      if (this.stopScroll === true) {
+        return;
+      }
       setTimeout(() => {
         this.loading = false;
-      }, 3000);
+      }, 1000);
     },
     goDetail(item) {
       this.$router.push({

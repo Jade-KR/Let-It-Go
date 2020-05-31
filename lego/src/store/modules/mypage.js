@@ -8,7 +8,8 @@ const state = {
   userModelList: [],
   userModelPage: "1",
   likeModelList: [],
-  likeModelPage: "1"
+  likeModelPage: "1",
+  stopScroll: false,
 };
 
 const actions = {
@@ -72,14 +73,14 @@ const actions = {
     const append = params.append;
     const resp = await api.getUserLikeModels(params).then(res => res.data);
     const models = resp.results.map(e => e);
-    // console.log(models)
+    // console.log(resp)
     if (append) {
       commit("addLikeModelList", models);
     } else {
       commit("setLikeModels", models);
     }
     commit("setLikeModelPage", resp.next);
-  }
+  },
 };
 
 const mutations = {
@@ -99,7 +100,9 @@ const mutations = {
     state.userModelList = model.map(e => e);
   },
   setUserModelPage(state, url) {
-    console.log(url);
+    if (url == null) {
+      return state.stopScroll = true
+    }
     state.userModelPage = new URL(url).searchParams.get("page");
   },
   addLikeModelList(state, model) {
@@ -109,7 +112,9 @@ const mutations = {
     state.likeModelList = model.map(e => e);
   },
   setLikeModelPage(state, url) {
-    console.log(url);
+    if (url == null) {
+      return state.stopScroll = true
+    }
     state.likeModelPage = new URL(url).searchParams.get("page");
   }
 };

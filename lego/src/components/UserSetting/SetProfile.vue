@@ -3,8 +3,11 @@
     <div class="all_box">
       <div class="photo_box">
         <div class="label_box">
-          <div class="photo_frame">
+          <div class="photo_frame" v-if="loading === false">
             <img :src="profilePic" alt class="photo" />
+          </div>
+          <div class="loading" v-else>
+            <i class="fa fa-spinner fa-spin"></i>
           </div>
         </div>
         <div class="input_box">
@@ -92,7 +95,8 @@ export default {
       nickname: localStorage.getItem("nickname"),
       comment: localStorage.getItem("comment"),
       email: localStorage.getItem("email"),
-      name: localStorage.getItem("username")
+      name: localStorage.getItem("username"),
+      loading: false
     };
   },
   methods: {
@@ -100,21 +104,26 @@ export default {
     async changeToUrl(e) {
       let file = e.target.files[0];
       let reader = new FileReader();
-      reader.onload = a => {
-        this.updateImg(a.target.result);
+      reader.onload = async a => {
+        this.loading = true;
+        await this.updateImg(a.target.result);
+        this.loading = false;
       };
       if (file) {
         reader.readAsDataURL(file);
       }
     },
-    onSubmit() {
+    async onSubmit() {
       const params = {
         nickname: this.nickname,
         comment: this.comment,
         email: this.email,
         id: localStorage.getItem("pk")
       };
-      this.updateInfo(params).then(alert("변경이 완료되었습니다."));
+      await this.updateInfo(params).then(alert("변경이 완료되었습니다."));
+      localStorage.setItem("nickname", this.nickname);
+      localStorage.setItem("email", this.email);
+      localStorage.setItem("comment", this.comment);
     }
   },
   computed: {
@@ -192,7 +201,7 @@ textarea {
 .photo {
   width: 100%;
   height: 100%;
-  border-radius: 180%;
+  border-radius: 50%;
 }
 .user_id {
   text-align: left;
@@ -251,5 +260,13 @@ textarea {
   top: 50px;
   left: 0px;
   font-size: 13px;
+}
+.loading {
+  width: 50px;
+  border-radius: 50%;
+  background: rgb(243, 243, 243);
+  height: 50px;
+  text-align: center;
+  line-height: 50px;
 }
 </style>

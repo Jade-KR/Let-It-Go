@@ -1,7 +1,12 @@
 <template>
-  <div class="container">
+  <div
+    class="container"
+    v-infinite-scroll="loadMore"
+    infinite-scroll-disabled="loading"
+    infinite-scroll-distance="10"
+  >
     <div class="control_box">
-      <AddParts @page="page=1">
+      <AddParts @close="added">
         <button class="submit_btn" slot="click">
           <i class="fas fa-plus"></i>&nbsp;부품 추가
         </button>
@@ -17,33 +22,28 @@
           :colorId="part.color_id"
           :quantity="part.quantity"
           :rgb="part.rgb"
-          :page="page"
-          @pageDown="page -= 1"
+          :idx="idx"
+          @update="changed"
         >
-          <div class="body_img_box" slot="click">
-            <img
-              class="body_img"
-              :src="`${part.image}` === `` ? noImage : `${part.image}`"
-              alt="photo"
-            />
+          <div class="item_box" slot="click">
+            <div class="body_img_box">
+              <img
+                class="body_img"
+                :src="`${part.image}` === `` ? noImage : `${part.image}`"
+                alt="photo"
+              />
+            </div>
+            <div class="part_info">
+              <p class="part_id">{{part.part_id}}</p>
+              <div class="part_color_cnt_box">
+                <div class="color" :style="`background-color: #${part.rgb}`"></div>
+                <p class="part_quantity">* {{part.quantity}}</p>
+              </div>
+            </div>
           </div>
         </ModifyParts>
-        <div class="part_info">
-          <p class="part_id">{{part.part_id}}</p>
-          <div class="part_color_cnt_box">
-            <div class="color" :style="`background-color: #${part.rgb}`"></div>
-            <p class="part_quantity">* {{part.quantity}}</p>
-          </div>
-        </div>
       </div>
     </div>
-    <v-layout justify-center>
-      <v-flex xs8>
-        <v-card-text>
-          <v-pagination :length="partPageLength" v-model="page"></v-pagination>
-        </v-card-text>
-      </v-flex>
-    </v-layout>
   </div>
 </template>
 <script>
@@ -57,7 +57,17 @@ export default {
     ModifyParts
   },
   async mounted() {
-    this.getUserParts(1);
+    const params = {
+      page: 1,
+      append: false,
+      id: this.$route.params.user_id
+    };
+    await this.resetStop();
+    await this.getParts(params);
+    if (this.stopScroll === true) {
+      return;
+    }
+    this.loading = false;
   },
   data() {
     return {
@@ -65,22 +75,57 @@ export default {
       noImage: require("../../../assets/icons/no_img.jpg"),
       pageLength: 10,
       dialog: false,
-      page: 1
+      loading: true
     };
   },
   methods: {
-    ...mapActions("Parts", ["getUserParts", "deleteAll"]),
+    ...mapActions("Parts", ["getParts", "resetStop"]),
+    async loadMore() {
+      this.loading = true;
+      const params = {
+        page: this.page,
+        append: true,
+        id: this.$route.params.user_id
+      };
+      await this.getParts(params);
+      if (this.stopScroll === true) {
+        return;
+      }
+      setTimeout(() => {
+        this.loading = false;
+      }, 1000);
+    },
     clean() {
       this.deleteAll();
+    },
+    changed(params) {
+      if (params.quantity <= 0) {
+        this.userParts.splice(params.idx, 1);
+      } else {
+        this.userParts[params.idx]["quantity"] = params.quantity;
+      }
+    },
+    async added() {
+      this.loading = true;
+      await this.resetStop();
+      const params = {
+        page: 1,
+        append: false,
+        id: this.$route.params.user_id
+      };
+      await this.getParts(params);
+      if (this.stopScroll === true) {
+        return;
+      }
+      this.loading = false;
     }
   },
   computed: {
-    ...mapState("Parts", ["userParts", "partPageLength", "originalCnt", "page"])
-  },
-  watch: {
-    page() {
-      this.getUserParts(this.page);
-    }
+    ...mapState({
+      userParts: state => state.Parts.partList,
+      page: state => state.Parts.partPage,
+      stopScroll: state => state.Parts.stopScroll
+    })
   }
 };
 </script>
@@ -147,7 +192,7 @@ export default {
   margin: auto;
 }
 .submit_btn {
-  background: lightblue;
+  background: rgb(120, 187, 209);
   color: white;
   width: 120px;
   height: 30px;

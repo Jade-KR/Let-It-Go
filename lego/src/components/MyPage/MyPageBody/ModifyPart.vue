@@ -8,7 +8,7 @@
       </template>
 
       <v-card>
-        <h2 class="header">수량 변경&제거</h2>
+        <h2 class="header">수량 변경&삭제</h2>
         <div class="form_box">
           <div class="label_box">
             <p class="label_name">부품 ID</p>
@@ -33,15 +33,7 @@
           </div>
           <div class="input_box">
             <v-col cols="12" sm="6" md="5" class="text_box">
-              <v-text-field
-                v-model="quantity"
-                solo
-                dense
-                type="number"
-                step="1"
-                :value="quantity"
-                min="0"
-              ></v-text-field>
+              <v-text-field :value="cnt" v-model="cnt" solo dense type="number" step="1" min="0"></v-text-field>
             </v-col>
           </div>
         </div>
@@ -65,66 +57,62 @@ export default {
     colorId: Number,
     quantity: Number,
     rgb: String,
-    page: Number
-  },
-  mounted() {
-    this.originalCnt = this.quantity;
-    this.check = this.quantity;
+    page: Number,
+    idx: Number
   },
   data() {
     return {
       dialog: false,
       loading: false,
       originalCnt: 0,
-      check: 0
+      cnt: 0
     };
   },
-  watch: {
-    quantity() {
-      this.originalCnt = this.quantity;
-    }
+  mounted() {
+    this.originalCnt = this.quantity;
+    this.cnt = this.quantity;
   },
   methods: {
-    ...mapActions("Parts", ["updateParts", "getUserParts"]),
+    ...mapActions("Parts", ["updateParts", "getParts"]),
     async submit() {
       let num = 0;
-      if (this.quantity <= 0) {
-        num = -Number(this.check);
-      } else if (this.quantity > this.check) {
-        num = Number(this.quantity - this.check);
+      if (this.cnt <= 0) {
+        num = -Number(this.originalCnt);
+      } else if (this.cnt > this.originalCnt) {
+        num = Number(this.cnt - this.originalCnt);
       } else {
-        num = -Number(this.check - this.quantity);
+        num = -Number(this.originalCnt - this.cnt);
       }
-      const params = [
+      const info = [
         {
           part_id: String(this.partId),
           color_id: Number(this.colorId),
           qte: Number(num)
         }
       ];
-      await this.updateParts({ UpdateList: params });
-      await this.getUserParts(this.page);
+      await this.updateParts({ UpdateList: info });
+      const params = {
+        idx: Number(this.idx),
+        quantity: Number(this.cnt)
+      };
+      this.$emit("update", params);
       this.dialog = false;
-      this.originalCnt = this.quantity;
-      this.check = this.quantity;
     },
     async deleteItem() {
-      const params = [
+      const info = [
         {
           part_id: String(this.partId),
           color_id: Number(this.colorId),
           qte: Number(-this.originalCnt)
         }
       ];
-      await this.updateParts({ UpdateList: params });
-      try {
-        await this.getUserParts(this.page);
-      } catch {
-        await this.getUserParts(this.page - 1);
-        this.$emit("pageDown");
-      }
+      await this.updateParts({ UpdateList: info });
+      const params = {
+        idx: this.idx,
+        quantity: Number(0)
+      };
+      this.$emit("update", params);
       this.dialog = false;
-      this.originalCnt = this.quantity;
     }
   }
 };

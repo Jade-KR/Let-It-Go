@@ -14,23 +14,19 @@
               class="search_by_id"
               @click="currentState = 0"
               :style="currentState === 0 ? menuStyle[0] : menuStyle[1]"
-            >
-              ID로 찾기
-            </button>
+            >ID로 찾기</button>
             <button
               class="search_by_img"
               @click="checkImg()"
               :style="currentState === 1 ? menuStyle[0] : menuStyle[1]"
-            >
-              이미지로 찾기
-            </button>
+            >이미지로 찾기</button>
           </div>
           <div class="close">
             <i class="fas fa-times" @click="dialog = 0"></i>
           </div>
         </div>
-        <SearchById v-if="currentState === 0" @close="close()"></SearchById>
-        <SearchByImg v-if="currentState === 1" @close="close()"></SearchByImg>
+        <SearchById v-if="currentState === 0" @close="close"></SearchById>
+        <SearchByImg v-if="currentState === 1" @close="close"></SearchByImg>
       </v-card>
     </v-dialog>
   </div>
@@ -64,8 +60,8 @@ export default {
       this.changeStep("start");
     },
     close() {
+      this.$emit("close");
       this.dialog = false;
-      this.$emit("page");
     }
   }
 };
