@@ -62,8 +62,8 @@
 
 <script>
 import UserModal from "../UserModal";
-import Follower from "./Follower";
-import Following from "./Following";
+import Follower from "./Follower/Follower";
+import Following from "./Following/Following";
 import { mapState, mapActions } from "vuex";
 
 export default {
@@ -96,12 +96,6 @@ export default {
   },
   data() {
     return {
-      summaryItems: [
-        { title: "설계도", cnt: "0" },
-        { title: "팔로우", cnt: "0" },
-        { title: "팔로잉", cnt: "0" }
-      ],
-      dialog: false,
       isMe: true,
       followFlag: true
     };
@@ -140,12 +134,10 @@ export default {
   methods: {
     ...mapActions("mypage", ["onFollow", "follower", "following"]),
     async pushFollow() {
-      // console.log("aaa");
       const params = {
         user_id: this.$route.params.user_id
       };
       const result = await this.onFollow(params);
-      console.log(result);
       if (result === "팔로우") {
         this.followFlag = true;
       } else if (result === "팔로우 취소") {

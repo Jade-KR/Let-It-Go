@@ -11,49 +11,13 @@
         </div>
         <div class="follow_body">
           <div v-for="(following, i) in followingList" :key="`following-${i}`">
-            <div class="follow_card">
-              <img
-                :src="following.image"
-                alt="user_image"
-                class="follow_card_img"
-                v-if="following.image !== 'null'"
-                @click="goYourPage(following.id)"
-              />
-              <img
-                src="../../../../public/images/user.png"
-                alt="no_img"
-                class="follow_card_img"
-                v-else
-                @click="goYourPage(following.id)"
-              />
-              <div
-                class="follow_card_nickname"
-                @click="goYourPage(following.id)"
-              >
-                {{ following.nickname }}
-              </div>
-              <div
-                class="follow_card_btn"
-                v-if="following.isFollow === false"
-                @click="pushFollow(i, following.id)"
-              >
-                팔로우
-              </div>
-              <div
-                class="follow_card_btn"
-                v-else-if="following.isFollow === true"
-                @click="pushFollow(i, following.id)"
-              >
-                팔로우취소
-              </div>
-              <div
-                class="follow_card_btn"
-                v-else
-                @click="pushFollow(i, following.id)"
-              >
-                It's Me
-              </div>
-            </div>
+            <following-card
+              :image="following.image"
+              :isFollow="following.isFollow"
+              :id="following.id"
+              :nickname="following.nickname"
+              :idx="i"
+            ></following-card>
           </div>
         </div>
       </v-card>
@@ -62,10 +26,13 @@
 </template>
 
 <script>
+import FollowingCard from "./FollowingCard";
 import { mapState, mapActions } from "vuex";
-import router from "../../../router";
 
 export default {
+  components: {
+    FollowingCard
+  },
   props: {
     followingList: {
       type: Array
@@ -91,10 +58,10 @@ export default {
           this.followingList[i]["isFollow"] = "me";
           continue;
         }
-        this.followingList[i]["isFollow"] = false;
+        this.followingList[i]["isFollow"] = "false";
         for (let j = 0; j < this.myFollowingList.length; ++j) {
           if (this.myFollowingList[j]["id"] === this.followingList[i]["id"]) {
-            this.followingList[i]["isFollow"] = true;
+            this.followingList[i]["isFollow"] = "true";
           }
         }
       }
@@ -104,25 +71,6 @@ export default {
     ...mapActions("mypage", ["onFollowInModal"]),
     close() {
       this.following = false;
-    },
-    goYourPage(value) {
-      router.push("/mypage/" + value);
-    },
-    async pushFollow(idx, user_id) {
-      const params = {
-        user_id: user_id
-      };
-      const result = await this.onFollowInModal(params);
-      console.log(result);
-      if (result === "팔로우") {
-        this.followingList[idx]["isFollow"] = true;
-        console.log(this.followingList);
-      } else if (result === "팔로우 취소") {
-        this.followingList[idx]["isFollow"] = false;
-        console.log(this.followingList);
-      } else {
-        alert("문제가 발생했습니다.");
-      }
     }
   }
 };
