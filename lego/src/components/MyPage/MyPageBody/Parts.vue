@@ -1,60 +1,72 @@
 <template>
-  <div
-    class="container"
-    v-infinite-scroll="loadMore"
-    infinite-scroll-disabled="loading"
-    infinite-scroll-distance="10"
-  >
-    <div class="control_box">
-      <AddParts @close="added">
-        <button class="submit_btn" slot="click">
-          <i class="fas fa-plus"></i>&nbsp;부품 추가
-        </button>
-      </AddParts>
-      <button class="delete_all" @click="clean()">
-        <i class="far fa-trash-alt"></i>&nbsp;모두 삭제
-      </button>
-    </div>
-    <div class="whole_box">
-      <div class="item" v-for="(part, idx) in userParts" :key="`image${idx}`">
-        <ModifyParts
-          :partId="part.part_id"
-          :colorId="part.color_id"
-          :quantity="part.quantity"
-          :rgb="part.rgb"
-          :idx="idx"
-          @update="changed"
-        >
-          <div class="item_box" slot="click">
-            <div class="body_img_box">
-              <img
-                class="body_img"
-                :src="`${part.image}` === `` ? noImage : `${part.image}`"
-                alt="photo"
-              />
-            </div>
-            <div class="part_info">
-              <p class="part_id">{{part.part_id}}</p>
-              <div class="part_color_cnt_box">
-                <div class="color" :style="`background-color: #${part.rgb}`"></div>
-                <p class="part_quantity">* {{part.quantity}}</p>
+  <div>
+    <div
+      class="container"
+      v-infinite-scroll="loadMore"
+      infinite-scroll-disabled="loading"
+      infinite-scroll-distance="10"
+      v-if="userParts.length !== 0"
+    >
+      <div class="control_box">
+        <AddParts @close="added">
+          <button class="submit_btn" slot="click">
+            <i class="fas fa-plus"></i>&nbsp;부품 추가
+          </button>
+        </AddParts>
+        <DeleteModal @deleteAll="clean()">
+          <button class="delete_all" slot="click">
+            <i class="far fa-trash-alt"></i>&nbsp;모두 삭제
+          </button>
+        </DeleteModal>
+      </div>
+      <div class="whole_box">
+        <div class="item" v-for="(part, idx) in userParts" :key="`image${idx}`">
+          <ModifyParts
+            :partId="part.part_id"
+            :colorId="part.color_id"
+            :quantity="part.quantity"
+            :rgb="part.rgb"
+            :idx="idx"
+            @update="changed"
+          >
+            <div class="item_box" slot="click">
+              <div class="body_img_box">
+                <img
+                  class="body_img"
+                  :src="`${part.image}` === `` ? noImage : `${part.image}`"
+                  alt="photo"
+                />
+              </div>
+              <div class="part_info">
+                <p class="part_id">{{part.part_id}}</p>
+                <div class="part_color_cnt_box">
+                  <div class="color" :style="`background-color: #${part.rgb}`"></div>
+                  <p class="part_quantity">* {{part.quantity}}</p>
+                </div>
               </div>
             </div>
-          </div>
-        </ModifyParts>
+          </ModifyParts>
+        </div>
       </div>
+    </div>
+    <div v-else>
+      <NoContentsPart @added="added"></NoContentsPart>
     </div>
   </div>
 </template>
 <script>
-import AddParts from "./AddParts";
+import AddParts from "./AddParts/AddParts";
+import DeleteModal from "./DeleteModal";
 import { mapActions, mapState } from "vuex";
 import ModifyParts from "./ModifyPart";
+import NoContentsPart from "./NoContentsPart";
 
 export default {
   components: {
     AddParts,
-    ModifyParts
+    ModifyParts,
+    DeleteModal,
+    NoContentsPart
   },
   async mounted() {
     const params = {
@@ -79,7 +91,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions("Parts", ["getParts", "resetStop"]),
+    ...mapActions("Parts", ["getParts", "resetStop", "updateParts"]),
     async loadMore() {
       this.loading = true;
       const params = {
@@ -95,8 +107,18 @@ export default {
         this.loading = false;
       }, 1000);
     },
-    clean() {
-      this.deleteAll();
+    async clean() {
+      let info = [];
+      this.userParts.forEach(item => {
+        let tmp = {
+          part_id: String(item.part_id),
+          color_id: Number(item.color_id),
+          qte: -Number(item.quantity)
+        };
+        info.push(tmp);
+      });
+      await this.updateParts({ UpdateList: info });
+      this.added();
     },
     changed(params) {
       if (params.quantity <= 0) {

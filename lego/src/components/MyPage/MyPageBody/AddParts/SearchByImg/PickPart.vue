@@ -1,10 +1,7 @@
 <template>
   <div>
     <div class="lego_parts_container">
-      <h2 class="lego_category_box">부품을 선택하세요</h2>
-      <hr
-        style="border: 3px dotted rgb(255, 212, 93); width: 50%; margin: auto; border-bottom: none;"
-      />
+      <h2 class="lego_parts_title">부품을 선택하세요</h2>
       <div
         class="lego_parts_box"
         v-for="(part, idx) in slicedParts"
@@ -83,6 +80,12 @@ export default {
   width: 90%;
   height: fit-content;
   margin: auto;
+}
+.lego_parts_title {
+  width: fit-content;
+  margin: auto;
+  border-bottom: rgb(255, 194, 82) 2px dotted;
+  margin-bottom: 10px;
 }
 .lego_parts_box {
   display: inline-block;

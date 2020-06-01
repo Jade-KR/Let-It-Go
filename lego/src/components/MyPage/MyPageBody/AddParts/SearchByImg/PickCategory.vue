@@ -1,9 +1,6 @@
 <template>
   <div>
-    <h2 class="lego_category_box">부품 카테고리를 선택하세요</h2>
-    <hr
-      style="border: 3px dotted rgb(255, 212, 93); width: 50%; margin: auto; border-bottom: none;"
-    />
+    <h2 class="lego_category_title">부품 카테고리를 선택하세요</h2>
     <div class="category_items_box">
       <div class="row">
         <div
@@ -61,6 +58,12 @@ export default {
 </script>
 
 <style scoped>
+.lego_category_title {
+  width: fit-content;
+  margin: auto;
+  border-bottom: rgb(255, 194, 82) 2px dotted;
+  margin-bottom: 10px;
+}
 .category_items_box {
   display: flex;
   width: 90%;
