@@ -287,7 +287,15 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
             user.save()
             emailaddress.save()
             return Response("수정 완료")
-        return Response("수정 실패")
+        elif request.user.is_staff and request.user != user:
+            if user.is_staff:
+                user.is_staff = False
+            else:
+                user.is_staff = True
+            user.save()
+            return Response("권한 변경 성공")
+        else:
+            return Response("접근 실패")
 
     def destroy(self, request, pk=None):
         user = get_object_or_404(get_user_model(), id=pk)
@@ -295,7 +303,17 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
             user.is_active = False
             user.save()
             return Response("탈퇴 완료")
-        return Response("탈퇴 실패")
+        elif request.user.is_staff and request.user != user:
+            if user.is_active:
+                user.is_active = False
+                user.save()
+                return Response("블럭 성공")
+            else:
+                user.is_active = True
+                user.save()
+                return Response("블럭 해제")
+        else:
+            return Response("접근 실패")
 
 @api_view(['PUT'])
 def UpdateUserProfile(self):
