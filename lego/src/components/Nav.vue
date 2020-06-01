@@ -2,7 +2,7 @@
   <div>
     <div class="nav">
       <div class="nav_left">
-        <div class="logo_box" @click="goHome">
+        <div class="logo_box" @click="goHome()">
           <img src="@/assets/logo.png" alt id="logo_box_img" />
         </div>
       </div>
@@ -12,6 +12,9 @@
         </button>
         <button class="button" id="nav_pop" @click="onHomeCate(2)">
           <span data-title="인기도순!">POP!</span>
+        </button>
+        <button class="button" id="nav_you" @click="onHomeCate(3)">
+          <span data-title="추천순!">YOU!</span>
         </button>
       </div>
       <div class="nav_right">
@@ -27,13 +30,13 @@
             />
           </div>
           <span
-            class="login_btn right_icon"
+            class="login_btn logRegi"
             v-if="checkLogin === false"
             @click="goLogin()"
             >로그인</span
           >
           <span
-            class="register_btn right_icon"
+            class="register_btn logRegi"
             v-if="checkLogin === false"
             @click="goRegister()"
             >회원가입</span
@@ -90,6 +93,10 @@ export default {
         this.$router.push("/mypage" + "/" + user_id);
       }
     },
+    goMember() {
+      window.scrollTo(0, 0);
+      router.push("/member");
+    },
     goSearch() {
       window.scrollTo(0, 0);
       const locationNow = location.pathname;
@@ -142,6 +149,10 @@ export default {
         const button = document.getElementsByClassName("button");
         button.forEach(e => {
           e.style.fontSize = "18px";
+          const logRegi = document.getElementsByClassName("logRegi");
+          logRegi.forEach(e => {
+            e.style.fontSize = "12px";
+          });
         });
       } else if (document.documentElement.scrollTop === 0) {
         document.getElementById("logo_box_img").style.width = "230px";
@@ -154,6 +165,10 @@ export default {
         const button = document.getElementsByClassName("button");
         button.forEach(e => {
           e.style.fontSize = "30px";
+        });
+        const logRegi = document.getElementsByClassName("logRegi");
+        logRegi.forEach(e => {
+          e.style.fontSize = "16px";
         });
       }
     }
@@ -220,12 +235,12 @@ export default {
   font-weight: bold;
   cursor: pointer;
   transform: translateY(-4px);
-  margin-left: 20px;
+  /* margin-left: 20px; */
 }
 .register_btn {
   width: 66px;
   height: 35px;
-  margin-right: 20px;
+  /* margin-right: 20px; */
   color: rgb(138, 211, 89);
   text-align: center;
   line-height: 35px;
@@ -271,7 +286,7 @@ export default {
 #nav_pop span:after {
   background-color: green;
 }
-#nav_can span:after {
+#nav_you span:after {
   background-color: red;
 }
 .button:hover span {

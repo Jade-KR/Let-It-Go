@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -72,6 +73,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions("home", ["setUserCategory"]),
     check(idx) {
       const target = document.getElementById(`img_hover-${idx}`);
       if (target.style.opacity === "1") {
@@ -88,7 +90,11 @@ export default {
           this.params.push(i);
         }
       }
-      console.log(this.params);
+      const params = {
+        categories: ""
+      };
+      params["categories"] = this.params.join("|");
+      this.setUserCategory(params);
       this.userCategory = false;
     }
   }

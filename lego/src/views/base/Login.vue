@@ -69,6 +69,9 @@ export default {
   mounted() {
     this.setAuthFlag(true);
   },
+  destroyed() {
+    this.setAuthFlag(false);
+  },
   methods: {
     ...mapActions("auth", ["SHA256", "login"]),
     ...mapMutations("auth", ["setAuthFlag"]),

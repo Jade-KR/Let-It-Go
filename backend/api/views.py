@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, SetPart, UserLikeLegoSet
+from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, UserPart2, SetPart, UserLikeLegoSet
 from api import models, serializers
 from allauth.account.models import EmailAddress
 from rest_framework import viewsets, mixins
@@ -74,14 +74,14 @@ def crawling_part_data(pk):
 class SmallPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = "page_size"
-    max_page_size = 50
+    max_page_size = 10000
 
 class ThemeViewSet(viewsets.ModelViewSet):
     queryset = Theme.objects.all()
     serializer_class = serializers.ThemeSerializer
     pagination_class = SmallPagination
 
-class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     '''
     GET params
     name
@@ -149,6 +149,13 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
         serializer_data["reviews"] = reviews
         return Response(serializer_data)
 
+    def destroy(self, request, pk=None):
+        legoset = get_object_or_404(LegoSet, pk=pk)
+        if request.user.is_staff or (request.user.is_authenticated and legoset.user.id == request.user.id):
+            legoset.delete()
+            return Response("삭제 완료")
+        return Response("삭제 실패")
+
 class LegoPartViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = LegoPart.objects.all()
     serializer_class = serializers.LegoPartSerializer
@@ -188,6 +195,14 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             return Response(serializer_data)
         return Response("")
 
+@api_view(['POST'])
+def set_user_category(self):
+    categories = self.data.get("categories")
+    user = CustomUser.objects.get(id=self.user.id)
+    user.categories = categories
+    user.save()
+    return Response("카테고리 등록 완료")
+
 class CustomLoginView(LoginView):
     def get_response(self):
         user = get_object_or_404(models.CustomUser, username=self.user)
@@ -198,6 +213,9 @@ class CustomLoginView(LoginView):
             "comment": user.comment,
             "age": user.age,
             "gender": user.gender,
+            "is_staff": user.is_staff,
+            "categories": user.categories,
+            # "category_list": user.category_list,
             "status": "success",
             }
         orginal_response.data["user"].update(mydata)
@@ -234,7 +252,7 @@ class ReviewViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Des
 
     def destroy(self, request, pk=None):
         review = get_object_or_404(Review, pk=pk)
-        if request.user.is_authenticated and review.user.id == request.user.id:
+        if request.user.is_staff or (request.user.is_authenticated and review.user.id == request.user.id):
             user = get_object_or_404(get_user_model(), id=request.user.id)
             legoset = review.lego_set
             legoset.review_count -= 1
@@ -278,10 +296,25 @@ class FollowingUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = serializers.LegoSetSerializer(followings, many=True)
         return Response(serializer.data)
 
-class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserSerializer
     pagination_class = SmallPagination
     queryset = CustomUser.objects.all()
+
+    def list(self, request):
+        if request.user.is_staff:
+            queryset = self.filter_queryset(self.get_queryset())
+
+            page = self.paginate_queryset(queryset)
+
+            if page is not None:
+                serializer = serializers.UserSerializer2(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.serializers.UserSerializer2(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            return Response("접근 실패")
 
     def retrieve(self, request, pk=None):
         user = get_object_or_404(get_user_model(), id=pk)
@@ -300,7 +333,15 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.Des
             user.save()
             emailaddress.save()
             return Response("수정 완료")
-        return Response("수정 실패")
+        elif request.user.is_staff and request.user != user:
+            if user.is_staff:
+                user.is_staff = False
+            else:
+                user.is_staff = True
+            user.save()
+            return Response("권한 변경 성공")
+        else:
+            return Response("접근 실패")
 
     def destroy(self, request, pk=None):
         user = get_object_or_404(get_user_model(), id=pk)
@@ -308,7 +349,17 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.Des
             user.is_active = False
             user.save()
             return Response("탈퇴 완료")
-        return Response("탈퇴 실패")
+        elif request.user.is_staff and request.user != user:
+            if user.is_active:
+                user.is_active = False
+                user.save()
+                return Response("블럭 성공")
+            else:
+                user.is_active = True
+                user.save()
+                return Response("블럭 해제")
+        else:
+            return Response("접근 실패")
 
 @api_view(['PUT'])
 def UpdateUserProfile(self):
@@ -449,6 +500,18 @@ def UpdateUserPart(self):
 
 
 @api_view(['POST'])
+def UpdateUserPart2(self):
+    user = self.user
+    print(user)
+    print(self.data)
+    if user.is_authenticated:
+        data = self.data
+        UserPart2.objects.create(user=user, part_id=data["part_id"], color_id=data["color_id"])
+        print(1)
+
+    return Response("수정 완료")
+
+@api_view(['POST'])
 def CreateLegoSet(self):
     '''
     {
@@ -541,3 +604,15 @@ def follow(self):
             return Response("팔로우")
     else:
         return Response("비 인증 유저")
+
+
+@api_view(['GET'])
+def crawll(self, idx):
+    for i in range(idx, idx + 50):
+        if not SetPart.objects.filter(lego_set_id=i):
+            print('crawll ' + str(i))
+            try:
+                crawling_part_data(i)
+            except:
+                print('fail on ' + str(i))
+            

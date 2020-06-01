@@ -34,10 +34,13 @@
               />
             </div>
             <div class="part_info">
-              <p class="part_id">{{part.part_id}}</p>
+              <p class="part_id">{{ part.part_id }}</p>
               <div class="part_color_cnt_box">
-                <div class="color" :style="`background-color: #${part.rgb}`"></div>
-                <p class="part_quantity">* {{part.quantity}}</p>
+                <div
+                  class="color"
+                  :style="`background-color: #${part.rgb}`"
+                ></div>
+                <p class="part_quantity">* {{ part.quantity }}</p>
               </div>
             </div>
           </div>

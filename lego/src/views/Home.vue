@@ -6,7 +6,7 @@
     infinite-scroll-distance="10"
   >
     <div id="home_show">
-      <div>
+      <div v-if="!isCate">
         <user-category>
           <span slot="userCategory" id="userCategory" />
         </user-category>
@@ -56,6 +56,7 @@ export default {
     return {
       loading: true,
       styleFlag: false,
+      isCate: true,
       matrixWidth: {
         width: "70vw",
         margin: "auto",
@@ -83,6 +84,7 @@ export default {
       models: state => state.home.modelList,
       page: state => state.home.modelPage,
       likePage: state => state.home.likeModelPage,
+      recommendPage: state => state.home.recommendModelPage,
       isCategory: state => state.auth.isCategory
     })
   },
@@ -97,12 +99,15 @@ export default {
         await this.getModels(params);
       } else if (this.homeCate === 2) {
         await this.getLikeModels(params);
+      } else if (this.homeCate === 3) {
+        await this.getRecommendModels(params);
       }
       this.loading = false;
     }
   },
   async mounted() {
-    if (this.isCategory === false) {
+    if (localStorage.getItem("categories") === "null") {
+      await this.setCate();
       document.getElementById("userCategory").click();
     }
     const params = {
@@ -113,14 +118,17 @@ export default {
       await this.getModels(params);
     } else if (this.homeCate === 2) {
       await this.getLikeModels(params);
+    } else if (this.homeCate === 3) {
+      await this.getRecommendModels(params);
     }
+
     this.loading = false;
   },
   beforeDestroy() {
     this.resetModels();
   },
   methods: {
-    ...mapActions("home", ["getModels", "getLikeModels"]),
+    ...mapActions("home", ["getModels", "getLikeModels", "getRecommendModels"]),
     ...mapMutations("home", ["resetModels"]),
     styleCheck() {
       if (this.styleFlag === false) {
@@ -140,10 +148,16 @@ export default {
       } else if (this.homeCate === 2) {
         params["page"] = this.likePage;
         await this.getLikeModels(params);
+      } else if (this.homeCate === 3) {
+        params["page"] = this.recommendPage;
+        await this.getRecommendModels(params);
       }
       setTimeout(() => {
         this.loading = false;
       }, 1000);
+    },
+    setCate() {
+      this.isCate = false;
     }
   }
 };

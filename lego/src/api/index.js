@@ -129,5 +129,8 @@ export default {
     return http.get(`${apiUrl}/UserPart?page_size=10000`, {
       headers
     });
+  },
+  setUserCategory(params) {
+    return http.post(`${apiUrl}/set_user_category`, params, { headers });
   }
 };

@@ -1,13 +1,16 @@
 <template>
   <div>
-    <div id="excel_export">
-      <download-excel
-        :data="json_data"
-        :fields="json_fields"
-        :name="`${setName}.xls`"
-      >
-        엑셀로 다운로드
-      </download-excel>
+    <div id="part_header">
+      <div @click="changeCate('all')" id="all_parts">
+        <i class="fas fa-exclamation icon"></i>전체 부품
+      </div>
+      <div @click="changeCate('need')" id="need_parts">
+        <i class="fas fa-question icon"></i>필요한 부품
+      </div>
+    </div>
+    <hr id="dived_line" />
+    <div v-if="isAll === true && partFlag === 'need'" id="iHaveAll">
+      모두 가지고 있습니다!
     </div>
     <div class="lego_parts_container">
       <div
@@ -23,7 +26,6 @@
         />
         <img v-else :src="part[1]" :alt="part[0]" class="lego_part" />
         <div class="part_info">
-          <!-- <p class="part_id">{{ part[0] }}</p> -->
           <div class="part_id">
             <div style="margin-bottom: 5px;">
               {{ part[0] }}
@@ -49,11 +51,38 @@
         </v-card-text>
       </v-flex>
     </v-layout>
+    <div @click="addParts()" id="add_my_parts" v-if="isLogin === true">
+      <div v-if="partFlag === 'all'">
+        전체 부품 내 부품에 추가
+      </div>
+      <div v-else>
+        필요 부품 내 부품에 추가
+      </div>
+    </div>
+    <div id="excel_export" v-if="isLogin === true">
+      <download-excel
+        :data="json_data"
+        :fields="json_fields"
+        :name="`${setName}_all.xls`"
+        v-if="partFlag === 'all'"
+      >
+        전체 부품 엑셀로 다운로드
+      </download-excel>
+      <download-excel
+        :data="json_data"
+        :fields="json_fields"
+        :name="`${setName}_need.xls`"
+        v-else
+      >
+        필요 부품 엑셀로 다운로드
+      </download-excel>
+    </div>
   </div>
 </template>
 
 <script>
 import LegoSort from "../../../../jsonData/LegoSort.json";
+import { mapState, mapActions } from "vuex";
 
 export default {
   props: {
@@ -73,7 +102,13 @@ export default {
       imageStore: [],
       colorList: LegoSort["colors"],
       partDict: LegoSort["parts"],
+      allParts: [],
+      haveParts: Object(),
+      needParts: [],
       sortedParts: [],
+      partFlag: "all",
+      isAll: false,
+      isLogin: false,
 
       json_fields: {
         "part ID": "part_id",
@@ -101,33 +136,160 @@ export default {
       ]
     };
   },
-  mounted() {
-    this.parts.forEach(e => {
-      this.sortedParts.push([
-        this.partDict[e.part_id][0],
-        this.partDict[e.part_id][1],
-        this.colorList[e.color_id],
-        e.quantity,
-        this.partDict[e.part_id][2]
-      ]);
-    });
-
-    this.pageLength = Math.ceil(this.sortedParts.length / 27);
-    this.slicedParts = this.sortedParts.slice(this.start * 27, this.page * 27);
-    this.json_data = this.sortedParts.map(e => ({
-      part_id: e[0],
-      part_name: e[4],
-      part_img_url: e[1],
-      color_rgb: e[2],
-      quantity: e[3]
-    }));
-  },
   computed: {
+    ...mapState({
+      myparts: state => state.detail.myparts
+    }),
     start: function() {
       return this.page - 1;
     }
   },
   watch: {
+    partFlag() {
+      this.page = 1;
+      this.pageLength = 1;
+      if (this.partFlag === "need") {
+        this.sortedParts = this.needParts;
+        this.pageLength = Math.ceil(this.sortedParts.length / 27);
+        this.slicedParts = this.sortedParts.slice(
+          this.start * 27,
+          this.page * 27
+        );
+        this.json_data = this.sortedParts.map(e => ({
+          part_id: e[0],
+          part_name: e[4],
+          part_img_url: e[1],
+          color_rgb: e[2],
+          quantity: e[3]
+        }));
+      } else {
+        this.sortedParts = this.allParts;
+        this.pageLength = Math.ceil(this.sortedParts.length / 27);
+        this.slicedParts = this.sortedParts.slice(
+          this.start * 27,
+          this.page * 27
+        );
+        this.json_data = this.sortedParts.map(e => ({
+          part_id: e[0],
+          part_name: e[4],
+          part_img_url: e[1],
+          color_rgb: e[2],
+          quantity: e[3]
+        }));
+      }
+    },
+    myparts() {
+      if (this.myparts.length === 0) {
+        this.needParts = this.allParts;
+        return;
+      }
+      const tempSortedParts = Object();
+      const checkList = Object();
+      this.parts.forEach(e => {
+        let part_id = e.part_id;
+        let color_id = e.color_id;
+        let quantity = e.quantity;
+        let temp = Object();
+        temp[color_id] = quantity;
+        temp[part_id] = part_id;
+        temp["color_id_for_sort"] = color_id;
+        tempSortedParts[`${e.part_id}_${e.color_id}`] = temp;
+        let temp2 = [];
+        temp2.push([
+          this.partDict[e.part_id][0],
+          this.partDict[e.part_id][1],
+          this.colorList[e.color_id],
+          e.quantity,
+          this.partDict[e.part_id][2],
+          e.color_id
+        ]);
+        checkList[`${e.part_id}_${e.color_id}`] = temp2;
+      });
+      for (let i = 0; i < this.myparts.length; ++i) {
+        if (
+          tempSortedParts[
+            `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+          ]
+        ) {
+          if (
+            tempSortedParts[
+              `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+            ][this.myparts[i].color_id]
+          ) {
+            let tempCnt = 0;
+            if (
+              tempSortedParts[
+                `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+              ][this.myparts[i].color_id] >= this.myparts[i].quantity
+            ) {
+              tempCnt = this.myparts[i].quantity;
+            } else {
+              tempCnt =
+                tempSortedParts[
+                  `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+                ][this.myparts[i].color_id];
+            }
+            let temp = [];
+            temp.push([
+              this.partDict[
+                tempSortedParts[
+                  `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+                ][this.myparts[i].part_id]
+              ][0],
+              this.partDict[
+                tempSortedParts[
+                  `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+                ][this.myparts[i].part_id]
+              ][1],
+              this.colorList[
+                tempSortedParts[
+                  `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+                ].color_id_for_sort
+              ],
+              tempCnt,
+              this.partDict[
+                tempSortedParts[
+                  `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+                ][this.myparts[i].part_id]
+              ][2],
+              tempSortedParts[
+                `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+              ].color_id_for_sort
+            ]);
+            this.haveParts[
+              `${
+                this.partDict[
+                  tempSortedParts[
+                    `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+                  ][this.myparts[i].part_id]
+                ][0]
+              }_${
+                tempSortedParts[
+                  `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+                ].color_id_for_sort
+              }`
+            ] = temp;
+          }
+        }
+      }
+
+      for (let part_id in this.haveParts) {
+        if (checkList[part_id][0][3] === this.haveParts[part_id][0][3]) {
+          delete checkList[part_id];
+        } else if (checkList[part_id][0][3] > this.haveParts[part_id][0][3]) {
+          checkList[part_id][0][3] =
+            checkList[part_id][0][3] - this.haveParts[part_id][0][3];
+        } else if (checkList[part_id][0][3] < this.haveParts[part_id][0][3]) {
+          delete checkList[part_id];
+        }
+      }
+      for (let part_id in checkList) {
+        this.needParts.push(checkList[part_id][0]);
+      }
+      if (this.needParts.length === 0) {
+        this.isAll = true;
+      }
+    },
     start() {
       this.slicedParts = [];
       setTimeout(() => {
@@ -137,19 +299,123 @@ export default {
         );
       }, 300);
     }
+  },
+  async mounted() {
+    if (localStorage.getItem("token")) {
+      this.isLogin = true;
+    }
+    await this.getUserPartsAll();
+    this.parts.forEach(e => {
+      this.allParts.push([
+        this.partDict[e.part_id][0],
+        this.partDict[e.part_id][1],
+        this.colorList[e.color_id],
+        e.quantity,
+        this.partDict[e.part_id][2],
+        e.color_id
+      ]);
+    });
+    this.sortedParts = this.allParts;
+    this.pageLength = Math.ceil(this.sortedParts.length / 27);
+    this.slicedParts = this.sortedParts.slice(this.start * 27, this.page * 27);
+    this.json_data = this.sortedParts.map(e => ({
+      part_id: e[0],
+      part_name: e[4],
+      part_img_url: e[1],
+      color_rgb: e[2],
+      quantity: e[3]
+    }));
+    const target = document.getElementById("all_parts");
+    target.style.fontSize = "20px";
+    target.style.color = "black";
+  },
+  methods: {
+    ...mapActions("detail", ["getUserPartsAll", "addMyParts"]),
+    changeCate(value) {
+      if (value === "need") {
+        if (!localStorage.getItem("token")) {
+          alert("로그인 후 사용해 주세요");
+          return;
+        }
+        const target = document.getElementById("need_parts");
+        const nonTarget = document.getElementById("all_parts");
+        target.style.fontSize = "20px";
+        target.style.color = "black";
+        nonTarget.style.fontSize = "16px";
+        nonTarget.style.color = "gray";
+      } else {
+        const nonTarget = document.getElementById("need_parts");
+        const target = document.getElementById("all_parts");
+        target.style.fontSize = "20px";
+        target.style.color = "black";
+        nonTarget.style.fontSize = "16px";
+        nonTarget.style.color = "gray";
+      }
+      this.partFlag = value;
+    },
+    async addParts() {
+      const params = {
+        UpdateList: []
+      };
+      this.sortedParts.forEach(e => {
+        params["UpdateList"].push({
+          part_id: String(e[0]),
+          color_id: Number(e[5]),
+          qte: Number(e[3])
+        });
+      });
+      const result = await this.addMyParts(params);
+      if (result === "수정 완료") {
+        alert("내 부품에 추가되었습니다.");
+        location.reload();
+      } else {
+        alert("문제가 생겼습니다.");
+      }
+    }
   }
 };
 </script>
 
 <style scoped>
+#part_header {
+  /* margin-bottom: 10px; */
+  text-align: center;
+  transform: translateY(-15px);
+  font-size: 16px;
+  color: gray;
+}
+#dived_line {
+  width: 80%;
+  margin: auto;
+  border: 1px dashed gold;
+  margin-bottom: 15px;
+}
+#all_parts,
+#need_parts {
+  display: inline-block;
+  cursor: pointer;
+  padding: 5px;
+  width: 50%;
+}
+.icon {
+  margin-right: 5px;
+}
 #excel_export {
   float: right;
-  transform: translateY(-12px);
+  transform: translateY(-55px);
   padding: 5px;
   background-color: green;
   color: white;
   cursor: pointer;
   /* border-radius: 10px; */
+}
+#add_my_parts {
+  float: left;
+  transform: translateY(-55px);
+  padding: 5px;
+  background-color: green;
+  color: white;
+  cursor: pointer;
 }
 .lego_parts_container {
   width: 100%;
@@ -200,5 +466,11 @@ export default {
 .lego_parts_box:hover .lego_part {
   opacity: 0.5;
   transition: all 0.3s ease-in-out;
+}
+#iHaveAll {
+  text-align: center;
+  font-size: 24px;
+  margin: 20px;
+  font-weight: 700;
 }
 </style>

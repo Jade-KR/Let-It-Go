@@ -211,6 +211,9 @@ export default {
     this.setAuthFlag(true);
     this.userInfo.gender = -1;
   },
+  destroyed() {
+    this.setAuthFlag(false);
+  },
   methods: {
     ...mapActions("auth", ["SHA256", "register"]),
     ...mapMutations("auth", ["setAuthFlag"]),
