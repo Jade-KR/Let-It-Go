@@ -197,6 +197,14 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             return Response(serializer_data)
         return Response("")
 
+@api_view(['POST'])
+def set_user_category(self):
+    categories = self.data.get("categories")
+    user = CustomUser.objects.get(id=self.user.id)
+    user.categories = categories
+    user.save()
+    return Response("카테고리 등록 완료")
+
 class CustomLoginView(LoginView):
     def get_response(self):
         user = get_object_or_404(models.CustomUser, username=self.user)
@@ -208,6 +216,7 @@ class CustomLoginView(LoginView):
             "age": user.age,
             "gender": user.gender,
             "is_staff": user.is_staff,
+            "category_list": user.category_list,
             "status": "success",
             }
         orginal_response.data["user"].update(mydata)
@@ -606,4 +615,28 @@ def crawll(self, idx):
                 crawling_part_data(i)
             except:
                 print('fail on ' + str(i))
-            
+
+    
+@api_view(['GET'])
+def user_parts_registered_by_IoT(self):
+    user = self.user
+    if user.is_authenticated:
+        user_parts = UserPart2.objects.filter(user=user)
+        user_part_dict = dict()
+        for part in user_parts:
+            if user_part_dict.get(part.part_id):
+                if user_part_dict[part.part_id].get(part.color_id):
+                    user_part_dict[part.part_id][part.color_id]["quantity"] += 1
+                else:
+                    user_part_dict[part.part_id][part.color_id] = {"part_id": part.part_id, "color_id": part.color_id, "quantity": 1}
+            else:
+                user_part_dict[part.part_id] = {part.color_id: {"part_id": part.part_id, "color_id": part.color_id, "quantity": 1}}
+        # print(user_part_dict)
+        res = []
+        for part_id, color_dict in user_part_dict.items():
+            # print(color_dict)
+            for color_id, part in color_dict.items():
+                res.append(part)
+        return Response(res)
+    else:
+        return Response("비 인증 유저")

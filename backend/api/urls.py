@@ -36,6 +36,7 @@ router.register(r"LegoSetRanking", views.LegoSetRankingViewSet, basename="LegoSe
 
 urlpatterns = [
     *router.urls,
+    path('set_user_category', views.set_user_category, name="set_user_category"),
     path('UpdateUserPart', views.UpdateUserPart, name='UpdateUserPart'),
     path('UpdateUserPart2', views.UpdateUserPart2, name='UpdateUserPart2'),
     path('CreateLegoSet', views.CreateLegoSet, name='CreateLegoSet'),
@@ -55,5 +56,6 @@ urlpatterns = [
     path('like_set', views.like_set, name='like_set'),
     path('follow', views.follow, name='follow'),
     path('crawll/<int:idx>', views.crawll, name='crawll'),
+    path('user_parts_registered_by_IoT', views.user_parts_registered_by_IoT, name="user_parts_registered_by_IoT")
     # path('create_review', views.create_review, name='create_review')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
