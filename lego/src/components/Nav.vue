@@ -30,13 +30,13 @@
             />
           </div>
           <span
-            class="login_btn right_icon"
+            class="login_btn logRegi"
             v-if="checkLogin === false"
             @click="goLogin()"
             >로그인</span
           >
           <span
-            class="register_btn right_icon"
+            class="register_btn logRegi"
             v-if="checkLogin === false"
             @click="goRegister()"
             >회원가입</span
@@ -149,6 +149,10 @@ export default {
         const button = document.getElementsByClassName("button");
         button.forEach(e => {
           e.style.fontSize = "18px";
+          const logRegi = document.getElementsByClassName("logRegi");
+          logRegi.forEach(e => {
+            e.style.fontSize = "12px";
+          });
         });
       } else if (document.documentElement.scrollTop === 0) {
         document.getElementById("logo_box_img").style.width = "230px";
@@ -161,6 +165,10 @@ export default {
         const button = document.getElementsByClassName("button");
         button.forEach(e => {
           e.style.fontSize = "30px";
+        });
+        const logRegi = document.getElementsByClassName("logRegi");
+        logRegi.forEach(e => {
+          e.style.fontSize = "16px";
         });
       }
     }
@@ -227,12 +235,12 @@ export default {
   font-weight: bold;
   cursor: pointer;
   transform: translateY(-4px);
-  margin-left: 20px;
+  /* margin-left: 20px; */
 }
 .register_btn {
   width: 66px;
   height: 35px;
-  margin-right: 20px;
+  /* margin-right: 20px; */
   color: rgb(138, 211, 89);
   text-align: center;
   line-height: 35px;

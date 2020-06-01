@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, SetPart, UserLikeLegoSet
+from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, UserPart2, SetPart, UserLikeLegoSet
 from api import models, serializers
 from allauth.account.models import EmailAddress
 from rest_framework import viewsets, mixins
@@ -81,7 +81,7 @@ class ThemeViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ThemeSerializer
     pagination_class = SmallPagination
 
-class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     '''
     GET params
     name
@@ -148,6 +148,13 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
         reviews = serializers.ReviewSerializer(legoset.review_set.all().order_by("-created_at"), many=True).data
         serializer_data["reviews"] = reviews
         return Response(serializer_data)
+
+    def destroy(self, request, pk=None):
+        legoset = get_object_or_404(LegoSet, pk=pk)
+        if request.user.is_staff or (request.user.is_authenticated and legoset.user.id == request.user.id):
+            legoset.delete()
+            return Response("삭제 완료")
+        return Response("삭제 실패")
 
 class LegoPartViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = LegoPart.objects.all()
@@ -234,7 +241,7 @@ class ReviewViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Des
 
     def destroy(self, request, pk=None):
         review = get_object_or_404(Review, pk=pk)
-        if request.user.is_authenticated and review.user.id == request.user.id:
+        if request.user.is_staff or (request.user.is_authenticated and review.user.id == request.user.id):
             user = get_object_or_404(get_user_model(), id=request.user.id)
             legoset = review.lego_set
             legoset.review_count -= 1
@@ -449,6 +456,18 @@ def UpdateUserPart(self):
 
 
 @api_view(['POST'])
+def UpdateUserPart2(self):
+    user = self.user
+    print(user)
+    print(self.data)
+    if user.is_authenticated:
+        data = self.data
+        UserPart2.objects.create(user=user, part_id=data["part_id"], color_id=data["color_id"])
+        print(1)
+
+    return Response("수정 완료")
+
+@api_view(['POST'])
 def CreateLegoSet(self):
     '''
     {
@@ -541,3 +560,15 @@ def follow(self):
             return Response("팔로우")
     else:
         return Response("비 인증 유저")
+
+
+@api_view(['GET'])
+def crawll(self, idx):
+    for i in range(idx, idx + 50):
+        if not SetPart.objects.filter(lego_set_id=i):
+            print('crawll ' + str(i))
+            try:
+                crawling_part_data(i)
+            except:
+                print('fail on ' + str(i))
+            
