@@ -10,6 +10,11 @@ class CustomUser(AbstractUser):
     gender = models.IntegerField(null=True)
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followings')
     review_count = models.IntegerField(default=0)
+    categories = models.TextField(null=True)
+    
+    @property
+    def category_list(self):
+        return self.gategories.split("|")[0] if self.categories else ""
 
 class Theme(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -125,6 +130,14 @@ class UserPart(models.Model):
     part = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
     color = models.ForeignKey(Color, on_delete=models.CASCADE)
     quantity = models.IntegerField()
+
+    def __str__(self):
+        return self.part_id
+
+class UserPart2(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    part = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
+    color = models.ForeignKey(Color, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.part_id
