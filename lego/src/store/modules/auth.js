@@ -59,6 +59,7 @@ const actions = {
     await api
       .login(params)
       .then(res => {
+        console.log(res.data);
         const token = res.data.token;
         const user = res.data.user;
         localStorage.setItem("token", token);
@@ -70,7 +71,7 @@ const actions = {
         localStorage.setItem("image", user.image);
         localStorage.setItem("gender", user.gender);
         localStorage.setItem("age", user.age);
-        localStorage.setItem("category", "null");
+        localStorage.setItem("categories", user.categories);
         commit("setAuthFlag", false);
         if (localStorage.getItem("category") === "null") {
           commit("setIsCategory", false);

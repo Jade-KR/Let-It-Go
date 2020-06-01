@@ -83,9 +83,9 @@ export default {
       };
       const result = await this.onFollowInModal(params);
       if (result === "팔로우") {
-        this.followFlag = true;
+        this.followFlag = "true";
       } else if (result === "팔로우 취소") {
-        this.followFlag = false;
+        this.followFlag = "false";
       } else {
         alert("문제가 발생했습니다.");
       }

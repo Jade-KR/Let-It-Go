@@ -64,6 +64,16 @@ const actions = {
       commit("setModels", models);
     }
     commit("setRecommendModelPage", resp.next);
+  },
+  async setUserCategory({ commit }, params) {
+    commit;
+    const resp = await api
+      .setUserCategory(params)
+      .then(res => res.data)
+      .catch(err => err.response);
+    if (resp === "카테고리 등록 완료") {
+      localStorage.setItem("categories", params["categories"]);
+    }
   }
 };
 

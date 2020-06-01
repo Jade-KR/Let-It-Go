@@ -82,9 +82,12 @@
         <div id="detail_side_similar_percent">{{ makePercent }}%</div>
       </div>
     </div>
-    <div id="detail_side_ad">
+    <!-- <div id="detail_side_ad">
       <div id="detail_side_content">레고레일로 분류를 해보세요!</div>
-    </div>
+    </div> -->
+    <video autoplay controls width="100%" style="margin-top: 10px;">
+      <source src="../../../assets/zzzz.mp4" type="video/mp4" />
+    </video>
   </div>
 </template>
 

@@ -9,6 +9,7 @@ import UserSetting from "../views/UserSetting.vue";
 import Write from "../views/Page/Write.vue";
 import Search from "../views/Page/Search.vue";
 import MemberPage from "../views/Page/MemberPage.vue";
+import Admin from "../views/Page/Admin.vue";
 
 Vue.use(VueRouter);
 
@@ -66,7 +67,18 @@ const routes = [
   {
     path: "/member",
     name: "MemberPage",
-    component: MemberPage
+    component: MemberPage,
+    meta: {
+      authRequired: true
+    }
+  },
+  {
+    path: "/admin",
+    name: "Admin",
+    component: Admin,
+    meta: {
+      authRequired: true
+    }
   }
 ];
 

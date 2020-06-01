@@ -6,7 +6,7 @@
     infinite-scroll-distance="10"
   >
     <div id="home_show">
-      <div>
+      <div v-if="!isCate">
         <user-category>
           <span slot="userCategory" id="userCategory" />
         </user-category>
@@ -56,6 +56,7 @@ export default {
     return {
       loading: true,
       styleFlag: false,
+      isCate: true,
       matrixWidth: {
         width: "70vw",
         margin: "auto",
@@ -105,7 +106,8 @@ export default {
     }
   },
   async mounted() {
-    if (this.isCategory === false) {
+    if (localStorage.getItem("categories") === "null") {
+      await this.setCate();
       document.getElementById("userCategory").click();
     }
     const params = {
@@ -119,6 +121,7 @@ export default {
     } else if (this.homeCate === 3) {
       await this.getRecommendModels(params);
     }
+
     this.loading = false;
   },
   beforeDestroy() {
@@ -152,6 +155,9 @@ export default {
       setTimeout(() => {
         this.loading = false;
       }, 1000);
+    },
+    setCate() {
+      this.isCate = false;
     }
   }
 };

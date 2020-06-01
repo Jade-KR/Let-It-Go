@@ -1,10 +1,6 @@
 <template>
   <div>
-    <!-- <div v-if="admin == true">
-      <adminDetail />
-    </div>
-    <div v-else> -->
-    <section v-if="main">
+    <section>
       <div class="slide">
         <div class="content">
           <h2>김평강</h2>
@@ -53,7 +49,14 @@
       </div>
       <div class="slide">
         <div class="content">
-          <h2>LEt it GO</h2>
+          <div id="side">
+            LE
+            <div id="inner">
+              t it
+            </div>
+            GO
+          </div>
+          <br />
           <a id="goAdmin" href="https://lab.ssafy.com/s02-final/s02p31d108">
             Go Git Lab</a
           >
@@ -61,28 +64,6 @@
         </div>
       </div>
     </section>
-    <!-- <div v-if="before" id="before">
-      빠져든다ㅏㅏㅏㅏㅏㅏㅏㅏㅏ
-    </div>
-    <div v-if="timeOut" id="admin_main">
-      <div class="scene">
-        <div class="wrap">
-          <div class="wall wall-right" />
-          <div class="wall wall-left" />
-          <div class="wall wall-top" />
-          <div class="wall wall-bottom" />
-          <div class="wall wall-back" />
-        </div>
-        <div class="wrap">
-          <div class="wall wall-right" />
-          <div class="wall wall-left" />
-          <div class="wall wall-top" />
-          <div class="wall wall-bottom" />
-          <div class="wall wall-back" />
-        </div>
-      </div>
-    </div> -->
-    <!-- </div> -->
   </div>
 </template>
 
@@ -92,24 +73,10 @@ import router from "../../router";
 
 export default {
   data() {
-    return {
-      // timeOut: false,
-      // before: true,
-      // main: false
-      main: true
-    };
+    return {};
   },
   async mounted() {
     this.setAuthFlag(true);
-
-    // setTimeout(() => {
-    //   this.timeOut = true;
-    //   this.before = false;
-    // }, 2000);
-    // setTimeout(() => {
-    //   this.timeOut = false;
-    //   this.main = true;
-    // }, 6000);
   },
   destroyed() {
     this.setAuthFlag(false);
@@ -238,84 +205,16 @@ section .slide .content h2 {
   height: 40%;
   vertical-align: middle;
 }
-.scene {
+#side {
   display: inline-block;
-  vertical-align: middle;
-  perspective: 5px;
-  perspective-origin: 50% 50%;
-  position: relative;
+  font-size: 30px;
+  font-weight: 700;
+  color: gold;
+  letter-spacing: 0.1px;
 }
-
-.wrap {
-  position: absolute;
-  width: 1000px;
-  height: 1000px;
-  left: -500px;
-  top: -500px;
-  transform-style: preserve-3d;
-  animation: move 12s infinite linear;
-  animation-fill-mode: forwards;
-}
-
-.wrap:nth-child(2) {
-  animation: move 12s infinite linear;
-  animation-delay: 6s;
-}
-
-.wall {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  opacity: 0;
-  animation: fade 12s infinite linear;
-  animation-delay: 0;
-}
-
-.wrap:nth-child(2) .wall {
-  animation-delay: 6s;
-}
-
-.wall-right {
-  transform: rotateY(90deg) translateZ(500px);
-}
-
-.wall-left {
-  transform: rotateY(-90deg) translateZ(500px);
-}
-
-.wall-top {
-  transform: rotateX(90deg) translateZ(500px);
-}
-
-.wall-bottom {
-  transform: rotateX(-90deg) translateZ(500px);
-}
-
-.wall-back {
-  transform: rotateX(180deg) translateZ(500px);
-}
-
-@keyframes move {
-  0% {
-    transform: translateZ(-500px) rotate(0deg);
-  }
-  100% {
-    transform: translateZ(500px) rotate(0deg);
-  }
-}
-
-@keyframes fade {
-  0% {
-    opacity: 0;
-  }
-  25% {
-    opacity: 1;
-  }
-  75% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+#inner {
+  display: inline-block;
+  font-size: 18px;
+  letter-spacing: 0.1px;
 }
 </style>
