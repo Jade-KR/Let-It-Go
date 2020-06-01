@@ -37,6 +37,7 @@ router.register(r"LegoSetRanking", views.LegoSetRankingViewSet, basename="LegoSe
 urlpatterns = [
     *router.urls,
     path('UpdateUserPart', views.UpdateUserPart, name='UpdateUserPart'),
+    path('UpdateUserPart2', views.UpdateUserPart2, name='UpdateUserPart2'),
     path('CreateLegoSet', views.CreateLegoSet, name='CreateLegoSet'),
     path('swagger/', schema_view.with_ui('swagger'), name='api_swagger'),
     path('token/', obtain_jwt_token),

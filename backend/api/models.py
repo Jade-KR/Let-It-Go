@@ -129,6 +129,14 @@ class UserPart(models.Model):
     def __str__(self):
         return self.part_id
 
+class UserPart2(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    part = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
+    color = models.ForeignKey(Color, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.part_id
+
 class SetPart(models.Model):
     lego_set = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
     part = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
