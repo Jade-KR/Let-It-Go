@@ -2,7 +2,7 @@
   <div>
     <div class="nav">
       <div class="nav_left">
-        <div class="logo_box" @click="goHome">
+        <div class="logo_box" @click="goHome()">
           <img src="@/assets/logo.png" alt id="logo_box_img" />
         </div>
       </div>
@@ -12,6 +12,9 @@
         </button>
         <button class="button" id="nav_pop" @click="onHomeCate(2)">
           <span data-title="인기도순!">POP!</span>
+        </button>
+        <button class="button" id="nav_you" @click="onHomeCate(3)">
+          <span data-title="추천순!">YOU!</span>
         </button>
       </div>
       <div class="nav_right">
@@ -89,6 +92,10 @@ export default {
       if (locationNow !== "/mypage/" + user_id) {
         this.$router.push("/mypage" + "/" + user_id);
       }
+    },
+    goMember() {
+      window.scrollTo(0, 0);
+      router.push("/member");
     },
     goSearch() {
       window.scrollTo(0, 0);
@@ -271,7 +278,7 @@ export default {
 #nav_pop span:after {
   background-color: green;
 }
-#nav_can span:after {
+#nav_you span:after {
   background-color: red;
 }
 .button:hover span {

@@ -83,6 +83,7 @@ export default {
       models: state => state.home.modelList,
       page: state => state.home.modelPage,
       likePage: state => state.home.likeModelPage,
+      recommendPage: state => state.home.recommendModelPage,
       isCategory: state => state.auth.isCategory
     })
   },
@@ -97,6 +98,8 @@ export default {
         await this.getModels(params);
       } else if (this.homeCate === 2) {
         await this.getLikeModels(params);
+      } else if (this.homeCate === 3) {
+        await this.getRecommendModels(params);
       }
       this.loading = false;
     }
@@ -113,6 +116,8 @@ export default {
       await this.getModels(params);
     } else if (this.homeCate === 2) {
       await this.getLikeModels(params);
+    } else if (this.homeCate === 3) {
+      await this.getRecommendModels(params);
     }
     this.loading = false;
   },
@@ -120,7 +125,7 @@ export default {
     this.resetModels();
   },
   methods: {
-    ...mapActions("home", ["getModels", "getLikeModels"]),
+    ...mapActions("home", ["getModels", "getLikeModels", "getRecommendModels"]),
     ...mapMutations("home", ["resetModels"]),
     styleCheck() {
       if (this.styleFlag === false) {
@@ -140,6 +145,9 @@ export default {
       } else if (this.homeCate === 2) {
         params["page"] = this.likePage;
         await this.getLikeModels(params);
+      } else if (this.homeCate === 3) {
+        params["page"] = this.recommendPage;
+        await this.getRecommendModels(params);
       }
       setTimeout(() => {
         this.loading = false;

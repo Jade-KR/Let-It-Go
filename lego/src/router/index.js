@@ -8,10 +8,12 @@ import Detail from "../views/Page/Detail.vue";
 import UserSetting from "../views/UserSetting.vue";
 import Write from "../views/Page/Write.vue";
 import Search from "../views/Page/Search.vue";
+import MemberPage from "../views/Page/MemberPage.vue";
 
 Vue.use(VueRouter);
 
-const routes = [{
+const routes = [
+  {
     path: "/",
     name: "Home",
     component: Home
@@ -37,7 +39,7 @@ const routes = [{
   {
     path: "/detail/:modelId",
     name: "Detail",
-    component: Detail,
+    component: Detail
   },
   {
     path: "/UserSetting",
@@ -60,6 +62,11 @@ const routes = [{
     path: "/search",
     name: "Search",
     component: Search
+  },
+  {
+    path: "/member",
+    name: "MemberPage",
+    component: MemberPage
   }
 ];
 
@@ -69,12 +76,12 @@ const router = new VueRouter({
   routes
 });
 
-router.beforeEach(function (to, from, next) {
+router.beforeEach(function(to, from, next) {
   const user_pk = localStorage.getItem("pk");
   const token = localStorage.getItem("token");
   const email = localStorage.getItem("email");
   if (
-    to.matched.some(function (routeInfo) {
+    to.matched.some(function(routeInfo) {
       return routeInfo.meta.authRequired;
     })
   ) {

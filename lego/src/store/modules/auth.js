@@ -78,6 +78,7 @@ const actions = {
           commit("setIsCategory", true);
         }
         router.push("/");
+        location.reload();
       })
       .catch(err => {
         if (
@@ -321,7 +322,8 @@ const actions = {
     commit;
     await api.logout();
     localStorage.clear();
-    router.push("home");
+    router.push("/");
+    location.reload();
   }
 };
 

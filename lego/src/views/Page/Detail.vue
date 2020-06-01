@@ -120,10 +120,14 @@ export default {
         scoreSum += e.score;
       });
       this.avgScore = Number((scoreSum / this.reviewList.length).toFixed(1));
+      if (isNaN(this.avgScore)) {
+        this.avgScore = 0;
+      }
     }
   },
   beforeDestroy() {
     this.resetModel();
+    this.resetMyParts();
   },
   async mounted() {
     this.loading = true;
@@ -142,7 +146,7 @@ export default {
   },
   methods: {
     ...mapActions("detail", ["getModelDetail"]),
-    ...mapMutations("detail", ["resetModel"]),
+    ...mapMutations("detail", ["resetModel", "resetMyParts"]),
     onReviews() {
       this.btnFlag = "reviews";
     },

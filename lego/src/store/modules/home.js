@@ -18,7 +18,8 @@ const state = {
   },
   modelList: [],
   modelPage: "1",
-  likeModelPage: "1"
+  likeModelPage: "1",
+  recommendModelPage: "1"
 };
 
 const actions = {
@@ -51,6 +52,18 @@ const actions = {
       commit("setModels", models);
     }
     commit("setLikeModelPage", resp.next);
+  },
+  async getRecommendModels({ commit }, params) {
+    const append = params.append;
+    // 아래 api 바꾸기
+    const resp = await api.getLikeModels(params).then(res => res.data);
+    const models = resp.results.map(e => e);
+    if (append) {
+      commit("addModelList", models);
+    } else {
+      commit("setModels", models);
+    }
+    commit("setRecommendModelPage", resp.next);
   }
 };
 
@@ -74,6 +87,9 @@ const mutations = {
     state.modelList = [];
     state.modelPage = "1";
     state.likeModelPage = "1";
+  },
+  setRecommendModelPage(state, url) {
+    state.recommendModelPage = new URL(url).searchParams.get("page");
   }
 };
 
