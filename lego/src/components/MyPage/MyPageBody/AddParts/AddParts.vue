@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import SearchById from "./PartsModal/SearchById";
-import SearchByImg from "./PartsModal/SearchByImg";
+import SearchById from "./SearchById";
+import SearchByImg from "./SearchByImg";
 import { mapActions } from "vuex";
 
 export default {

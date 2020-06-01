@@ -1,10 +1,19 @@
 <template>
   <div class="right_body_box">
     <h1 class="header">레고레일 분류 현황</h1>
-    <button class="send_btn" @click="onSubmit()">내 부품에 넣기</button>
-    <button class="delete_all_btn">모두 삭제</button>
+    <button class="send_btn" @click="onSubmit()">
+      <i class="fas fa-share-square"></i>&nbsp; 내 부품에 추가
+    </button>
     <div class="classified_list">
-      <div v-for="(item, idx) in realList" :key="`item${idx}`">
+      <div v-for="(item, idx) in realList" :key="`item${idx}`" class="delete_item_box">
+        <div class="delete_box">
+          <img
+            src="../../assets/icons/delete.png"
+            alt="delete"
+            class="delete_btn"
+            @click="deleteItem(idx)"
+          />
+        </div>
         <ModifyPart
           :partId="item.part_id"
           :colorId="item.color_id"
@@ -14,7 +23,11 @@
         >
           <div class="items_container" slot="click">
             <div class="img_box">
-              <img :src="item.part_img" alt="noImage" class="part_img" />
+              <img
+                :src="item.part_img === `` ? noImage : item.part_img"
+                alt="noImage"
+                class="part_img"
+              />
             </div>
             <div class="part_info">
               <p class="lego_id">{{item.part_id}}</p>
@@ -44,11 +57,32 @@ export default {
         { part_id: 10057, color_id: 2, quantity: 3 },
         { part_id: 10058, color_id: 1, quantity: 3 },
         { part_id: 10057, color_id: 3, quantity: 3 },
-        { part_id: 10058, color_id: 2, quantity: 3 }
+        { part_id: 10058, color_id: 2, quantity: 3 },
+        { part_id: 10057, color_id: 4, quantity: 3 },
+        { part_id: 10058, color_id: 5, quantity: 3 },
+        { part_id: 10057, color_id: 6, quantity: 3 },
+        { part_id: 10058, color_id: 7, quantity: 3 },
+        { part_id: 10057, color_id: 8, quantity: 3 },
+        { part_id: 10058, color_id: 9, quantity: 3 },
+        { part_id: 10057, color_id: 10, quantity: 3 },
+        { part_id: 10058, color_id: 11, quantity: 3 },
+        { part_id: 10057, color_id: 12, quantity: 3 },
+        { part_id: 10058, color_id: 13, quantity: 3 },
+        { part_id: 10057, color_id: 14, quantity: 3 },
+        { part_id: 10058, color_id: 15, quantity: 3 },
+        { part_id: 10050, color_id: 4, quantity: 3 },
+        { part_id: 10050, color_id: 5, quantity: 3 },
+        { part_id: 10050, color_id: 6, quantity: 3 },
+        { part_id: 10050, color_id: 7, quantity: 3 },
+        { part_id: 10050, color_id: 0, quantity: 3 },
+        { part_id: 10050, color_id: 1, quantity: 3 },
+        { part_id: 10050, color_id: 2, quantity: 3 },
+        { part_id: 10050, color_id: 3, quantity: 3 }
       ],
       check: LegoSort,
       realList: [],
-      dialog: false
+      dialog: false,
+      noImage: require("../../assets/icons/no_img.jpg")
     };
   },
   mounted() {
@@ -90,7 +124,7 @@ export default {
       const newBasket = [];
       this.realList.forEach(item => {
         let info = {
-          part_id: item.part_id,
+          part_id: String(item.part_id),
           color_id: Number(item.color_id),
           qte: Number(item.quantity)
         };
@@ -100,6 +134,9 @@ export default {
       await this.updateParts(params);
       alert("부품이 등록되었습니다");
       this.$router.push("mypage/" + localStorage.getItem("pk"));
+    },
+    deleteItem(idx) {
+      this.realList.splice(idx, 1);
     }
   }
 };
@@ -175,13 +212,18 @@ export default {
   margin-left: 10px;
 }
 .send_btn {
-  background: rgb(125, 205, 231);
+  background: rgb(169, 213, 226);
   color: white;
-  width: 130px;
-  height: 30px;
+  width: 180px;
+  height: 40px;
   border-radius: 5%;
+  margin-bottom: 10px;
+  transition: ease-in-out 0.3s;
 }
-.delete_all_btn {
+.send_btn:hover {
+  background: rgb(101, 193, 221);
+}
+/* .delete_all_btn {
   background: red;
   color: white;
   width: 130px;
@@ -189,5 +231,24 @@ export default {
   border-radius: 5%;
   margin-bottom: 20px;
   margin-left: 10px;
+} */
+.delete_box {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  transition: ease-in-out 0.3s;
+}
+.delete_box:hover {
+  background: red;
+  border-radius: 50%;
+}
+.delete_btn {
+  width: 100%;
+  height: 100%;
+}
+.delete_item_box {
+  position: relative;
 }
 </style>

@@ -11,22 +11,28 @@
       </div>
       <hr />
       <div class="body_menu_bar">
-        <button
-          class="menu"
-          @click.prevent="menuState(menu.title, idx)"
-          :id="`menu${idx}`"
-          v-for="(menu, idx) in menus"
-          :key="`first${idx}`"
-          :style="btnFlag === menu.title ? btnStyle[0] : btnStyle[1]"
-        >
-          <i :class="menu.icon">&nbsp;{{ menu.title }}</i>
-        </button>
+        <div v-if="check === true">
+          <button
+            class="menu"
+            @click.prevent="menuState(menu.title, idx)"
+            :id="`menu${idx}`"
+            v-for="(menu, idx) in menus"
+            :key="`first${idx}`"
+            :style="btnFlag === menu.title ? btnStyle[0] : btnStyle[1]"
+          >
+            <i :class="menu.icon">&nbsp;{{ menu.title }}</i>
+          </button>
+        </div>
+        <div v-else>
+          <button class="menu" @click.prevent="menuState(`설계도`, 0)" :style="btnStyle[0]">
+            <i class="fas fa-scroll">&nbsp;설계도</i>
+          </button>
+        </div>
       </div>
       <div class="body">
         <Models v-if="currentState === 0"></Models>
         <Like v-if="currentState === 1"></Like>
         <Parts v-if="currentState === 2"></Parts>
-        <Combination v-if="currentState === 3"></Combination>
       </div>
     </div>
   </div>
@@ -37,7 +43,6 @@ import MyPageHeader from "@/components/MyPage/MyPageHeader/MyPageHeader.vue";
 import Models from "@/components/MyPage/MyPageBody/Models.vue";
 import Like from "@/components/MyPage/MyPageBody/Like.vue";
 import Parts from "@/components/MyPage/MyPageBody/Parts.vue";
-import Combination from "@/components/MyPage/MyPageBody/Combination.vue";
 import { mapActions } from "vuex";
 import router from "../router";
 
@@ -46,17 +51,16 @@ export default {
     MyPageHeader,
     Models,
     Like,
-    Parts,
-    Combination
+    Parts
   },
   data() {
     return {
       menus: [
         { title: "설계도", icon: "fas fa-scroll" },
         { title: "좋아요", icon: "fas fa-heart" },
-        { title: "부품", icon: "fas fa-cubes" },
-        { title: "조합", icon: "fas fa-puzzle-piece" },
-        { title: "등등", icon: "fas fa-scroll" }
+        { title: "부품", icon: "fas fa-cubes" }
+        // { title: "조합", icon: "fas fa-puzzle-piece" },
+        // { title: "등등", icon: "fas fa-scroll" }
       ],
       currentState: 0,
       btnFlag: "설계도",
@@ -75,10 +79,14 @@ export default {
         nickname: "",
         comment: "",
         lego_sets: []
-      }
+      },
+      check: ""
     };
   },
   async mounted() {
+    this.$route.params.user_id === localStorage.getItem("pk")
+      ? (this.check = true)
+      : (this.check = false);
     const params = {
       user_id: this.$route.params.user_id
     };

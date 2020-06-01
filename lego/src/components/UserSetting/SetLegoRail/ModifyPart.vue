@@ -6,92 +6,96 @@
           <slot name="click" />
         </div>
       </template>
-      <div class="modal_container">
-        <h2 class="modal_header">부품 정보 수정</h2>
-        <div id="part_input">
-          <div class="star">*</div>
-          <v-autocomplete
-            v-model="partIdx"
-            filled
-            color="rgb(255, 215, 0)"
-            background-color="white"
-            item-text="name"
-            item-value="idx"
-            hide-details
-            label="부품"
-            :placeholder="String(partId)"
-            disabled
-          />
-        </div>
-        <div class="color_cnt_box">
-          <div id="color_input">
-            <div class="star">*</div>
-            <v-autocomplete
-              v-model="selectedColor"
-              :items="partColor"
-              filled
-              chips
-              color="rgb(255, 215, 0)"
-              background-color="white"
-              item-text="colorName"
-              item-value="idx"
-              hide-details
-              label="색상"
-              placeholder="색상을 골라주세요"
-            >
-              <template v-slot:selection="data">
-                <v-chip
-                  v-bind="data.attrs"
-                  :input-value="data.selected"
-                  @click="data.select"
-                  color="white"
-                  style="height: 54px;"
+      <div class="modal_box">
+        <div class="modal_border">
+          <div class="modal_container">
+            <h2 class="modal_header">부품 정보 수정</h2>
+            <div id="part_input">
+              <div class="star">*</div>
+              <v-autocomplete
+                v-model="partIdx"
+                filled
+                color="rgb(255, 215, 0)"
+                background-color="white"
+                item-text="name"
+                item-value="idx"
+                hide-details
+                label="부품"
+                :placeholder="String(partId)"
+                disabled
+              />
+            </div>
+            <div class="color_cnt_box">
+              <div id="color_input">
+                <div class="star">*</div>
+                <v-autocomplete
+                  v-model="selectedColor"
+                  :items="partColor"
+                  filled
+                  chips
+                  color="rgb(255, 215, 0)"
+                  background-color="white"
+                  item-text="colorName"
+                  item-value="idx"
+                  hide-details
+                  label="색상"
+                  placeholder="색상을 골라주세요"
                 >
-                  <v-avatar left>
-                    <div
-                      :style="
+                  <template v-slot:selection="data">
+                    <v-chip
+                      v-bind="data.attrs"
+                      :input-value="data.selected"
+                      @click="data.select"
+                      color="white"
+                      style="height: 54px;"
+                    >
+                      <v-avatar left>
+                        <div
+                          :style="
                     `background-color: #${data.item.colorRgb}; width: 100%; height: 100%;`
                   "
-                    ></div>
-                  </v-avatar>
-                  {{ data.item.colorName }}
-                </v-chip>
-              </template>
-              <template v-slot:item="data">
-                <template v-if="typeof data.item !== 'object'">
-                  <v-list-item-content v-text="data.item"></v-list-item-content>
-                </template>
-                <template v-else>
-                  <v-list-item-avatar>
-                    <div
-                      :style="
+                        ></div>
+                      </v-avatar>
+                      {{ data.item.colorName }}
+                    </v-chip>
+                  </template>
+                  <template v-slot:item="data">
+                    <template v-if="typeof data.item !== 'object'">
+                      <v-list-item-content v-text="data.item"></v-list-item-content>
+                    </template>
+                    <template v-else>
+                      <v-list-item-avatar>
+                        <div
+                          :style="
                     `background-color: #${data.item.colorRgb}; width: 100%; height: 100%;`
                   "
-                    ></div>
-                  </v-list-item-avatar>
-                  <v-list-item-content>
-                    <v-list-item-title v-html="data.item.colorName"></v-list-item-title>
-                  </v-list-item-content>
-                </template>
-              </template>
-            </v-autocomplete>
-          </div>
-          <div id="quan_input">
-            <div class="star star2">*</div>
-            <v-text-field
-              label="수량"
-              type="number"
-              min="0"
-              step="1"
-              v-model="partQuantity"
-              hide-details
-              height="55px"
-              color="rgb(255, 215, 0)"
-              style="width: 100px; font-size: 24px;"
-            ></v-text-field>
+                        ></div>
+                      </v-list-item-avatar>
+                      <v-list-item-content>
+                        <v-list-item-title v-html="data.item.colorName"></v-list-item-title>
+                      </v-list-item-content>
+                    </template>
+                  </template>
+                </v-autocomplete>
+              </div>
+              <div id="quan_input">
+                <div class="star star2">*</div>
+                <v-text-field
+                  label="수량"
+                  type="number"
+                  min="0"
+                  step="1"
+                  v-model="partQuantity"
+                  hide-details
+                  height="55px"
+                  color="rgb(255, 215, 0)"
+                  style="width: 100px; font-size: 24px;"
+                ></v-text-field>
+              </div>
+            </div>
+            <input type="submit" value="수정 완료" id="enroll_btn" @click="changeInfo()" />
           </div>
         </div>
-        <input type="submit" value="수정 완료" id="enroll_btn" @click="changeInfo()" />
       </div>
     </v-dialog>
   </div>
@@ -167,6 +171,18 @@ export default {
 </script>
 
 <style scoped>
+.modal_box {
+  width: 100%;
+  height: 330px;
+  background: white;
+}
+.modal_border {
+  border: rgb(255, 198, 93) 2px solid;
+  width: 95%;
+  height: 90%;
+  margin: auto;
+  transform: translateY(15px);
+}
 .modal_container {
   display: flex;
   flex-flow: column wrap;
@@ -174,6 +190,7 @@ export default {
 }
 .modal_header {
   border-bottom: 2px dotted rgb(252, 210, 132);
+  margin-top: 10px;
 }
 .color_cnt_box {
   display: flex;
