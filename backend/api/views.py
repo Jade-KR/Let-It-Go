@@ -195,6 +195,14 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             return Response(serializer_data)
         return Response("")
 
+@api_view(['POST'])
+def set_user_category(self):
+    categories = self.data.get("categories")
+    user = CustomUser.objects.get(id=self.user.id)
+    user.categories = categories
+    user.save()
+    return Response("카테고리 등록 완료")
+
 class CustomLoginView(LoginView):
     def get_response(self):
         user = get_object_or_404(models.CustomUser, username=self.user)
@@ -205,6 +213,8 @@ class CustomLoginView(LoginView):
             "comment": user.comment,
             "age": user.age,
             "gender": user.gender,
+            "is_staff": user.is_staff,
+            "category_list": user.category_list,
             "status": "success",
             }
         orginal_response.data["user"].update(mydata)
@@ -285,10 +295,25 @@ class FollowingUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = serializers.LegoSetSerializer(followings, many=True)
         return Response(serializer.data)
 
-class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserSerializer
     pagination_class = SmallPagination
     queryset = CustomUser.objects.all()
+
+    def list(self, request):
+        if request.user.is_staff:
+            queryset = self.filter_queryset(self.get_queryset())
+
+            page = self.paginate_queryset(queryset)
+
+            if page is not None:
+                serializer = serializers.UserSerializer2(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.serializers.UserSerializer2(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            return Response("접근 실패")
 
     def retrieve(self, request, pk=None):
         user = get_object_or_404(get_user_model(), id=pk)
@@ -307,7 +332,15 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.Des
             user.save()
             emailaddress.save()
             return Response("수정 완료")
-        return Response("수정 실패")
+        elif request.user.is_staff and request.user != user:
+            if user.is_staff:
+                user.is_staff = False
+            else:
+                user.is_staff = True
+            user.save()
+            return Response("권한 변경 성공")
+        else:
+            return Response("접근 실패")
 
     def destroy(self, request, pk=None):
         user = get_object_or_404(get_user_model(), id=pk)
@@ -315,7 +348,17 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.Des
             user.is_active = False
             user.save()
             return Response("탈퇴 완료")
-        return Response("탈퇴 실패")
+        elif request.user.is_staff and request.user != user:
+            if user.is_active:
+                user.is_active = False
+                user.save()
+                return Response("블럭 성공")
+            else:
+                user.is_active = True
+                user.save()
+                return Response("블럭 해제")
+        else:
+            return Response("접근 실패")
 
 @api_view(['PUT'])
 def UpdateUserProfile(self):
