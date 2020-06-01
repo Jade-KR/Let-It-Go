@@ -14,7 +14,7 @@ class CustomUser(AbstractUser):
     
     @property
     def category_list(self):
-        return self.gategories.split("|")[0] if self.categories else ""
+        return self.categories.split("|") if self.categories else ""
 
 class Theme(models.Model):
     id = models.IntegerField(primary_key=True)
