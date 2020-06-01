@@ -206,6 +206,7 @@ class CustomLoginView(LoginView):
             "age": user.age,
             "gender": user.gender,
             "is_staff": user.is_staff,
+            "category_list": user.category_list,
             "status": "success",
             }
         orginal_response.data["user"].update(mydata)
