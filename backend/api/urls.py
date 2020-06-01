@@ -53,5 +53,6 @@ urlpatterns = [
     path('go_to_myhome/', views.go_to_myhome, name="go_to_myhome"),
     path('like_set', views.like_set, name='like_set'),
     path('follow', views.follow, name='follow'),
+    path('crawll/<int:idx>', views.crawll, name='crawll'),
     # path('create_review', views.create_review, name='create_review')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

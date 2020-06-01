@@ -51,6 +51,11 @@ class Command(BaseCommand):
         with open(cur_file, 'rb') as f:
             theme_list = pickle.load(f)["results"]
         print("complete")
+        print("Loading setpart data")
+        cur_file = Path(settings.BASE_DIR) / "crawling" / "data" / "setpart.p"
+        with open(cur_file, 'rb') as f:
+            setpart_list = pickle.load(f)
+        print("complete")
         
         print("[*] Delete all data...")
         # DB에 저장된 정보를 모두 지워 초기화해 줍니다.
@@ -93,6 +98,7 @@ class Command(BaseCommand):
         ]
         models.Color.objects.bulk_create(colors_bulk)
         models.Color.objects.create(id=9999, name="not a color", rgb="000000")
+        models.Color.objects.create(id=-1, name="Unknown", rgb="0033B2")
         print("[+] Done")
 
         print("[*] Initializing themes...")
@@ -144,6 +150,38 @@ class Command(BaseCommand):
             for part in part_list
         ]
         models.LegoPart.objects.bulk_create(lego_part_bulk)
+        # models.LegoPart.objects.create(
+        #         id="6223",
+        #         name="Brick 2 x 2 without Inside Ridges",
+        #         category_id=11,
+        #         image="https://cdn.rebrickable.com/media/parts/elements/4144387.jpg",
+        #         bricklink_ids="3003",
+        #         official_ids="6223"
+        # )
+        print("[+] Done")
+
+        print("[*] Initializing setparts...")
+        
+        # inventory_id	part_num	color_id	quantity
+        setpart_bulk = [
+            models.SetPart(
+                lego_set_id=part[0],
+                quantity=part[3],
+                color_id=part[2],
+                part_id=part[1]
+            )
+            for part in setpart_list
+        ]
+        models.SetPart.objects.bulk_create(setpart_bulk)
+        # for part in setpart_list:
+        #     try:
+        #         models.SetPart.objects.create(
+        #             lego_set_id=part[0],
+        #             quantity=part[3],
+        #             color_id=part[2],
+        #             part_id=part[1])
+        #     except:
+        #         print(part)
         print("[+] Done")
 
 

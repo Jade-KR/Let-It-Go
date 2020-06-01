@@ -10,6 +10,11 @@ class CustomUser(AbstractUser):
     gender = models.IntegerField(null=True)
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followings')
     review_count = models.IntegerField(default=0)
+    categories = models.TextField(null=True)
+    
+    @property
+    def category_list(self):
+        return self.gategories.split("|")[0] if self.categories else ""
 
 class Theme(models.Model):
     id = models.IntegerField(primary_key=True)

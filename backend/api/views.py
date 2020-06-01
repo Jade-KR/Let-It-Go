@@ -526,3 +526,15 @@ def follow(self):
             return Response("팔로우")
     else:
         return Response("비 인증 유저")
+
+
+@api_view(['GET'])
+def crawll(self, idx):
+    for i in range(idx, idx + 50):
+        if not SetPart.objects.filter(lego_set_id=i):
+            print('crawll ' + str(i))
+            try:
+                crawling_part_data(i)
+            except:
+                print('fail on ' + str(i))
+            
