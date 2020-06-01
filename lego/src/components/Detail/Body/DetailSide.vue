@@ -82,16 +82,19 @@
         <div id="detail_side_similar_percent">{{ makePercent }}%</div>
       </div>
     </div>
-    <div id="detail_side_ad">
+    <!-- <div id="detail_side_ad">
       <div id="detail_side_content">레고레일로 분류를 해보세요!</div>
-    </div>
+    </div> -->
+    <video autoplay controls width="100%" style="margin-top: 10px;">
+      <source src="../../../assets/zzzz.mp4" type="video/mp4" />
+    </video>
   </div>
 </template>
 
 <script>
 import LegoThemes from "../../../../jsonData/LegoThemes.json";
 import router from "../../../router";
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   props: {
@@ -158,7 +161,7 @@ export default {
           color: "black"
         }
       ],
-      makePercent: ""
+      makePercent: "0.0"
     };
   },
   watch: {
@@ -176,9 +179,61 @@ export default {
       } else if (this.isLike === 0) {
         this.likeFlag = false;
       }
+    },
+    myparts() {
+      if (this.myparts === undefined) {
+        this.myparts = [];
+      }
+      var allPartSum = 0;
+      const sortedParts = Object();
+      this.parts.forEach(e => {
+        let part_id = e.part_id;
+        let color_id = e.color_id;
+        let quantity = e.quantity;
+        allPartSum += quantity;
+        let temp = Object();
+        temp[color_id] = quantity;
+        sortedParts[`${part_id}_${color_id}`] = temp;
+      });
+
+      var myPartSum = 0;
+      for (let i = 0; i < this.myparts.length; ++i) {
+        if (
+          sortedParts[`${this.myparts[i].part_id}_${this.myparts[i].color_id}`]
+        ) {
+          if (
+            sortedParts[
+              `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+            ][this.myparts[i].color_id]
+          ) {
+            if (
+              sortedParts[
+                `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+              ][this.myparts[i].color_id] >= this.myparts[i].quantity
+            ) {
+              myPartSum += this.myparts[i].quantity;
+            } else {
+              myPartSum +=
+                sortedParts[
+                  `${this.myparts[i].part_id}_${this.myparts[i].color_id}`
+                ][this.myparts[i].color_id];
+            }
+          }
+        }
+      }
+      this.makePercent = ((myPartSum / allPartSum) * 100).toFixed(1);
+      if (this.makePercent === "100.0") {
+        this.makePercent = "100";
+      }
     }
   },
+  computed: {
+    ...mapState({
+      myparts: state => state.detail.myparts
+    })
+  },
   async mounted() {
+    await this.getUserPartsAll();
     if (this.tags) {
       this.tagList = await this.tags.split("|");
     }
@@ -187,39 +242,6 @@ export default {
       this.likeFlag = true;
     } else if (this.isLike === 0) {
       this.likeFlag = false;
-    }
-
-    const myparts = await this.getUserPartsAll();
-    var allPartSum = 0;
-    const sortedParts = Object();
-    this.parts.forEach(e => {
-      let part_id = e.part_id;
-      let color_id = e.color_id;
-      let quantity = e.quantity;
-      allPartSum += quantity;
-      let temp = Object();
-      temp[color_id] = quantity;
-      sortedParts[part_id] = temp;
-    });
-
-    var myPartSum = 0;
-    for (let i = 0; i < myparts.length; ++i) {
-      if (sortedParts[myparts[i].part_id]) {
-        if (sortedParts[myparts[i].part_id][myparts[i].color_id]) {
-          if (
-            sortedParts[myparts[i].part_id][myparts[i].color_id] >=
-            myparts[i].quantity
-          ) {
-            myPartSum += myparts[i].quantity;
-          } else {
-            myPartSum += sortedParts[myparts[i].part_id][myparts[i].color_id];
-          }
-        }
-      }
-    }
-    this.makePercent = ((myPartSum / allPartSum) * 100).toFixed(1);
-    if (this.makePercent === "100.0") {
-      this.makePercent = "100";
     }
   },
   methods: {

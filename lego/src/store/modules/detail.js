@@ -16,7 +16,8 @@ const state = {
     updated_at: "",
     parts: []
   },
-  reviews: []
+  reviews: [],
+  myparts: []
 };
 
 const actions = {
@@ -62,11 +63,18 @@ const actions = {
     });
   },
   async getUserPartsAll({ commit }) {
-    commit;
-    const resp = api
+    const resp = await api
       .getUserPartsAll()
       .then(res => res.data.results)
       .catch(err => err);
+    commit("setMyParts", resp);
+  },
+  async addMyParts({ commit }, params) {
+    commit;
+    const resp = await api
+      .addUserParts(params)
+      .then(res => res.data)
+      .catch(err => err.response);
     return resp;
   }
 };
@@ -96,6 +104,12 @@ const mutations = {
   },
   resetReviews(state) {
     state.reviews = [];
+  },
+  setMyParts(state, models) {
+    state.myparts = models;
+  },
+  resetMyParts(state) {
+    state.myparts = [];
   }
 };
 

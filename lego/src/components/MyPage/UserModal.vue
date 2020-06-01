@@ -14,12 +14,18 @@
           :key="`menu${idx}`"
           @click="goSetting(menu, idx)"
         >
-          <p class="menu_name">{{menu}}</p>
+          <p class="menu_name">{{ menu }}</p>
+        </div>
+        <div class="menu" @click="member()" v-if="isStaff">
+          <p class="menu_name">멤버소개</p>
+        </div>
+        <div class="menu" @click="admin()" v-if="isStaff">
+          <p class="menu_name">관리자페이지</p>
         </div>
         <div class="menu" @click="logout()">
           <p class="menu_name">로그아웃</p>
         </div>
-        <div class="menu" @click="dialog=false">
+        <div class="menu" @click="dialog = false">
           <p class="menu_name">취소</p>
         </div>
       </v-card>
@@ -33,7 +39,8 @@ export default {
   data() {
     return {
       dialog: false,
-      menus: ["프로필 편집", "비밀번호 변경", "레고레일"]
+      menus: ["프로필 편집", "비밀번호 변경", "레고레일"],
+      isStaff: false
     };
   },
   methods: {
@@ -43,6 +50,12 @@ export default {
         name: "UserSetting",
         params: { title: title, idx: idx }
       });
+    },
+    member() {
+      this.$router.push("/member");
+    },
+    admin() {
+      this.$router.push("/admin");
     }
   }
 };
