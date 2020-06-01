@@ -183,6 +183,7 @@ class CustomLoginView(LoginView):
             "comment": user.comment,
             "age": user.age,
             "gender": user.gender,
+            "is_staff": user.is_staff,
             "status": "success",
             }
         orginal_response.data["user"].update(mydata)
@@ -249,10 +250,25 @@ class FollowingUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = serializers.LegoSetSerializer(followings, many=True)
         return Response(serializer.data)
 
-class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserSerializer
     pagination_class = SmallPagination
     queryset = CustomUser.objects.all()
+
+    def list(self, request):
+        if request.user.is_staff:
+            queryset = self.filter_queryset(self.get_queryset())
+
+            page = self.paginate_queryset(queryset)
+
+            if page is not None:
+                serializer = serializers.UserSerializer2(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.serializers.UserSerializer2(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            return Response("접근 실패")
 
     def retrieve(self, request, pk=None):
         user = get_object_or_404(get_user_model(), id=pk)

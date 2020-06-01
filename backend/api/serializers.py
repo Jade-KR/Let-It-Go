@@ -132,6 +132,21 @@ class UserSerializer(serializers.ModelSerializer):
             "image"
         ]
 
+class UserSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = [
+            "id",
+            "username",
+            "email",
+            "nickname",
+            "age",
+            "gender",
+            "is_staff",
+            "is_active",
+            "last_login"
+        ]
+
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
