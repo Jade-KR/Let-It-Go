@@ -19,8 +19,9 @@ django.setup()
 
 from api.models import LegoSet, Review, CustomUser, Theme
 
-# user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
-# review_df = pd.DataFrame(Review.objects.all().values("user_id", "score", "lego_set_id"))
+user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
+lego_set_df = pd.DataFrame(LegoSet.objects.all().values("id", "name", "theme_id"))
+
 # db 모델 변경용 파일 수정
 theme_df = pd.DataFrame(Theme.objects.all().values("id", "parent_id", "name"))
 theme_df['root_id'] = 0
@@ -37,22 +38,31 @@ for i in theme_df.index:
 # theme_df.to_csv('theme.csv')
 
 
-
 def recoNearLegoSet(temp_id):
-    lego_set_theme_id = get_root_theme(temp_id)
-    print(lego_set_theme_id)
-    all_lego_set = LegoSet.objects.all()
-    list1 = []
-    for ls in all_lego_set.iterator():
-        ls_root_theme_id = get_root_theme(ls.theme_id)
-        if(lego_set_theme_id == ls_root_theme_id):
-            list1.append(ls)
-    print(list1[0:5])
-    print(len(list1))
-    # lego_set_df = pd.DataFrame(all_lego_set.values(id, theme_id, review_count, like_count))
+    # lego_set_root_theme_id = theme_df.loc[temp_id, 'root_id']    
+    lego_set_theme_id = int(lego_set_df[lego_set_df['id'] == temp_id]['theme_id'])
+    near_lego_set_df = lego_set_df[lego_set_df['theme_id']== lego_set_theme_id]
 
-    return 1
+    review_df = pd.DataFrame(Review.objects.all().values("user_id", "score", "lego_set_id"))
+    review_df = review_df[review_df['lego_set_id'].isin(set(near_lego_set_df['id']))]
+    
+    review_df = review_df.groupby('lego_set_id').agg(['sum', 'count', 'mean'])['score']
+    print(sum(review_df['count']))
+    print(review_df)
+    if sum(review_df['count']) == 0:
+        return list(near_lego_set_df.sample(n=20)['id'])
+    else:
+        a = sum(review_df['sum'])/sum(review_df['count'])
+        min_review = 5
 
+        # 인기도 고려한 평점 계산
+        review_df['calc'] = review_df.apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/(x['count']+min_review))*a), axis=1)    
+        near_lego_set_df = pd.merge(near_lego_set_df[["id", "count"]], review_df["calc"], right_index=True, left_on="id", how='outer').set_index('id')
+        near_lego_set_df['calc'] = near_lego_set_df['calc'].fillna(0.0)
+
+        # 카테고리 일치 개수, 인기도 고려한 평점 순 정렬
+        near_lego_set_df.sort_values(by=['count', 'calc'], inplace=True, ascending=False)
+        return near_lego_set_df.index[:20]
 
 print(recoNearLegoSet(84))
 
