@@ -18,22 +18,6 @@ from surprise.dataset import DatasetAutoFolds
 from surprise.model_selection import GridSearchCV
 from api.models import Review, CustomUser
 
-def read_item_names():
-    """Read the u.item file from MovieLens 100-k dataset and return two
-    mappings to convert raw ids into movie names and movie names into raw ids.
-    """
-
-    file_name = get_dataset_dir() + '/ml-100k/ml-100k/u.item'
-    rid_to_name = {}
-    name_to_rid = {}
-    with io.open(file_name, 'r', encoding='ISO-8859-1') as f:
-        for line in f:
-            line = line.split('|')
-            rid_to_name[line[0]] = line[1]
-            name_to_rid[line[1]] = line[0]
-
-    return rid_to_name, name_to_rid
-
 user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
 review_df = pd.DataFrame(Review.objects.all().values("user_id", "score", "lego_set_id"))
 
@@ -58,28 +42,19 @@ reader = Reader(rating_scale=(1, 5))
 review_data = surprise.Dataset.load_from_df(df=ratings_df, reader=reader)
 trainset = review_data.build_full_trainset()
 
-# k = 10 최적
-# knn_gs = cross_validate(KNNBaseline(), review_data, cv=5, n_jobs=5, verbose=False)
-# param_grid = {'k': [10, 20, 30, 40, 50, 60]}
-# knn_gs = GridSearchCV(KNNBaseline, param_grid, measures=['rmse', 'mae'], cv=5, n_jobs=5)
-# knn_gs.fit(review_data)
-
 # 피어슨 유사도로 학습
 sim_options = {'name': 'pearson_baseline', 'user_based': False}
 algo = surprise.KNNBaseline(k=10, sim_options=sim_options)
 algo.fit(trainset)
-print('학습 완료')
+# print('학습 완료')
 
-toy_story_inner_id = algo.trainset.to_inner_iid(1872)
-top_neighbors = algo.get_neighbors(toy_story_inner_id, k=10)
-print(toy_story_inner_id)
-print(top_neighbors)
+def recoNearLegoSet(temp_id):
+    lego_set__inner_id = algo.trainset.to_inner_iid(temp_id)
+    top_neighbors = algo.get_neighbors(lego_set__inner_id, k=20)
 
+    top_neighbors = [algo.trainset.to_raw_iid(inner_id) for inner_id in top_neighbors]
 
-top_neighbors = [algo.trainset.to_raw_iid(inner_id)
-                       for inner_id in top_neighbors]
+    return top_neighbors
 
-    
-print(dir(top_neighbors))
-print(top_neighbors.__getattribute__)
-print(top_neighbors)
+print(recoNearLegoSet(1872))
+

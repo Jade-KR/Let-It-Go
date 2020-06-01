@@ -12,7 +12,6 @@ from surprise import KNNBaseline
 from surprise import Dataset, accuracy, Reader
 
 
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE',
  'backend.settings')
 django.setup()
