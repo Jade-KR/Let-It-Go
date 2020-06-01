@@ -18,18 +18,28 @@
           *
         </div>
         <v-autocomplete
-          v-model="params.theme_name"
-          :loading="loading"
-          :items="themeList"
-          :search-input.sync="search"
-          cache-items
-          flat
+          v-model="params.theme_id"
+          :items="themes"
+          outlined
+          chips
           hide-details
           label="테마를 골라주세요"
-          solo-inverted
-          color="rgba(255, 215, 0, 0.7)"
-          multiple
-        ></v-autocomplete>
+          color="rgb(255, 215, 0)"
+          background-color="white"
+          item-text="name"
+          item-value="id"
+        >
+          <template v-slot:selection="data">
+            <v-chip
+              v-bind="data.attrs"
+              :input-value="data.selected"
+              @click="data.select"
+              color="white"
+            >
+              {{ data.item.name }}
+            </v-chip>
+          </template>
+        </v-autocomplete>
       </div>
       <div id="tag">
         <div class="star">
@@ -71,7 +81,17 @@
       <button @click="onPrev(step - 1)" class="before_btn">
         이전
       </button>
-      <button @click="onNext(step + 1)" class="after_btn">
+      <button
+        @click="onNext(step + 1)"
+        class="after_btn"
+        :disabled="
+          params.set_name.length > 50 ||
+            params.set_name.length <= 2 ||
+            !params.theme_id ||
+            !params.tags ||
+            !params.description
+        "
+      >
         다음
       </button>
     </div>
@@ -79,7 +99,6 @@
 </template>
 
 <script>
-import LegoThemes from "../../../jsonData/LegoThemes.json";
 import { mapState, mapActions, mapMutations } from "vuex";
 
 import VueTagsInput from "@johmun/vue-tags-input";
@@ -103,10 +122,6 @@ export default {
           rule: tag => tag.text.length < 2
         },
         {
-          classes: "no-numbers",
-          rule: /^([^0-9]*)$/
-        },
-        {
           classes: "avoid-item",
           rule: /^(?!Cannot).*$/,
           disableAdd: true
@@ -117,18 +132,17 @@ export default {
             text.indexOf("{") !== -1 || text.indexOf("}") !== -1
         }
       ],
-      themeHeader: LegoThemes["header"],
-      themess: LegoThemes["rows"],
-      loading: false,
-      themeList: [],
-      search: null,
-      themes: []
+      themes: [],
+      params: {
+        set_name: "",
+        theme_id: 0,
+        tags: [],
+        description: "",
+        reference: ""
+      }
     };
   },
   watch: {
-    search(val) {
-      val && val !== this.params.theme_name && this.querySelections(val);
-    },
     tag() {
       const temp = [];
       this.tags.forEach(e => {
@@ -140,24 +154,44 @@ export default {
   },
   computed: {
     ...mapState({
-      params: state => state.write.descParams,
       step: state => state.write.step,
-      currentStep: state => state.write.currentStep
+      currentStep: state => state.write.currentStep,
+      model: state => state.write.model,
+      themess: state => state.write.themess
     })
   },
   async mounted() {
     await this.setThemesList();
+    this.params.set_name = this.model.set_name;
+    if (this.model.theme_id.length !== 0) {
+      this.params.theme_id = this.model.theme_id;
+    }
+    if (this.model.tags.length !== 0) {
+      this.tags = [];
+      this.model.tags.forEach(e => {
+        this.tags.push({
+          text: e,
+          style: "background-color: gold"
+        });
+      });
+      this.tags.forEach(e => {
+        this.params.tags.push(e["text"]);
+      });
+    }
+    this.params.description = this.model.description;
+    this.params.reference = this.model.reference;
     document.querySelector("#tag > div.vue-tags-input > div").style.width =
       "642px";
     document.querySelector(
       "#tag > div.vue-tags-input > div > ul"
     ).style.paddingLeft = "0px";
   },
+
   methods: {
-    ...mapActions("write", ["next"]),
-    ...mapActions("write", ["prev"]),
-    ...mapMutations("write", ["setSteps"]),
-    ...mapMutations("write", ["setCurrentStep"]),
+    ...mapActions("write", ["next", "prev"]),
+    // ...mapActions("write", ["prev"]),
+    ...mapMutations("write", ["setSteps", "setCurrentStep"]),
+    // ...mapMutations("write", ["setCurrentStep"]),
     goStep(idx) {
       if (this.currentStep >= idx || this.step >= idx) {
         this.setCurrentStep(idx);
@@ -165,6 +199,18 @@ export default {
     },
     onStep(idx) {
       this.setStep(idx);
+    },
+    subValidateCheck() {
+      if (
+        this.params.set_name.length > 50 ||
+        this.params.set_name.length <= 2
+      ) {
+        alert(
+          "제목이 너무 길거나 짧습니다. 2글자 이상 50글자 미만으로 작성해 주세요"
+        );
+        return false;
+      }
+      return true;
     },
     validateCheck() {
       if (
@@ -176,7 +222,7 @@ export default {
         );
         return false;
       } else if (
-        !this.params.theme_name ||
+        !this.params.theme_id ||
         !this.params.tags ||
         !this.params.description
       ) {
@@ -192,63 +238,63 @@ export default {
       }
       const params = {
         idx: idx,
-        step: 2
+        step: 2,
+        descParams: this.params
       };
       this.next(params);
     },
     onPrev(idx) {
-      const check = this.validateCheck();
+      const check = this.subValidateCheck();
       if (check === false) {
         return;
       }
       const params = {
         idx: idx,
-        step: 2
+        step: 2,
+        descParams: this.params
       };
       this.prev(params);
-    },
-    querySelections(v) {
-      this.loading = true;
-      setTimeout(() => {
-        this.themeList = this.themes.filter(e => {
-          return (e || "").toLowerCase().indexOf((v || "").toLowerCase()) > -1;
-        });
-        this.loading = false;
-      }, 500);
     },
     setThemesList() {
       this.themess.forEach(e => {
         if (e[1] === "NULL") {
-          this.themes.push(e[2]);
+          this.themes.push({ name: e[2], id: Number(e[0]) });
         } else {
           if (this.themess[e[1] - 1][1] === "NULL") {
-            this.themes.push(this.themess[e[1] - 1][2] + " > " + e[2]);
+            this.themes.push({
+              name: this.themess[e[1] - 1][2] + " > " + e[2],
+              id: Number(e[0])
+            });
           } else {
             if (this.themess[this.themess[e[1] - 1][1] - 1][1] === "NULL") {
-              this.themes.push(
-                this.themess[this.themess[e[1] - 1][1] - 1][2] +
+              this.themes.push({
+                name:
+                  this.themess[this.themess[e[1] - 1][1] - 1][2] +
                   " > " +
                   this.themess[e[1] - 1][2] +
                   " > " +
-                  e[2]
-              );
+                  e[2],
+                id: Number(e[0])
+              });
             } else {
               if (
                 this.themess[
                   this.themess[this.themess[e[1] - 1][1] - 1][1] - 1
                 ][1] === "NULL"
               ) {
-                this.themes.push(
-                  this.themess[
-                    this.themess[this.themess[e[1] - 1][1] - 1][1] - 1
-                  ][2] +
+                this.themes.push({
+                  name:
+                    this.themess[
+                      this.themess[this.themess[e[1] - 1][1] - 1][1] - 1
+                    ][2] +
                     " > " +
                     this.themess[this.themess[e[1] - 1][1] - 1][2] +
                     " > " +
                     this.themess[e[1] - 1][2] +
                     " > " +
-                    e[2]
-                );
+                    e[2],
+                  id: Number(e[0])
+                });
               }
             }
           }
@@ -275,6 +321,7 @@ export default {
   position: absolute;
   transform: translateX(5px);
   color: red;
+  z-index: 1;
 }
 
 .before_btn,

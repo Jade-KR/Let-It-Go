@@ -53,9 +53,6 @@ class OfficialMapping(models.Model):
     id = models.CharField(primary_key=True, max_length=50)
     lego_set = models.ForeignKey(LegoSet, on_delete=models.SET_NULL, null=True)
 
-    def __str__(self):
-        return self.set_id
-
 class Category(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -66,7 +63,7 @@ class Category(models.Model):
 
 class Review(models.Model):
     id = models.IntegerField(primary_key=True)
-    set_id = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
+    lego_set = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
     score = models.IntegerField()
@@ -134,6 +131,3 @@ class SetPart(models.Model):
     part = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
     color = models.ForeignKey(Color, on_delete=models.CASCADE)
     quantity = models.IntegerField(null=True)
-
-    def __str__(self):
-        return self.set_id
