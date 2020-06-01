@@ -14,12 +14,13 @@ class CustomUser(AbstractUser):
     
     @property
     def category_list(self):
-        return self.gategories.split("|")[0] if self.categories else ""
+        return self.categories.split("|")[0] if self.categories else ""
 
 class Theme(models.Model):
     id = models.IntegerField(primary_key=True)
     parent_id = models.IntegerField(null=True)
     name = models.CharField(max_length=100)
+    root_id = models.IntegerField(null=True)
 
     def __str__(self):
         return self.name
