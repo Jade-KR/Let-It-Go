@@ -36,6 +36,7 @@ router.register(r"LegoSetRanking", views.LegoSetRankingViewSet, basename="LegoSe
 
 urlpatterns = [
     *router.urls,
+    path('set_user_category', views.set_user_category, name="set_user_category"),
     path('UpdateUserPart', views.UpdateUserPart, name='UpdateUserPart'),
     path('UpdateUserPart2', views.UpdateUserPart2, name='UpdateUserPart2'),
     path('CreateLegoSet', views.CreateLegoSet, name='CreateLegoSet'),

@@ -195,6 +195,14 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             return Response(serializer_data)
         return Response("")
 
+@api_view(['POST'])
+def set_user_category(self):
+    categories = self.data.get("categories")
+    user = CustomUser.objects.get(id=self.user.id)
+    user.categories = categories
+    user.save()
+    return Response("카테고리 등록 완료")
+
 class CustomLoginView(LoginView):
     def get_response(self):
         user = get_object_or_404(models.CustomUser, username=self.user)
@@ -206,6 +214,7 @@ class CustomLoginView(LoginView):
             "age": user.age,
             "gender": user.gender,
             "is_staff": user.is_staff,
+            "category_list": user.category_list,
             "status": "success",
             }
         orginal_response.data["user"].update(mydata)
