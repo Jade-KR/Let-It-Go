@@ -5,9 +5,11 @@ import numpy as np
 import pandas as pd
 import surprise 
 import requests
+import sys
 from math import sqrt
 from surprise.model_selection import cross_validate
 
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE',
  'backend.settings')
 django.setup()
@@ -31,9 +33,6 @@ ten_lego_set = set(temp_review_df[temp_review_df['score']>=10].index)
 
 # 10개 이상의 리뷰를 남긴 user
 ten_user_set = set(ten_user_df[ten_user_df["score"]>=10].index)
-print('-------')
-print(ten_lego_set)
-print(ten_user_set)
 
 # 해당 작품에 대한 리뷰가 10개이상이면서 10개 이상 작성자의 정보만 남김
 ten_review_df = review_df[review_df['user_id'].isin(ten_user_set)]
@@ -47,31 +46,30 @@ reader = Reader(rating_scale=(1, 5))
 review_data = surprise.Dataset.load_from_df(df=ratings_df, reader=reader)
 trainset = review_data.build_full_trainset()
 
-knn_gs = cross_validate(KNNBaseline(), review_data, cv=5, n_jobs=5, verbose=False)
-param_grid = {'k': [10, 20, 30, 40, 50, 60]}
-knn_gs = GridSearchCV(KNNBaseline, param_grid, measures=['rmse', 'mae'], cv=5, n_jobs=5)
-knn_gs.fit(review_data)
-print(knn_gs.cv_results)
-print(knn_gs.cv_results['mean_test_rmse'])
-print(knn_gs.cv_results['mean_test_mae'])
-print('학습 시작')
+# knn_gs = cross_validate(KNNBaseline(), review_data, cv=5, n_jobs=5, verbose=False)
+# param_grid = {'k': [10, 20, 30, 40, 50, 60]}
+# knn_gs = GridSearchCV(KNNBaseline, param_grid, measures=['rmse', 'mae'], cv=5, n_jobs=5)
+# knn_gs.fit(review_data)
+# print(knn_gs.cv_results)
+# print(knn_gs.cv_results['mean_test_rmse'])
+# print(knn_gs.cv_results['mean_test_mae'])
+
+# print('학습 시작')
 # 피어슨 유사도로 학습
 sim_options = {'name': 'pearson', 'user_based': True}
 algo = surprise.KNNBaseline(k=30, sim_options=sim_options)
 algo.fit(trainset)
-print('학습 완료')
+# print('학습 완료')
 
-# 안가본 식당
+# 작성 안한 레고
 def get_unmaked(ratings, store_list, user_id):
-    eaten_store = ratings[ratings['user_id'] == user_id]['lego_set_id'].tolist()
-    uneaten_store = [store for store in store_list if store not in eaten_store]
-    print('평점 매긴 식당 수 : ', len(eaten_store), '추천 대상 식당 수 : ', len(uneaten_store), '전체 식당 수 : ', len(store_list)  )
+    maked_lego_set = ratings[ratings['user_id'] == user_id]['lego_set_id'].tolist()
+    unmaked_lego_set = [store for store in store_list if store not in maked_lego_set]
+    print('평점 매긴  수 : ', len(maked_lego_set), '추천 대상 레고 세트 수 : ', len(unmaked_lego_set), '전체 레고 세트 수 : ', len(store_list)  )
 
-    return uneaten_store
+    return unmaked_lego_set
 
-
-
-# 추천 식당 정렬해서 리턴
+# 추천 레고세트 정렬해서 리턴
 def recomm_lego_set(algo, user_id, unvisited_store, top_n=10):
     predicitons = []
     predicitons = [algo.predict(user_id, kk) for kk in unvisited_store]
@@ -87,11 +85,11 @@ def recomm_lego_set(algo, user_id, unvisited_store, top_n=10):
 
     return top_store_preds
 
-unvisited_store = get_unmaked(ratings_df, ten_lego_set, 32)
+unmaked_lego_set = get_unmaked(ratings_df, ten_lego_set, 32)
 
-top_store_preds = recomm_lego_set(algo, 32, unvisited_store)
-print('#### Top 10 음식점####')
-for top_store in top_store_preds:
+top_lego_set_preds = recomm_lego_set(algo, 32, unmaked_lego_set)
+print('#### Top 10 레고세트####')
+for top_store in top_lego_set_preds:
     print(top_store)
 
 print('결과 툭')

@@ -1,9 +1,10 @@
 from sklearn.cluster import KMeans
 import os
 import django
+import sys
 from django.core.management.base import BaseCommand
-from backend import settings
 
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE',
  'backend.settings')
 django.setup()
@@ -11,6 +12,7 @@ import numpy as np
 import pandas as pd
 import requests
 from api.models import Review, CustomUser
+from backend import settings
 import pickle
 
 
