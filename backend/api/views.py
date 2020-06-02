@@ -129,10 +129,12 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
                 user_id = request.user.id
                 for legoset in serializer_data:
                     legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
+                    legoset["is_review"] = 1 if Review.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
                 return self.get_paginated_response(serializer_data)
             else:
                 for legoset in serializer_data:
                     legoset["is_like"] = 0
+                    legoset["is_review"] = 0
                 return self.get_paginated_response(serializer_data)
 
         serializer = serializers.LegoSetSerializer(queryset, many=True)
@@ -613,4 +615,28 @@ def crawll(self, idx):
                 crawling_part_data(i)
             except:
                 print('fail on ' + str(i))
-            
+
+    
+@api_view(['GET'])
+def user_parts_registered_by_IoT(self):
+    user = self.user
+    if user.is_authenticated:
+        user_parts = UserPart2.objects.filter(user=user)
+        user_part_dict = dict()
+        for part in user_parts:
+            if user_part_dict.get(part.part_id):
+                if user_part_dict[part.part_id].get(part.color_id):
+                    user_part_dict[part.part_id][part.color_id]["quantity"] += 1
+                else:
+                    user_part_dict[part.part_id][part.color_id] = {"part_id": part.part_id, "color_id": part.color_id, "quantity": 1}
+            else:
+                user_part_dict[part.part_id] = {part.color_id: {"part_id": part.part_id, "color_id": part.color_id, "quantity": 1}}
+        # print(user_part_dict)
+        res = []
+        for part_id, color_dict in user_part_dict.items():
+            # print(color_dict)
+            for color_id, part in color_dict.items():
+                res.append(part)
+        return Response(res)
+    else:
+        return Response("비 인증 유저")
