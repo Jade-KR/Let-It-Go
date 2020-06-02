@@ -5,33 +5,34 @@
       v-infinite-scroll="loadMore"
       infinite-scroll-disabled="loading"
       infinite-scroll-distance="10"
-      v-if="this.userModels.length !== 0"
     >
-      <div class="main">
-        <div class="whole_box">
-          <div
-            class="item"
-            v-for="(item, idx) in userModels"
-            :key="`item${idx}`"
-            @click="goDetail(item)"
-          >
-            <div class="body_img_box">
-              <img class="body_img" :src="item.images" alt />
-              <div class="body_img_hover">
-                <div class="body_img_info">
-                  <i class="fas fa-heart"></i>
-                  <span>{{item.like_count}}</span>
-                  <i class="fas fa-comment"></i>
-                  <span>{{item.review_count}}</span>
+      <div v-if="this.userModels.length !== 0">
+        <div class="main">
+          <div class="whole_box">
+            <div
+              class="item"
+              v-for="(item, idx) in userModels"
+              :key="`item${idx}`"
+              @click="goDetail(item)"
+            >
+              <div class="body_img_box">
+                <img class="body_img" :src="item.images" alt />
+                <div class="body_img_hover">
+                  <div class="body_img_info">
+                    <i class="fas fa-heart"></i>
+                    <span>{{item.like_count}}</span>
+                    <i class="fas fa-comment"></i>
+                    <span>{{item.review_count}}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div v-else>
-      <NoContentsModel></NoContentsModel>
+      <div v-else>
+        <NoContentsModel></NoContentsModel>
+      </div>
     </div>
   </div>
 </template>

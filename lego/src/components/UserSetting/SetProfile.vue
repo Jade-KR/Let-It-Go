@@ -4,7 +4,7 @@
       <div class="photo_box">
         <div class="label_box">
           <div class="photo_frame" v-if="loading === false">
-            <img :src="profilePic" alt class="photo" />
+            <img :src="profilePic" alt="noImage" class="photo" />
           </div>
           <div class="loading" v-else>
             <i class="fa fa-spinner fa-spin"></i>
@@ -13,20 +13,27 @@
         <div class="input_box">
           <div class="photo_desc">
             <h1 class="user_id">{{name}}</h1>
-            <div class="filebox">
+            <div class="filebox" v-if="photoCheck === true">
               <label for="ex_file">프로필 사진 변경</label>
               <input type="file" id="ex_file" @change="changeToUrl" />
+            </div>
+
+            <div class="filebox" v-else>
+              <label for="ex_file2">프로필 사진 변경</label>
+              <ProfileModal @loading="loading = true" @stop="loading = false">
+                <input type="button" id="ex_file2" slot="click" />
+              </ProfileModal>
             </div>
           </div>
         </div>
       </div>
-      <ValidationObserver ref="obs" v-slot="{ invalid, validated }">
+      <ValidationObserver ref="obs" v-slot="{ invalid }">
         <div class="form_box">
           <div class="label_box">
             <p class="label_name">닉네임</p>
           </div>
           <div class="input_box">
-            <ValidationProvider name="닉네임" rules="nickname|max:12">
+            <ValidationProvider name="닉네임" rules="nickname|max:12|required">
               <div
                 slot-scope="{ errors }"
                 style="margin-bottom: 20px; height:20px; position:relative"
@@ -56,7 +63,7 @@
             <p class="label_name">이메일</p>
           </div>
           <div class="input_box">
-            <ValidationProvider name="이메일" rules="email|max:50">
+            <ValidationProvider name="이메일" rules="email|max:50|required">
               <div
                 slot-scope="{ errors }"
                 style="margin-bottom: 20px; height:20px; position:relative"
@@ -73,7 +80,7 @@
         <div class="form_box">
           <div class="label_box"></div>
           <div class="input_box">
-            <button class="submit_btn" @click="onSubmit()" :disabled="invalid || !validated">제출</button>
+            <button class="submit_btn" @click="onSubmit()" :disabled="invalid">제출</button>
           </div>
         </div>
       </ValidationObserver>
@@ -84,19 +91,26 @@
 <script>
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import { mapActions, mapState } from "vuex";
+import ProfileModal from "./ProfileModal";
 export default {
   components: {
     ValidationProvider,
-    ValidationObserver
+    ValidationObserver,
+    ProfileModal
   },
   data() {
     return {
-      profilePic: localStorage.getItem("image"),
+      profilePic:
+        localStorage.getItem("image") == "null" || ""
+          ? require("../../../public/images/user.png")
+          : localStorage.getItem("image"),
       nickname: localStorage.getItem("nickname"),
       comment: localStorage.getItem("comment"),
       email: localStorage.getItem("email"),
       name: localStorage.getItem("username"),
-      loading: false
+      loading: false,
+      photoCheck: localStorage.getItem("image") == "null" || "" ? true : false,
+      dialog: false
     };
   },
   methods: {
@@ -133,7 +147,13 @@ export default {
   },
   watch: {
     photoFlag() {
-      this.profilePic = localStorage.getItem("image");
+      const tmp =
+        localStorage.getItem("image") == "null" || ""
+          ? require("../../../public/images/user.png")
+          : localStorage.getItem("image");
+      this.profilePic = tmp;
+      this.photoCheck =
+        localStorage.getItem("image") == "null" || "" ? true : false;
     }
   }
 };
@@ -268,5 +288,8 @@ textarea {
   height: 50px;
   text-align: center;
   line-height: 50px;
+}
+#ex_file2 {
+  display: none;
 }
 </style>

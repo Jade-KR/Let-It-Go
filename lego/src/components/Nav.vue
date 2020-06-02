@@ -22,25 +22,10 @@
           <i class="fas fa-search right_icon" @click="goSearch"></i>
           <i class="fas fa-plus right_icon" @click="goWrite"></i>
           <div class="mypage" @click="goMyPage" v-show="checkLogin">
-            <img
-              :src="profilePic"
-              alt="noImage"
-              class="picture"
-              id="right_img"
-            />
+            <img :src="profilePic" alt="noImage" class="picture" id="right_img" />
           </div>
-          <span
-            class="login_btn logRegi"
-            v-if="checkLogin === false"
-            @click="goLogin()"
-            >로그인</span
-          >
-          <span
-            class="register_btn logRegi"
-            v-if="checkLogin === false"
-            @click="goRegister()"
-            >회원가입</span
-          >
+          <span class="login_btn logRegi" v-if="checkLogin === false" @click="goLogin()">로그인</span>
+          <span class="register_btn logRegi" v-if="checkLogin === false" @click="goRegister()">회원가입</span>
           <!-- <i class="fas fa-user-alt" @click="goMyPage"></i> -->
         </div>
       </div>
@@ -56,7 +41,7 @@ export default {
   data() {
     return {
       profilePic:
-        localStorage.getItem("image") != "null"
+        localStorage.getItem("image") != "null" || ""
           ? localStorage.getItem("image")
           : require("@/../public/images/user.png"),
       checkLogin: localStorage.getItem("token") != null ? true : false
@@ -69,7 +54,11 @@ export default {
   },
   watch: {
     photoFlag() {
-      this.profilePic = localStorage.getItem("image");
+      const tmp =
+        localStorage.getItem("image") == "null" || ""
+          ? require("@/../public/images/user.png")
+          : localStorage.getItem("image");
+      this.profilePic = tmp;
     }
   },
   created() {
