@@ -111,13 +111,13 @@
                   <p class="part_quantity">* {{ part.quantity }}</p>
                 </div>
               </div>
-            </div>
-          </ModifyParts>
+            </ModifyParts>
+          </div>
         </div>
       </div>
-    </div>
-    <div v-else>
-      <NoContentsPart @added="added"></NoContentsPart>
+      <div v-else>
+        <NoContentsPart @added="added"></NoContentsPart>
+      </div>
     </div>
   </div>
 </template>

@@ -49,7 +49,7 @@ class Command(BaseCommand):
         print("Loading theme data")
         cur_file = Path(settings.BASE_DIR) / "crawling" / "data" / "theme.p"
         with open(cur_file, 'rb') as f:
-            theme_list = pickle.load(f)["results"]
+            theme_list = pickle.load(f)
         print("complete")
         print("Loading setpart data")
         cur_file = Path(settings.BASE_DIR) / "crawling" / "data" / "setpart.p"
@@ -106,7 +106,8 @@ class Command(BaseCommand):
             models.Theme(
                 id=theme["id"],
                 parent_id=theme["parent_id"],
-                name=theme["name"]
+                name=theme["name"],
+                root_id=theme["root_id"]
             )
             for theme in theme_list
         ]

@@ -93,7 +93,10 @@ export default {
       currentPw: "",
       newPw: "",
       checkPw: "",
-      profilePic: localStorage.getItem("image"),
+      profilePic:
+        localStorage.getItem("image") == "null" || ""
+          ? require("../../../public/images/user.png")
+          : localStorage.getItem("image"),
       name: localStorage.getItem("username")
     };
   },
@@ -104,7 +107,11 @@ export default {
   },
   watch: {
     photoFlag() {
-      this.profilePic = localStorage.getItem("image");
+      const tmp =
+        localStorage.getItem("image") == "null" || ""
+          ? require("../../../public/images/user.png")
+          : localStorage.getItem("image");
+      this.profilePic = tmp;
     }
   },
   methods: {
