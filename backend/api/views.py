@@ -129,7 +129,7 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
                 user_id = request.user.id
                 for legoset in serializer_data:
                     legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
-                    legoset["is_review"] = 1 if Review.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
+                    legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user_id) else 0
                 return self.get_paginated_response(serializer_data)
             else:
                 for legoset in serializer_data:
@@ -191,7 +191,7 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             serializer_data = serializers.SetPartSerializer(queryset, many=True).data
             return Response(serializer_data)
         elif OfficialMapping.objects.get(lego_set_id=pk):
-            crawling_part_data(pk)
+            # crawling_part_data(pk)
             queryset = SetPart.objects.filter(lego_set_id=pk)
             serializer_data = serializers.SetPartSerializer(queryset, many=True).data
             return Response(serializer_data)
@@ -427,6 +427,35 @@ class LegoSetRankingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         serializer = serializers.LegoSetSerializer(queryset, many=True)
         return Response(serializer.data)
 
+class FollowingUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = serializers.LegoSetSerializer2
+    pagination_class = SmallPagination
+    
+    def list(self, request):
+        if request.user.is_authenticated:
+            queryset = UserPart.objects.filter(user=request.user)
+
+        queryset = LegoSet.objects.all().order_by("-like_count")
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer_data = serializers.LegoSetSerializer(page, many=True).data
+            if request.user.is_authenticated:
+                user_id = request.user.id
+                for legoset in serializer_data:
+                    legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
+                return self.get_paginated_response(serializer_data)
+            else:
+                for legoset in serializer_data:
+                    legoset["is_like"] = 0
+                return self.get_paginated_response(serializer_data)
+            serializer = serializers.LegoSetSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = serializers.LegoSetSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 @api_view(['POST'])
 def UpdateUserPart(self):
     '''
@@ -498,17 +527,20 @@ def UpdateUserPart(self):
 
     return Response("수정 완료")
 
-
 @api_view(['POST'])
 def UpdateUserPart2(self):
+    """
+    {
+		"part_id": "10066pr0001",
+		"color_id": 1,
+		"qte": 5
+	}
+
+    """
     user = self.user
-    print(user)
-    print(self.data)
     if user.is_authenticated:
         data = self.data
         UserPart2.objects.create(user=user, part_id=data["part_id"], color_id=data["color_id"])
-        print(1)
-
     return Response("수정 완료")
 
 @api_view(['POST'])
@@ -605,7 +637,6 @@ def follow(self):
     else:
         return Response("비 인증 유저")
 
-
 @api_view(['GET'])
 def crawll(self, idx):
     for i in range(idx, idx + 50):
@@ -616,7 +647,6 @@ def crawll(self, idx):
             except:
                 print('fail on ' + str(i))
 
-    
 @api_view(['GET'])
 def user_parts_registered_by_IoT(self):
     user = self.user
@@ -631,10 +661,8 @@ def user_parts_registered_by_IoT(self):
                     user_part_dict[part.part_id][part.color_id] = {"part_id": part.part_id, "color_id": part.color_id, "quantity": 1}
             else:
                 user_part_dict[part.part_id] = {part.color_id: {"part_id": part.part_id, "color_id": part.color_id, "quantity": 1}}
-        # print(user_part_dict)
         res = []
         for part_id, color_dict in user_part_dict.items():
-            # print(color_dict)
             for color_id, part in color_dict.items():
                 res.append(part)
         return Response(res)
