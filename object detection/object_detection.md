@@ -185,3 +185,10 @@ for p in object_position:
 hsv 방식
 
 선 제거
+
+
+
+
+
+레이저 센싱 > 카메라 촬영 > object detection > 식별
+
