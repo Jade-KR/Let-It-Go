@@ -93,7 +93,9 @@ export default {
     });
   },
   reviewUpdate(params) {
-    return http.put(`${apiUrl}/Review/${params.id}`, params.info, { headers });
+    return http.put(`${apiUrl}/Review/${params.id}`, params.info, {
+      headers
+    });
   },
   reviewDelete(params) {
     return http.delete(`${apiUrl}/Review/${params}`, {
@@ -105,7 +107,7 @@ export default {
       params
     });
   },
-  changProfilePic(params) {
+  changeProfilePic(params) {
     return http.put(`${apiUrl}/UpdateUserProfile`, params, {
       headers
     });

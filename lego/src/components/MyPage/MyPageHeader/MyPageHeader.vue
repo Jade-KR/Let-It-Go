@@ -6,26 +6,22 @@
           <img
             src="../../../../public/images/user.png"
             alt="no_image"
-            v-if="image === 'null' || image === ''"
+            v-if="image == null || image == '' || image == 'null'"
           />
           <img :src="`${image}`" alt="user_image" v-else />
           <!-- <img
             src="https://images.unsplash.com/photo-1472457974886-0ebcd59440cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
             alt="photo"
             v-else
-          /> -->
+          />-->
         </div>
       </div>
       <div class="my_info">
         <div class="info_top">
           <span class="user_id">{{ nickname }}</span>
           <div v-if="!isMe" class="user_follow" @click="pushFollow()">
-            <div v-if="followFlag">
-              팔로우 취소
-            </div>
-            <div v-else>
-              팔로우
-            </div>
+            <div v-if="followFlag">팔로우 취소</div>
+            <div v-else>팔로우</div>
           </div>
           <UserModal v-else>
             <span class="user_setting" slot="click">
@@ -35,7 +31,7 @@
         </div>
         <div class="info_middle">
           <div class="summary">
-            <span>설계도 {{ legoSet }}</span>
+            <span>설계도 {{ modelCnt }}</span>
           </div>
           <div class="summary cursor">
             <follower :followerList="followerList">
@@ -49,10 +45,10 @@
           </div>
         </div>
         <div class="info_bottom" v-if="comment === 'null'">
-          레고를 안 산 사람은 있어도, 하나만 산 사람은 없다. <br />
-          레고와 함께라면 놀이가 교육이다. <br />
-          무엇을 생각하는가? 일단 지르고 고민해라. <br />
-          레고는 아름답고, 쌓을만한 가치가 있다.
+          레고를 안 산 사람은 있어도, 하나만 산 사람은 없다.
+          <br />레고와 함께라면 놀이가 교육이다.
+          <br />무엇을 생각하는가? 일단 지르고 고민해라.
+          <br />레고는 아름답고, 쌓을만한 가치가 있다.
         </div>
         <div class="info_bottom" v-else>{{ comment }}</div>
       </div>
@@ -97,8 +93,18 @@ export default {
   data() {
     return {
       isMe: true,
-      followFlag: true
+      followFlag: true,
+      modelCnt: 0
     };
+  },
+  async mounted() {
+    const params = {
+      page: 1,
+      append: false,
+      id: this.$route.params.user_id
+    };
+    const resp = await this.checkModelsCnt(params);
+    this.modelCnt = resp.data.count;
   },
   computed: {
     ...mapState({
@@ -132,7 +138,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions("mypage", ["onFollow", "follower", "following"]),
+    ...mapActions("mypage", [
+      "onFollow",
+      "follower",
+      "following",
+      "checkModelsCnt"
+    ]),
     async pushFollow() {
       const params = {
         user_id: this.$route.params.user_id

@@ -20,9 +20,7 @@
               multiple
             >
               <template v-slot:item="data">
-                <div style="margin-right: 10px; width: 40px;">
-                  {{ data.item.name }}
-                </div>
+                <div style="margin-right: 10px; width: 40px;">{{ data.item.name }}</div>
                 <div
                   :style="
                     `width: 60px; height: 20px; background-color: #${data.item.color}; border-radius: 15px; border: 0.2px solid gray;`
@@ -68,10 +66,7 @@
               <div class="part_info">
                 <p class="part_id">{{ part.part_id }}</p>
                 <div class="part_color_cnt_box">
-                  <div
-                    class="color"
-                    :style="`background-color: #${part.rgb}`"
-                  ></div>
+                  <div class="color" :style="`background-color: #${part.rgb}`"></div>
                   <p class="part_quantity">* {{ part.quantity }}</p>
                 </div>
               </div>
@@ -80,11 +75,7 @@
         </div>
       </div>
       <div class="whole_box" v-else>
-        <div
-          class="item"
-          v-for="(part, idx) in searchedParts"
-          :key="`searched${idx}`"
-        >
+        <div class="item" v-for="(part, idx) in searchedParts" :key="`searched${idx}`">
           <ModifyParts
             :partId="part.part_id"
             :colorId="part.color_id"
@@ -104,10 +95,7 @@
               <div class="part_info">
                 <p class="part_id">{{ part.part_id }}</p>
                 <div class="part_color_cnt_box">
-                  <div
-                    class="color"
-                    :style="`background-color: #${part.rgb}`"
-                  ></div>
+                  <div class="color" :style="`background-color: #${part.rgb}`"></div>
                   <p class="part_quantity">* {{ part.quantity }}</p>
                 </div>
               </div>

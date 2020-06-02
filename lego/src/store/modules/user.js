@@ -16,7 +16,6 @@ const actions = {
   async updateImg({
     commit
   }, params) {
-    commit;
     var modelImgUrl = ''
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
@@ -39,7 +38,7 @@ const actions = {
         params = {
           profile_url: modelImgUrl
         }
-        await api.changProfilePic(params).then(res => console.log(res)).catch(err => console.log(err))
+        await api.changeProfilePic(params)
         localStorage.setItem("image", modelImgUrl)
         commit("setFlag", state.photoFlag === false ? true : false)
       })
@@ -49,7 +48,19 @@ const actions = {
     commit
   }, params) {
     commit;
-    await api.updateUserInfo(params).then(res => console.log(res))
+    await api.updateUserInfo(params)
+  },
+  async deleteImg({
+    commit
+  }, params) {
+    const imgUrl = null
+    params = {
+      profile_url: imgUrl
+    }
+    await api.changeProfilePic(params)
+    localStorage.setItem("image", imgUrl)
+    commit("setFlag", state.photoFlag === false ? true : false)
+
   }
 }
 

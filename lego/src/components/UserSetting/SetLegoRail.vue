@@ -56,6 +56,8 @@ export default {
       mockList: [
         { part_id: 10057, color_id: 2, quantity: 3 },
         { part_id: 10058, color_id: 1, quantity: 3 },
+        { part_id: 10057, color_id: 2, quantity: 3 },
+        { part_id: 10058, color_id: 1, quantity: 3 },
         { part_id: 10057, color_id: 3, quantity: 3 },
         { part_id: 10058, color_id: 2, quantity: 3 },
         { part_id: 10057, color_id: 4, quantity: 3 },
