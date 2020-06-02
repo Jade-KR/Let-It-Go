@@ -20,7 +20,10 @@
       </div>
       <div v-else @click="styleCheck()" class="home_show_btn">크게보기</div>
     </div>
-    <div :style="styleFlag ? matrixWidth : instaWidth">
+    <div v-if="!isCate && homeCate === 3" id="home_no_show">
+      카테고리를 골라 주세요
+    </div>
+    <div :style="styleFlag ? matrixWidth : instaWidth" v-else>
       <div
         class="home_card"
         v-for="(model, i) in models"
@@ -121,7 +124,6 @@ export default {
     } else if (this.homeCate === 3) {
       await this.getRecommendModels(params);
     }
-
     this.loading = false;
   },
   beforeDestroy() {
@@ -183,5 +185,12 @@ export default {
   color: white;
   font-weight: 600;
   font-size: 20px;
+}
+#home_no_show {
+  text-align: center;
+  margin-top: 100px;
+  font-size: 50px;
+  font-weight: 700;
+  transform: translateX(50px);
 }
 </style>

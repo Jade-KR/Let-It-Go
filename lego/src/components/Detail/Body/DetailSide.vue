@@ -67,11 +67,15 @@
             Like
           </div>
           <div id="detail_side_like_num">
-            {{ likeCount }}
+            {{ likeCnt }}
           </div>
         </div>
         <button id="detail_side_onlikes" @click="pushLike()" v-else>
-          <i class="fas fa-heart" />
+          <i class="fas fa-heart">
+            <div id="detail_side_like_num_on">
+              {{ likeCnt }}
+            </div>
+          </i>
         </button>
       </div>
 
@@ -85,7 +89,7 @@
     <!-- <div id="detail_side_ad">
       <div id="detail_side_content">레고레일로 분류를 해보세요!</div>
     </div> -->
-    <video autoplay controls width="100%" style="margin-top: 10px;">
+    <video controls width="100%" style="margin-top: 10px;">
       <source src="../../../assets/zzzz.mp4" type="video/mp4" />
     </video>
   </div>
@@ -161,7 +165,8 @@ export default {
           color: "black"
         }
       ],
-      makePercent: "0.0"
+      makePercent: "0.0",
+      likeCnt: 0
     };
   },
   watch: {
@@ -183,10 +188,29 @@ export default {
     myparts() {
       if (this.myparts === undefined) {
         this.myparts = [];
+        this.makePercent = "0.0";
+        return;
+      }
+      const partsObj = Object();
+      this.parts.forEach(e => {
+        let temp = `${e.part_id}_${e.color_id}`;
+        if (partsObj[temp]) {
+          partsObj[temp]["quantity"] += e.quantity;
+        } else {
+          partsObj[temp] = {
+            color_id: e.color_id,
+            part_id: e.part_id,
+            quantity: e.quantity
+          };
+        }
+      });
+      const preprocedParts = [];
+      for (let i in partsObj) {
+        preprocedParts.push(partsObj[i]);
       }
       var allPartSum = 0;
       const sortedParts = Object();
-      this.parts.forEach(e => {
+      preprocedParts.forEach(e => {
         let part_id = e.part_id;
         let color_id = e.color_id;
         let quantity = e.quantity;
@@ -195,7 +219,6 @@ export default {
         temp[color_id] = quantity;
         sortedParts[`${part_id}_${color_id}`] = temp;
       });
-
       var myPartSum = 0;
       for (let i = 0; i < this.myparts.length; ++i) {
         if (
@@ -243,6 +266,7 @@ export default {
     } else if (this.isLike === 0) {
       this.likeFlag = false;
     }
+    this.likeCnt = this.likeCount;
   },
   methods: {
     ...mapActions("detail", ["onLike", "getUserPartsAll"]),
@@ -264,8 +288,18 @@ export default {
       const setLike = await this.onLike(params);
       if (setLike === "좋아요") {
         this.likeFlag = true;
+        if (this.isLike === 1) {
+          this.likeCnt = this.likeCount;
+        } else {
+          this.likeCnt = this.likeCount + 1;
+        }
       } else if (setLike === "좋아요 취소") {
         this.likeFlag = false;
+        if (this.isLike === 1) {
+          this.likeCnt = this.likeCount - 1;
+        } else {
+          this.likeCnt = this.likeCount;
+        }
       } else {
         alert("문제가 발생했습니다.");
       }
@@ -378,5 +412,13 @@ export default {
 #detail_side_content {
   font-size: 24px;
   vertical-align: middle;
+}
+#detail_side_like_num_on {
+  color: white;
+  text-align: center;
+  position: absolute;
+  transform: translate(-10%, -200%);
+  font-size: 30px;
+  width: 100px;
 }
 </style>
