@@ -8,6 +8,7 @@ import detail from "./modules/detail.js";
 import mypage from "./modules/mypage.js";
 import user from "./modules/user.js";
 import search from "./modules/search.js";
+import admin from "./modules/admin.js";
 
 Vue.use(Vuex);
 
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     detail,
     mypage,
     user,
-    search
+    search,
+    admin
   }
 });

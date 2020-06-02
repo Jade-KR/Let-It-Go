@@ -15,7 +15,58 @@
       </div>
     </div>
     <div>
-      <div>
+      <div v-if="modelFlag === true">
+        <table>
+          <tr>
+            <th>
+              ID
+            </th>
+            <th>
+              NAME
+            </th>
+            <th>
+              WRITER
+            </th>
+            <th>
+              LIKE COUNT
+            </th>
+            <th>
+              REVIEW COUNT
+            </th>
+            <th>
+              DELETE
+            </th>
+          </tr>
+          <tr v-for="(v, i) in models" :key="`models-${i}`">
+            <th>
+              {{ v.id }}
+            </th>
+            <th>
+              {{ v.name }}
+            </th>
+            <th>
+              {{ v.nickname }}
+            </th>
+            <th>
+              {{ v.like_count }}
+            </th>
+            <th>
+              {{ v.review_count }}
+            </th>
+            <th>
+              <div class="deleteBtn" @click="delModel(v.id)">
+                DELETE
+              </div>
+            </th>
+          </tr>
+        </table>
+
+        <div class="loadMore" @click="moreModel()">
+          더보기
+        </div>
+      </div>
+
+      <div v-if="reviewFlag === true">
         <table>
           <tr>
             <th>
@@ -54,14 +105,80 @@
               i
             </th>
             <th>
-              <div class="deleteBtn">
+              <div class="deleteBtn" @click="deleteReview()">
                 DELETE
               </div>
             </th>
           </tr>
         </table>
 
-        <div class="loadMore">
+        <div class="loadMore" @click="moreReview()">
+          더보기
+        </div>
+      </div>
+
+      <div v-if="userFlag === true">
+        <table>
+          <tr>
+            <th>
+              PK
+            </th>
+            <th>
+              ID
+            </th>
+            <th>
+              NICKNAME
+            </th>
+            <th>
+              E-MAIL
+            </th>
+            <th>
+              IS STAFF
+            </th>
+            <th>
+              AGE
+            </th>
+            <th>
+              GENDER
+            </th>
+            <th>
+              DELETE
+            </th>
+          </tr>
+          <tr v-for="(v, i) in users" :key="`user-${i}`">
+            <th>
+              {{ v.id }}
+            </th>
+            <th>
+              {{ v.username }}
+            </th>
+            <th>
+              {{ v.nickname }}
+            </th>
+            <th>
+              {{ v.email }}
+            </th>
+            <th>
+              {{ v.is_staff }}
+            </th>
+            <th>
+              {{ v.age }}
+            </th>
+            <th v-if="v.gender === 0">
+              남
+            </th>
+            <th v-else>
+              여
+            </th>
+            <th>
+              <div class="deleteBtn" @click="delUser(v.id)">
+                DELETE
+              </div>
+            </th>
+          </tr>
+        </table>
+
+        <div class="loadMore" @click="moreUser()">
           더보기
         </div>
       </div>
@@ -70,17 +187,38 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 import router from "../../router";
 
 export default {
-  mounted() {
-    this.setAuthFlag(true);
+  data() {
+    return {
+      modelFlag: false,
+      reviewFlag: false,
+      userFlag: false
+    };
+  },
+  computed: {
+    ...mapState({
+      modelPage: s => s.admin.modelPage,
+      models: s => s.admin.modelList,
+      userPage: s => s.admin.userPage,
+      users: s => s.admin.userList
+    })
+  },
+  async mounted() {
+    await this.setAuthFlag(true);
   },
   destroyed() {
     this.setAuthFlag(false);
   },
   methods: {
+    ...mapActions("admin", [
+      "getModels",
+      "deleteModel",
+      "getUsers",
+      "deleteUser"
+    ]),
     ...mapMutations("auth", ["setAuthFlag"]),
     goHome() {
       router.push("/");
@@ -100,15 +238,30 @@ export default {
         target.color = "";
         target.backgroundColor = "";
       }
-      // if ( this.userFlag == false) {
-      //   this.userFlag = true
-      //   this.reviewFlag = false
-      //   this.storeFlag = false
-      // } else {
-      //   this.userFlag = false
-      // }
-      // this.getUserData()
+      if (this.userFlag == false) {
+        this.userFlag = true;
+        this.reviewFlag = false;
+        this.modelFlag = false;
+      } else {
+        this.userFlag = false;
+      }
+      const params = {
+        page: 1,
+        append: false
+      };
+      await this.getUsers(params);
     },
+    async delUser(user_id) {
+      await this.deleteUser(user_id);
+    },
+    async moreUser() {
+      const params = {
+        append: true,
+        page: this.userPage
+      };
+      await this.getUsers(params);
+    },
+
     async showReviews() {
       var target = document.getElementById("tab2").style;
       var else1 = document.getElementById("tab1").style;
@@ -127,7 +280,7 @@ export default {
       if (this.reviewFlag == false) {
         this.reviewFlag = true;
         this.userFlag = false;
-        this.storeFlag = false;
+        this.modelFlag = false;
       } else {
         this.reviewFlag = false;
       }
@@ -139,6 +292,7 @@ export default {
       // };
       // await this.getUserReview(params);
     },
+
     async showModels() {
       var target = document.getElementById("tab1").style;
       var else1 = document.getElementById("tab2").style;
@@ -154,20 +308,29 @@ export default {
         target.color = "";
         target.backgroundColor = "";
       }
-      if (this.storeFlag == false) {
-        this.storeFlag = true;
+      if (this.modelFlag == false) {
+        this.modelFlag = true;
         this.userFlag = false;
         this.reviewFlag = false;
       } else {
-        this.storeFlag = false;
+        this.modelFlag = false;
+        return;
       }
-      // const params = {
-      //   page: 1,
-      //   append: true,
-      //   page_size: 10,
-      //   reset: true,
-      // };
-      // await this.getStores(params)
+      const params = {
+        page: 1,
+        append: false
+      };
+      await this.getModels(params);
+    },
+    async delModel(set_id) {
+      await this.deleteModel(set_id);
+    },
+    async moreModel() {
+      const params = {
+        append: true,
+        page: this.modelPage
+      };
+      await this.getModels(params);
     }
   }
 };
@@ -181,6 +344,7 @@ export default {
   padding: auto;
   font-size: 50px;
   text-align: center;
+  cursor: pointer;
 }
 .tab:hover {
   background-color: gold;

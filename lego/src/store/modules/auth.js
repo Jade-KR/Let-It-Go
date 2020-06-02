@@ -72,6 +72,7 @@ const actions = {
         localStorage.setItem("gender", user.gender);
         localStorage.setItem("age", user.age);
         localStorage.setItem("categories", user.categories);
+        localStorage.setItem("isStaff", user.is_staff);
         commit("setAuthFlag", false);
         if (localStorage.getItem("category") === "null") {
           commit("setIsCategory", false);
