@@ -21,7 +21,7 @@
       <div v-else @click="styleCheck()" class="home_show_btn">크게보기</div>
     </div>
     <div v-if="!isCate && homeCate === 3" id="home_no_show">
-      카테고리를 골라 주세요
+      선호 카테고리를 선택해 주세요
     </div>
     <div :style="styleFlag ? matrixWidth : instaWidth" v-else>
       <div

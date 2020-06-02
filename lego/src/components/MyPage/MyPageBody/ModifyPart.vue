@@ -16,7 +16,13 @@
             </div>
             <div class="input_box">
               <v-col cols="12" sm="6" md="10" class="text_box">
-                <v-text-field solo dense type="text" :value="this.partId" disabled></v-text-field>
+                <v-text-field
+                  solo
+                  dense
+                  type="text"
+                  :value="this.partId"
+                  disabled
+                ></v-text-field>
               </v-col>
             </div>
           </div>
@@ -34,7 +40,15 @@
             </div>
             <div class="input_box">
               <v-col cols="12" sm="6" md="5" class="text_box">
-                <v-text-field :value="cnt" v-model="cnt" solo dense type="number" step="1" min="0"></v-text-field>
+                <v-text-field
+                  :value="cnt"
+                  v-model="cnt"
+                  solo
+                  dense
+                  type="number"
+                  step="1"
+                  min="0"
+                ></v-text-field>
               </v-col>
             </div>
           </div>
@@ -111,7 +125,9 @@ export default {
       await this.updateParts({ UpdateList: info });
       const params = {
         idx: this.idx,
-        quantity: Number(0)
+        quantity: Number(0),
+        part_id: String(this.partId),
+        color_id: Number(this.colorId)
       };
       this.$emit("update", params);
       this.dialog = false;

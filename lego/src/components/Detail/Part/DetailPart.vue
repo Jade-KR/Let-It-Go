@@ -7,11 +7,18 @@
         <button
           @click.stop="addParts()"
           class="plus"
-          id="plus1"
           :disabled="partFlag === 'need'"
           v-if="isLogin === true"
         >
           <i class="fas fa-plus"></i>
+        </button>
+        <button
+          @click.stop="minusParts()"
+          class="minus"
+          :disabled="partFlag === 'need'"
+          v-if="isLogin === true"
+        >
+          <i class="fas fa-minus"></i>
         </button>
       </div>
       <div @click="changeCate('need')" id="need_parts">
@@ -20,7 +27,6 @@
         <button
           @click.stop="addParts()"
           class="plus"
-          id="plus2"
           :disabled="partFlag === 'all'"
           v-if="isLogin === true"
         >
@@ -365,7 +371,6 @@ export default {
     const target = document.getElementById("all_parts");
     target.style.fontSize = "20px";
     target.style.color = "black";
-    document.getElementById("plus2").style.paddingTop = "3.5px";
   },
   methods: {
     ...mapActions("detail", ["getUserPartsAll", "addMyParts"]),
@@ -381,8 +386,6 @@ export default {
         target.style.color = "black";
         nonTarget.style.fontSize = "16px";
         nonTarget.style.color = "gray";
-        document.getElementById("plus2").style.paddingTop = "0px";
-        document.getElementById("plus1").style.paddingTop = "3.5px";
       } else {
         const nonTarget = document.getElementById("need_parts");
         const target = document.getElementById("all_parts");
@@ -390,8 +393,6 @@ export default {
         target.style.color = "black";
         nonTarget.style.fontSize = "16px";
         nonTarget.style.color = "gray";
-        document.getElementById("plus1").style.paddingTop = "0px";
-        document.getElementById("plus2").style.paddingTop = "3.5px";
       }
       this.partFlag = value;
     },
@@ -409,6 +410,25 @@ export default {
       const result = await this.addMyParts(params);
       if (result === "수정 완료") {
         alert("내 부품에 추가되었습니다.");
+        location.reload();
+      } else {
+        alert("문제가 생겼습니다.");
+      }
+    },
+    async minusParts() {
+      const params = {
+        UpdateList: []
+      };
+      this.sortedParts.forEach(e => {
+        params["UpdateList"].push({
+          part_id: String(e[0]),
+          color_id: Number(e[5]),
+          qte: -Number(e[3])
+        });
+      });
+      const result = await this.addMyParts(params);
+      if (result === "수정 완료") {
+        alert("내 부품에서 삭제 되었습니다.");
         location.reload();
       } else {
         alert("문제가 생겼습니다.");
@@ -525,7 +545,7 @@ export default {
 }
 .plus:hover::after {
   content: "내 부품에 추가합니다.";
-  color: skyblue;
+  color: gold;
   font-size: 18px;
   width: 200px;
   position: absolute;
@@ -536,6 +556,29 @@ export default {
   font-weight: 600;
 }
 .plus:disabled {
+  opacity: 0;
+}
+.minus {
+  margin-left: 5px;
+  background-color: red;
+  color: white;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+}
+.minus:hover::after {
+  content: "내 부품에서 삭제합니다.";
+  color: red;
+  font-size: 18px;
+  width: 220px;
+  position: absolute;
+  transform: translate(7px, -27px);
+  border: 1px solid black;
+  background-color: white;
+  padding: 5px;
+  font-weight: 600;
+}
+.minus:disabled {
   opacity: 0;
 }
 </style>

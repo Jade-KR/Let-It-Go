@@ -214,10 +214,23 @@ export default {
       this.added();
     },
     changed(params) {
-      if (params.quantity <= 0) {
-        this.userParts.splice(params.idx, 1);
+      if (this.isSearch === false) {
+        if (params.quantity <= 0) {
+          this.userParts.splice(params.idx, 1);
+        } else {
+          this.userParts[params.idx]["quantity"] = params.quantity;
+        }
       } else {
-        this.userParts[params.idx]["quantity"] = params.quantity;
+        if (params.quantity <= 0) {
+          this.searchedParts.splice(params.idx, 1);
+        } else {
+          this.searchedParts[params.idx]["quantity"] = params.quantity;
+        }
+        for (let i in this.searchObj) {
+          if (i === `${params.part_id}_${params.color_id}`) {
+            delete this.searchObj[i];
+          }
+        }
       }
     },
     async added() {
@@ -235,6 +248,10 @@ export default {
       this.loading = false;
     },
     onSearch() {
+      if (this.searchWords === "") {
+        alert("검색어를 입력해 주세요");
+        return;
+      }
       this.loading = true;
       const temp = [];
       for (let id in this.searchObj) {
