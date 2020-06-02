@@ -2,10 +2,30 @@
   <div>
     <div id="part_header">
       <div @click="changeCate('all')" id="all_parts">
-        <i class="fas fa-exclamation icon"></i>전체 부품
+        <i class="fas fa-exclamation icon"></i>
+        전체 부품
+        <button
+          @click.stop="addParts()"
+          class="plus"
+          id="plus1"
+          :disabled="partFlag === 'need'"
+          v-if="isLogin === true"
+        >
+          <i class="fas fa-plus"></i>
+        </button>
       </div>
       <div @click="changeCate('need')" id="need_parts">
-        <i class="fas fa-question icon"></i>필요한 부품
+        <i class="fas fa-question icon"></i>
+        필요한 부품
+        <button
+          @click.stop="addParts()"
+          class="plus"
+          id="plus2"
+          :disabled="partFlag === 'all'"
+          v-if="isLogin === true"
+        >
+          <i class="fas fa-plus"></i>
+        </button>
       </div>
     </div>
     <hr id="dived_line" />
@@ -51,14 +71,14 @@
         </v-card-text>
       </v-flex>
     </v-layout>
-    <div @click="addParts()" id="add_my_parts" v-if="isLogin === true">
+    <!-- <div @click="addParts()" id="add_my_parts" v-if="isLogin === true">
       <div v-if="partFlag === 'all'">
         전체 부품 내 부품에 추가
       </div>
       <div v-else>
         필요 부품 내 부품에 추가
       </div>
-    </div>
+    </div> -->
     <div id="excel_export" v-if="isLogin === true">
       <download-excel
         :data="json_data"
@@ -109,6 +129,7 @@ export default {
       partFlag: "all",
       isAll: false,
       isLogin: false,
+      preprocedParts: [],
 
       json_fields: {
         "part ID": "part_id",
@@ -185,7 +206,7 @@ export default {
       }
       const tempSortedParts = Object();
       const checkList = Object();
-      this.parts.forEach(e => {
+      this.preprocedParts.forEach(e => {
         let part_id = e.part_id;
         let color_id = e.color_id;
         let quantity = e.quantity;
@@ -305,7 +326,23 @@ export default {
       this.isLogin = true;
     }
     await this.getUserPartsAll();
+    const partsObj = Object();
     this.parts.forEach(e => {
+      let temp = `${e.part_id}_${e.color_id}`;
+      if (partsObj[temp]) {
+        partsObj[temp]["quantity"] += e.quantity;
+      } else {
+        partsObj[temp] = {
+          color_id: e.color_id,
+          part_id: e.part_id,
+          quantity: e.quantity
+        };
+      }
+    });
+    for (let i in partsObj) {
+      this.preprocedParts.push(partsObj[i]);
+    }
+    this.preprocedParts.forEach(e => {
       this.allParts.push([
         this.partDict[e.part_id][0],
         this.partDict[e.part_id][1],
@@ -328,6 +365,7 @@ export default {
     const target = document.getElementById("all_parts");
     target.style.fontSize = "20px";
     target.style.color = "black";
+    document.getElementById("plus2").style.paddingTop = "3.5px";
   },
   methods: {
     ...mapActions("detail", ["getUserPartsAll", "addMyParts"]),
@@ -343,6 +381,8 @@ export default {
         target.style.color = "black";
         nonTarget.style.fontSize = "16px";
         nonTarget.style.color = "gray";
+        document.getElementById("plus2").style.paddingTop = "0px";
+        document.getElementById("plus1").style.paddingTop = "3.5px";
       } else {
         const nonTarget = document.getElementById("need_parts");
         const target = document.getElementById("all_parts");
@@ -350,6 +390,8 @@ export default {
         target.style.color = "black";
         nonTarget.style.fontSize = "16px";
         nonTarget.style.color = "gray";
+        document.getElementById("plus1").style.paddingTop = "0px";
+        document.getElementById("plus2").style.paddingTop = "3.5px";
       }
       this.partFlag = value;
     },
@@ -433,7 +475,7 @@ export default {
   border: 1px black solid;
   margin: 5px;
   position: relative;
-  cursor: pointer;
+  cursor: default;
   background: black;
 }
 .lego_part {
@@ -472,5 +514,28 @@ export default {
   font-size: 24px;
   margin: 20px;
   font-weight: 700;
+}
+.plus {
+  margin-left: 5px;
+  background-color: gold;
+  color: white;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+}
+.plus:hover::after {
+  content: "내 부품에 추가합니다.";
+  color: skyblue;
+  font-size: 18px;
+  width: 200px;
+  position: absolute;
+  transform: translate(7px, -27px);
+  border: 1px solid black;
+  background-color: white;
+  padding: 5px;
+  font-weight: 600;
+}
+.plus:disabled {
+  opacity: 0;
 }
 </style>

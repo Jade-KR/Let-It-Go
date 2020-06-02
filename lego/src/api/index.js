@@ -133,8 +133,18 @@ export default {
     });
   },
   setUserCategory(params) {
-    return http.post(`${apiUrl}/set_user_category`, params, {
+    return http.post(`${apiUrl}/set_user_category`, params, { headers });
+  },
+  delelteModel(params) {
+    return http.delete(`${apiUrl}/LegoSet/${params}`, { headers });
+  },
+  getUsers(params) {
+    return http.get(`${apiUrl}/User`, {
+      params,
       headers
     });
+  },
+  delelteUser(params) {
+    return http.delete(`${apiUrl}/User/${params}`, { headers });
   }
 };

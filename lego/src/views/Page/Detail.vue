@@ -31,6 +31,9 @@
           @click="onReviews()"
         >
           <i class="fas fa-scroll"></i>&nbsp; 댓글
+          <div style="display: inline-block; transform: translateY(-2px);">
+            ({{ reviews.length }})
+          </div>
         </div>
         <div
           class="detail_btn"
