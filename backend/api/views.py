@@ -447,6 +447,8 @@ class FollowingUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     
     def list(self, request):
         if request.user.is_authenticated:
+            followings = request.user.followings.all()
+            legosets = 
             queryset = UserPart.objects.filter(user=request.user)
 
         queryset = LegoSet.objects.all().order_by("-like_count")
