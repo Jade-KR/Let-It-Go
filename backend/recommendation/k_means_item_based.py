@@ -20,24 +20,27 @@ django.setup()
 
 from api.models import LegoSet, Review, CustomUser, Theme
 
-user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
-lego_set_df = pd.DataFrame(LegoSet.objects.all().values("id", "name", "theme_id"))
+# # db 모델 변경용 파일 수정
+# user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
+# lego_set_df = pd.DataFrame(LegoSet.objects.all().values("id", "name", "theme_id"))
 
-# db 모델 변경용 파일 수정
-theme_df = pd.DataFrame(Theme.objects.all().values("id", "parent_id", "name"))
-theme_df['root_id'] = 0
+# theme_df = pd.DataFrame(Theme.objects.all().values("id", "parent_id", "name"))
+# theme_df['root_id'] = 0
 
-def get_root_theme(theme_id):
-    root_id = theme_id
-    while(Theme.objects.get(id=root_id).parent_id is not None):
-        root_id = Theme.objects.get(id=root_id).parent_id
-    return root_id
+# def get_root_theme(theme_id):
+#     root_id = theme_id
+#     while(Theme.objects.get(id=root_id).parent_id is not None):
+#         root_id = Theme.objects.get(id=root_id).parent_id
+#     return root_id
 
-for i in theme_df.index:
-    theme_df.loc[i, 'root_id'] = get_root_theme(theme_df.loc[i, 'id'])
-
+# for i in theme_df.index:
+#     theme_df.loc[i, 'root_id'] = get_root_theme(theme_df.loc[i, 'id'])
 # theme_df.to_csv('theme.csv')
 
+user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
+theme_df = pd.DataFrame(Theme.objects.all().values("id", "parent_id", "name"))
+lego_set_df = pd.DataFrame(LegoSet.objects.all().values("id", "name", "theme_id"))
+theme_df = theme_df[theme_df['parent_id'].isna()]
 
 def recoNearLegoSet(temp_id):
     # lego_set_root_theme_id = theme_df.loc[temp_id, 'root_id']    
