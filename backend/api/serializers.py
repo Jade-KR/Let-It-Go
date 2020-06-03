@@ -93,8 +93,8 @@ class LegoSetSerializer2(serializers.ModelSerializer):
     def get_image(self, obj):
         return obj.images[0] if obj.images else ""
     def get_parts(self, obj):
-        if not SetPart.objects.filter(lego_set=obj):
-            views.crawling_part_data(obj.id)
+        # if not SetPart.objects.filter(lego_set=obj):
+        #     views.crawling_part_data(obj.id)
         return SetPartSerializer2(obj.setpart_set.all(), many=True).data
 
 class LegoPartSerializer(serializers.ModelSerializer):
