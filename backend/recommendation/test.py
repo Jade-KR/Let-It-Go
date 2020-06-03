@@ -62,32 +62,5 @@ for i in review_df.index:
 
 for dic in theme_list:
     review_df = pd.DataFrame(theme_dic[dic])
-    print(review_df)
-    break
     review_df = review_df.groupby('lego_set_id').agg(['sum', 'count', 'mean'])['score']
-    # print(sum(review_df['count']))
-    # print(review_df)
-
-# def recoNearLegoSet(temp_id):
-#     # random으로 20개 추출해주는것
-#     if sum(review_df['count']) == 0:
-#         return list(near_lego_set_df.sample(n=20)['id'])
-#     else:
-#         a = sum(review_df['sum'])/sum(review_df['count'])
-#         min_review = 5
-
-#         # 인기도 고려한 평점 계산
-#         review_df['calc'] = review_df.apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/(x['count']+min_review))*a), axis=1)    
-#         near_lego_set_df = pd.merge(near_lego_set_df[["id", "count"]], review_df["calc"], right_index=True, left_on="id", how='outer').set_index('id')
-#         near_lego_set_df['calc'] = near_lego_set_df['calc'].fillna(0.0)
-
-#         # 카테고리 일치 개수, 인기도 고려한 평점 순 정렬
-#         near_lego_set_df.sort_values(by=['count', 'calc'], inplace=True, ascending=False)
-#         return near_lego_set_df.index[:20]
         
-
-
-
-
-
-
