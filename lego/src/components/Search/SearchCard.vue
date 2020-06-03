@@ -15,7 +15,10 @@
             :style="isLike === 1 ? likeStyle[0] : likeStyle[1]"
           ></i>
           <span>{{ likeCount }}</span>
-          <i class="fas fa-comment"></i>
+          <i
+            class="fas fa-comment"
+            :style="isReview === 1 ? reviewStyle[0] : reviewStyle[1]"
+          ></i>
           <span>{{ reviewCount }}</span>
         </div>
       </div>
@@ -55,6 +58,10 @@ export default {
     reviewCount: {
       type: Number,
       default: 0
+    },
+    isReview: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -62,6 +69,14 @@ export default {
       likeStyle: [
         {
           color: "red"
+        },
+        {
+          color: "white"
+        }
+      ],
+      reviewStyle: [
+        {
+          color: "gold"
         },
         {
           color: "white"
@@ -127,6 +142,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: baseline;
+  transform: translate(10px, -10px);
 }
 .body_img_info > i {
   font-size: 25px;

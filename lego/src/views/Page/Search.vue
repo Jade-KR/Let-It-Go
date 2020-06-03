@@ -18,6 +18,7 @@
           :isLike="model.is_like"
           :likeCount="model.like_count"
           :reviewCount="model.review_count"
+          :isReview="model.is_review"
         ></search-card>
       </div>
     </div>
