@@ -8,7 +8,7 @@
           @click.stop="addParts()"
           class="plus"
           :disabled="partFlag === 'need'"
-          v-if="isLogin === true"
+          v-if="isLogin === true && isNoParts === false"
         >
           <i class="fas fa-plus"></i>
         </button>
@@ -16,7 +16,7 @@
           @click.stop="minusParts()"
           class="minus"
           :disabled="partFlag === 'need'"
-          v-if="isLogin === true"
+          v-if="isLogin === true && isNoParts === false"
         >
           <i class="fas fa-minus"></i>
         </button>
@@ -28,15 +28,18 @@
           @click.stop="addParts()"
           class="plus"
           :disabled="partFlag === 'all'"
-          v-if="isLogin === true"
+          v-if="isLogin === true && isNeedNothing === false"
         >
           <i class="fas fa-plus"></i>
         </button>
       </div>
     </div>
     <hr id="dived_line" />
-    <div v-if="isAll === true && partFlag === 'need'" id="iHaveAll">
+    <div v-if="isNeedNothing === true && partFlag === 'need'" id="iHaveAll">
       모두 가지고 있습니다!
+    </div>
+    <div v-if="isNoParts === true && partFlag === 'all'" id="iHaveAll">
+      부품 데이터가 없습니다.
     </div>
     <div class="lego_parts_container">
       <div
@@ -77,14 +80,6 @@
         </v-card-text>
       </v-flex>
     </v-layout>
-    <!-- <div @click="addParts()" id="add_my_parts" v-if="isLogin === true">
-      <div v-if="partFlag === 'all'">
-        전체 부품 내 부품에 추가
-      </div>
-      <div v-else>
-        필요 부품 내 부품에 추가
-      </div>
-    </div> -->
     <div id="excel_export" v-if="isLogin === true">
       <download-excel
         :data="json_data"
@@ -133,9 +128,10 @@ export default {
       needParts: [],
       sortedParts: [],
       partFlag: "all",
-      isAll: false,
+      isNeedNothing: false,
       isLogin: false,
       preprocedParts: [],
+      isNoParts: false,
 
       json_fields: {
         "part ID": "part_id",
@@ -209,6 +205,14 @@ export default {
       if (this.myparts.length === 0) {
         this.needParts = this.allParts;
         return;
+      }
+      if (this.preprocedParts.length === 0) {
+        this.preprocess();
+        if (this.preprocedParts.length === 0) {
+          this.isNoParts = true;
+          this.isNeedNothing = true;
+          return;
+        }
       }
       const tempSortedParts = Object();
       const checkList = Object();
@@ -314,7 +318,7 @@ export default {
         this.needParts.push(checkList[part_id][0]);
       }
       if (this.needParts.length === 0) {
-        this.isAll = true;
+        this.isNeedNothing = true;
       }
     },
     start() {
@@ -332,21 +336,12 @@ export default {
       this.isLogin = true;
     }
     await this.getUserPartsAll();
-    const partsObj = Object();
-    this.parts.forEach(e => {
-      let temp = `${e.part_id}_${e.color_id}`;
-      if (partsObj[temp]) {
-        partsObj[temp]["quantity"] += e.quantity;
-      } else {
-        partsObj[temp] = {
-          color_id: e.color_id,
-          part_id: e.part_id,
-          quantity: e.quantity
-        };
+    if (this.preprocedParts.length === 0) {
+      await this.preprocess();
+      if (this.preprocedParts.length === 0) {
+        this.isNoParts = true;
+        this.isNeedNothing = true;
       }
-    });
-    for (let i in partsObj) {
-      this.preprocedParts.push(partsObj[i]);
     }
     this.preprocedParts.forEach(e => {
       this.allParts.push([
@@ -433,6 +428,24 @@ export default {
       } else {
         alert("문제가 생겼습니다.");
       }
+    },
+    preprocess() {
+      const partsObj = Object();
+      this.parts.forEach(e => {
+        let temp = `${e.part_id}_${e.color_id}`;
+        if (partsObj[temp]) {
+          partsObj[temp]["quantity"] += e.quantity;
+        } else {
+          partsObj[temp] = {
+            color_id: e.color_id,
+            part_id: e.part_id,
+            quantity: e.quantity
+          };
+        }
+      });
+      for (let i in partsObj) {
+        this.preprocedParts.push(partsObj[i]);
+      }
     }
   }
 };
@@ -470,14 +483,6 @@ export default {
   color: white;
   cursor: pointer;
   /* border-radius: 10px; */
-}
-#add_my_parts {
-  float: left;
-  transform: translateY(-55px);
-  padding: 5px;
-  background-color: green;
-  color: white;
-  cursor: pointer;
 }
 .lego_parts_container {
   width: 100%;
@@ -544,7 +549,7 @@ export default {
   display: inline-block;
 }
 .plus:hover::after {
-  content: "내 부품에 추가합니다.";
+  content: "내가 보유한 부품에 이 설계도에서 사용되는 부품을 추가합니다.";
   color: gold;
   font-size: 18px;
   width: 200px;
@@ -567,7 +572,7 @@ export default {
   display: inline-block;
 }
 .minus:hover::after {
-  content: "내 부품에서 삭제합니다.";
+  content: "내가 보유한 부품에서 이 설계도에 사용되는 전체 부품을 제거합니다.";
   color: red;
   font-size: 18px;
   width: 220px;

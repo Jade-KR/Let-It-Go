@@ -16,7 +16,7 @@
         >
           <p class="menu_name">{{ menu }}</p>
         </div>
-        <div class="menu" @click="member()" v-if="isStaff === 'true'">
+        <div class="menu" @click="member()">
           <p class="menu_name">멤버소개</p>
         </div>
         <div class="menu" @click="admin()" v-if="isStaff === 'true'">

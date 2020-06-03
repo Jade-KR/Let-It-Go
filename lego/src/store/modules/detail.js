@@ -75,7 +75,6 @@ const actions = {
       .addUserParts(params)
       .then(res => res.data)
       .catch(err => err.response);
-    console.log(resp);
     return resp;
   }
 };

@@ -9,7 +9,7 @@
           팔로우
           <i class="fas fa-times follow_header_close" @click="close()"></i>
         </div>
-        <div class="follow_body">
+        <div class="follow_body" v-if="isEmpty === false">
           <div v-for="(following, i) in followingList" :key="`following-${i}`">
             <following-card
               :image="following.image"
@@ -19,6 +19,9 @@
               :idx="i"
             ></following-card>
           </div>
+        </div>
+        <div class="follow_body empty" v-else>
+          다른 사용자를 팔로우해보세요!
         </div>
       </v-card>
     </v-dialog>
@@ -41,7 +44,8 @@ export default {
   data() {
     return {
       following: false,
-      followFlag: false
+      followFlag: false,
+      isEmpty: false
     };
   },
   computed: {
@@ -51,6 +55,10 @@ export default {
   },
   watch: {
     following() {
+      if (this.followingList.length === 0) {
+        this.isEmpty = true;
+        return;
+      }
       for (let i = 0; i < this.followingList.length; ++i) {
         if (
           this.followingList[i]["id"] === Number(localStorage.getItem("pk"))
@@ -95,6 +103,10 @@ export default {
 }
 .follow_body {
   padding: 10px;
+}
+.empty {
+  text-align: center;
+  padding: 40px 0;
 }
 .follow_card {
   display: flex;

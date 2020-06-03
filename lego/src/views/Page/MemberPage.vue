@@ -24,7 +24,6 @@
         <div class="content">
           <h2>김정덕</h2>
           <p>Front End (SearchPage, StoreDetail, Location Based, Word Cloud)</p>
-          <p>Back End (TF-IDF)</p>
           <p>특징(프론트 총괄, UCC, 글로벌 글로벌, 타이완 넘버 원)</p>
           <p>기타(지훈이형.. 2달은 우습지 ㅎㅎ)</p>
         </div>
@@ -41,9 +40,9 @@
         <div class="content">
           <h2>이지훈</h2>
           <p>
-            Front-End (Home, Search, Write, Login, Register)
+            Front-End (Home, Search, Write, Detail, Login, Register, Admin)
           </p>
-          <p>특징 (확진짜아주확찐자매우확찐자, 하리보고양이)</p>
+          <p>특징 (확진짜아주확찐자매우확찐자)</p>
           <p>기타 (코로나Out)</p>
         </div>
       </div>

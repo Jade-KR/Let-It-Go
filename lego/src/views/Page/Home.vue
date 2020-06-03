@@ -7,7 +7,7 @@
   >
     <div id="home_show">
       <div v-if="!isCate">
-        <user-category>
+        <user-category @cateSubmit="cateSubmit">
           <span slot="userCategory" id="userCategory" />
         </user-category>
       </div>
@@ -46,7 +46,7 @@
 
 <script>
 import HomeCard from "@/components/Home/HomeCard";
-import UserCategory from "../components/Home/UserCategory";
+import UserCategory from "@/components/Home/UserCategory";
 import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
@@ -160,6 +160,9 @@ export default {
     },
     setCate() {
       this.isCate = false;
+    },
+    cateSubmit(value) {
+      this.isCate = value;
     }
   }
 };

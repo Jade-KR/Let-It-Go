@@ -15,10 +15,10 @@
             @click="goMypage()"
             v-if="nickname !== 'Official Set'"
           >
-            <b>{{ nickname }}</b>
+            <b class="fontColor_green">{{ nickname }}</b>
           </div>
           <div id="detail_side_designer_id" @click="goOfficial()" v-else>
-            <b>{{ nickname }}</b>
+            <b class="fontColor_green">{{ nickname }}</b>
           </div>
         </div>
         <div id="detail_side_bricks">
@@ -30,7 +30,9 @@
         <div id="detail_side_themes">
           <div id="detail_side_theme">Theme</div>
           <div id="detail_side_theme_name">
-            <b>{{ themeName }}</b>
+            <b class="fontColor_green" @click="searchTheme(theme)">{{
+              themeName
+            }}</b>
           </div>
         </div>
         <div id="detail_side_tags">
@@ -41,7 +43,7 @@
               :key="`tag-${i}`"
               style="display: inline-block; margin-right: 10px;"
             >
-              <b>#{{ tag }}</b>
+              <b class="fontColor_green" @click="searchTag(tag)">#{{ tag }}</b>
             </div>
           </div>
         </div>
@@ -84,11 +86,15 @@
       <div id="detail_side_similar">
         <div id="detail_side_similar_text">You Can Make</div>
         <div id="detail_side_similar_percent">{{ makePercent }}%</div>
+        <div
+          id="detail_side_similar_add"
+          v-if="is100 === true"
+          @click="addModelToInven()"
+        >
+          보관함에 설계도 추가하기
+        </div>
       </div>
     </div>
-    <!-- <div id="detail_side_ad">
-      <div id="detail_side_content">레고레일로 분류를 해보세요!</div>
-    </div> -->
     <video controls width="100%" style="margin-top: 10px;">
       <source src="../../../assets/zzzz.mp4" type="video/mp4" />
     </video>
@@ -166,10 +172,17 @@ export default {
         }
       ],
       makePercent: "0.0",
-      likeCnt: 0
+      likeCnt: 0,
+      is100: false,
+      preprocedParts: []
     };
   },
   watch: {
+    makePercent() {
+      if (this.makePercent === "100") {
+        this.is100 = true;
+      }
+    },
     async tags() {
       if (this.tags) {
         this.tagList = await this.tags.split("|");
@@ -191,6 +204,10 @@ export default {
         this.makePercent = "0.0";
         return;
       }
+      if (this.parts.length === 0) {
+        this.makePercent = "0.0";
+        return;
+      }
       const partsObj = Object();
       this.parts.forEach(e => {
         let temp = `${e.part_id}_${e.color_id}`;
@@ -204,13 +221,13 @@ export default {
           };
         }
       });
-      const preprocedParts = [];
+      this.preprocedParts = [];
       for (let i in partsObj) {
-        preprocedParts.push(partsObj[i]);
+        this.preprocedParts.push(partsObj[i]);
       }
       var allPartSum = 0;
       const sortedParts = Object();
-      preprocedParts.forEach(e => {
+      this.preprocedParts.forEach(e => {
         let part_id = e.part_id;
         let color_id = e.color_id;
         let quantity = e.quantity;
@@ -269,7 +286,8 @@ export default {
     this.likeCnt = this.likeCount;
   },
   methods: {
-    ...mapActions("detail", ["onLike", "getUserPartsAll"]),
+    ...mapActions("detail", ["onLike", "getUserPartsAll", "addMyParts"]),
+    ...mapActions("search", ["searchByDetail"]),
     goMypage() {
       if (this.userId === null) {
         var user_id = localStorage.getItem("pk");
@@ -310,6 +328,41 @@ export default {
       } else {
         this.followFlag = false;
       }
+    },
+    async addModelToInven() {
+      const params = {
+        UpdateList: []
+      };
+      this.preprocedParts.forEach(e => {
+        params["UpdateList"].push({
+          part_id: String(e["part_id"]),
+          color_id: Number(e["color_id"]),
+          qte: -Number(e["quantity"])
+        });
+      });
+      const result = await this.addMyParts(params);
+      if (result === "수정 완료") {
+        alert("보관함에 저장되었습니다.");
+        location.reload();
+      } else {
+        alert("문제가 생겼습니다.");
+      }
+    },
+    async searchTheme(value) {
+      const params = {
+        type: "theme",
+        word: value
+      };
+      await this.searchByDetail(params);
+      router.push("/search");
+    },
+    async searchTag(value) {
+      const params = {
+        type: "tag",
+        word: value
+      };
+      await this.searchByDetail(params);
+      router.push("/search");
     }
   }
 };
@@ -386,7 +439,28 @@ export default {
 #detail_side_similar_percent {
   font-size: 64px;
 }
-
+#detail_side_similar_add {
+  font-size: 20px;
+  background-color: gold;
+  padding: 3px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+#detail_side_similar_add:hover {
+  background-color: red;
+}
+#detail_side_similar_add:hover::after {
+  content: "보관함에 설계도를 추가하고 해당 설계도에 사용된 부품을 내 부품에서 삭제합니다.";
+  color: gold;
+  font-size: 18px;
+  width: 250px;
+  position: absolute;
+  transform: translate(-95%, 35%);
+  border: 1px solid black;
+  background-color: white;
+  padding: 5px;
+}
 #detail_side_likes {
   cursor: pointer;
   transition: 0.5s;
@@ -420,5 +494,10 @@ export default {
   transform: translate(-10%, -200%);
   font-size: 30px;
   width: 100px;
+}
+.fontColor_green {
+  color: green;
+  cursor: pointer;
+  font-weight: 400;
 }
 </style>

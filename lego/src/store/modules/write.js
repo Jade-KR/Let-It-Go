@@ -49,7 +49,8 @@ const state = {
   legoCategory: LegoCategory,
   pickStep: 0,
   pickedParts: [],
-  pickedPartByImg: []
+  pickedPartByImg: [],
+  pickedReset: false
 };
 
 const actions = {
@@ -76,8 +77,7 @@ const actions = {
             const test = JSON.parse(result);
             modelImgUrls.push(test.data.link);
             commit("setImage", modelImgUrls);
-          })
-          .catch(error => console.log("error", error));
+          });
       }
     } else if (params.step === 2) {
       commit("setDesc", params.descParams);
@@ -152,6 +152,11 @@ const actions = {
   },
   pickPartBytImg({ commit }, params) {
     const part = [params[0] + " " + params[1], params[2], params[0]];
+    for (let i = 0; i < state.pickedPartByImg.length; ++i) {
+      if (params[0] === state.pickedPartByImg[i][2]) {
+        return;
+      }
+    }
     commit("setPickedPartByImg", part);
   },
   async onWriteSubmit({ commit }) {
@@ -177,21 +182,16 @@ const actions = {
     });
     commit("setTags", tagString);
     commit("setParts");
-
-    console.log(state.model);
-
     await api
       .writeSubmit(state.model)
       .then(res => {
         res;
-        // console.log(res);
         alert("글이 성공적으로 작성되었습니다.");
         router.push("/");
         location.reload();
       })
       .catch(err => {
         err;
-        // console.log(err.response);
         alert("글 작성에 문제가 생겼습니다.");
       });
   }
@@ -237,7 +237,11 @@ const mutations = {
     state.pickedParts = result;
   },
   setPickedPartByImg(state, part) {
-    state.pickedPartByImg = part;
+    state.pickedPartByImg.push(part);
+  },
+  resetPickedPartByImg(state) {
+    state.pickedPartByImg = [];
+    state.pickedReset = state.pickedReset === false ? true : false;
   }
 };
 
