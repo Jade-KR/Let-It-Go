@@ -443,35 +443,35 @@ class LegoSetRankingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         serializer = serializers.LegoSetSerializer(queryset, many=True)
         return Response(serializer.data)
 
-class FollowingUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = serializers.LegoSetSerializer2
-    pagination_class = SmallPagination
+# class FollowingUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+#     serializer_class = serializers.LegoSetSerializer2
+#     pagination_class = SmallPagination
     
-    def list(self, request):
-        if request.user.is_authenticated:
-            followings = request.user.followings.all()
-            legosets = 
-            queryset = UserPart.objects.filter(user=request.user)
+#     def list(self, request):
+#         if request.user.is_authenticated:
+#             followings = request.user.followings.all()
+#             legosets = 
+#             queryset = UserPart.objects.filter(user=request.user)
 
-        queryset = LegoSet.objects.all().order_by("-like_count")
-        page = self.paginate_queryset(queryset)
+#         queryset = LegoSet.objects.all().order_by("-like_count")
+#         page = self.paginate_queryset(queryset)
 
-        if page is not None:
-            serializer_data = serializers.LegoSetSerializer(page, many=True).data
-            if request.user.is_authenticated:
-                user_id = request.user.id
-                for legoset in serializer_data:
-                    legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
-                return self.get_paginated_response(serializer_data)
-            else:
-                for legoset in serializer_data:
-                    legoset["is_like"] = 0
-                return self.get_paginated_response(serializer_data)
-            serializer = serializers.LegoSetSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+#         if page is not None:
+#             serializer_data = serializers.LegoSetSerializer(page, many=True).data
+#             if request.user.is_authenticated:
+#                 user_id = request.user.id
+#                 for legoset in serializer_data:
+#                     legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
+#                 return self.get_paginated_response(serializer_data)
+#             else:
+#                 for legoset in serializer_data:
+#                     legoset["is_like"] = 0
+#                 return self.get_paginated_response(serializer_data)
+#             serializer = serializers.LegoSetSerializer(page, many=True)
+#             return self.get_paginated_response(serializer.data)
 
-        serializer = serializers.LegoSetSerializer(queryset, many=True)
-        return Response(serializer.data)
+#         serializer = serializers.LegoSetSerializer(queryset, many=True)
+#         return Response(serializer.data)
 
 
 @api_view(['POST'])
