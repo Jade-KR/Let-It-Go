@@ -8,7 +8,7 @@ const state = {
   legoCategory: LegoCategory,
   filtered: [],
   currentStep: 0,
-  pickedPart: "",
+  pickedPart: [],
   legoColor: LegoColor.rows,
   basket: [],
   userParts: [],
@@ -34,7 +34,10 @@ const mutations = {
     state.filtered = result;
   },
   setPart(state, id) {
-    state.pickedPart = id;
+    state.pickedPart.push(id);
+  },
+  resetPart(state) {
+    state.pickedPart = [];
   },
   setBasket(state, info) {
     let check = 0;
@@ -94,6 +97,11 @@ const actions = {
     commit("setCurrentStep", params);
   },
   pickPart({ commit }, params) {
+    for (let i = 0; i < state.pickedPart.length; ++i) {
+      if (state.pickedPart[i] === params) {
+        return;
+      }
+    }
     commit("setPart", params);
   },
   addBasket({ commit }, params) {
@@ -103,7 +111,6 @@ const actions = {
     commit("takeOutBasket", params);
   },
   async updateParts({ commit }, params) {
-    // console.log(params)
     await api.addUserParts(params);
     commit("resetBasket");
   },
@@ -116,11 +123,9 @@ const actions = {
   },
   async getParts({ commit }, params) {
     commit;
-    // console.log(params)
     const append = params.append;
     const resp = await api.getUserParts(params).then(res => res.data);
     const models = resp.results.map(e => e);
-    // console.log(resp)
     if (append) {
       commit("addPartList", models);
     } else {
@@ -138,7 +143,6 @@ const actions = {
       .then(res => res.data)
       .catch(err => err.response);
     commit("setUserPartsAll", resp.results);
-    // console.log(resp);
   }
 };
 

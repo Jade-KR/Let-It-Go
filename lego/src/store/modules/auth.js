@@ -20,7 +20,6 @@ const actions = {
       .tokenVerify(params)
       .then(res => res.status)
       .catch(err => err.response.status);
-    // console.log(result);
     if (result === 400) {
       alert("정보 변조의 위험이 있어, 로그아웃합니다.");
       await api.logout();
@@ -59,7 +58,6 @@ const actions = {
     await api
       .login(params)
       .then(res => {
-        console.log(res.data);
         const token = res.data.token;
         const user = res.data.user;
         localStorage.setItem("token", token);

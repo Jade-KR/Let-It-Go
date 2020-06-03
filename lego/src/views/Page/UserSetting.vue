@@ -13,7 +13,9 @@
               :id="`menu${idx}`"
               @click="menuState(menu, idx)"
               :style="btnFlag === menu ? btnStyle[0] : btnStyle[1]"
-            >{{menu}}</p>
+            >
+              {{ menu }}
+            </p>
           </div>
         </div>
         <SetProfile v-if="currentState === 0"></SetProfile>
@@ -25,9 +27,9 @@
 </template>
 
 <script>
-import SetProfile from "../components/UserSetting/SetProfile";
-import SetPassword from "../components/UserSetting/SetPassword";
-import SetLegoRail from "../components/UserSetting/SetLegoRail";
+import SetProfile from "@/components/UserSetting/SetProfile";
+import SetPassword from "@/components/UserSetting/SetPassword";
+import SetLegoRail from "@/components/UserSetting/SetLegoRail";
 export default {
   props: { title: String, idx: Number },
   components: {

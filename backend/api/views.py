@@ -129,7 +129,7 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
                 user_id = request.user.id
                 for legoset in serializer_data:
                     legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
-                    legoset["is_review"] = 1 if Review.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
+                    legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user_id) else 0
                 return self.get_paginated_response(serializer_data)
             else:
                 for legoset in serializer_data:

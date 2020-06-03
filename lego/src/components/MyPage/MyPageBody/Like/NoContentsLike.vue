@@ -1,16 +1,18 @@
 <template>
   <div>
     <div class="no_content_box">
-      <h2 class="no_content_header">보유하고 있는 설계도가 없습니다</h2>
-      <div class="no_content_body" v-if="check === true">
-        <div class="no_content_body_right">
-          <p class="no_content_contents">설계도</p>
-          <p class="no_content_contents">추가하기</p>
+      <h2 class="no_content_header">좋아하는 설계도가 없습니다</h2>
+      <div class="no_content_body">
+        <div class="no_content_body_right" v-if="check === true">
+          <p class="no_content_contents">다른 사람의</p>
+          <p class="no_content_contents">설계도 보러가기</p>
           <i class="fas fa-angle-double-down no_content_icons"></i>
-          <button class="no_content_btn" @click="write()">Add Model!</button>
+          <button class="no_content_btn" @click="goHome()">
+            CHECK Models!
+          </button>
         </div>
+        <div v-else></div>
       </div>
-      <div v-else></div>
     </div>
   </div>
 </template>
@@ -28,8 +30,8 @@ export default {
       : (this.check = false);
   },
   methods: {
-    write() {
-      this.$router.push("/write");
+    goHome() {
+      this.$router.push("/");
     }
   }
 };

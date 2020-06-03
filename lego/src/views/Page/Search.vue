@@ -6,7 +6,12 @@
     infinite-scroll-distance="10"
   >
     <div id="search_bar">
-      <search-bar @onSubmit="onSubmit" @setCate="setCate"></search-bar>
+      <search-bar
+        @onSubmit="onSubmit"
+        @setCate="setCate"
+        :searchedWordByDetail="searchedWordByDetail"
+        :searchedCateByDetail="searchedCateByDetail"
+      ></search-bar>
     </div>
     <div id="search_card_box">
       <div v-for="(model, i) in models" :key="`model-${i}`" id="search_card">
@@ -18,6 +23,7 @@
           :isLike="model.is_like"
           :likeCount="model.like_count"
           :reviewCount="model.review_count"
+          :isReview="model.is_review"
         ></search-card>
       </div>
     </div>
@@ -38,22 +44,67 @@ export default {
     return {
       loading: true,
       selectedCate: 0,
-      selectedTheme: 0
+      selectedTheme: 0,
+      searchedWordByDetail: "",
+      searchedCateByDetail: 0
     };
   },
   computed: {
     ...mapState({
       models: state => state.search.modelList,
       page: state => state.search.modelPage,
-      endPoint: state => state.search.endPoint
+      endPoint: state => state.search.endPoint,
+      searchWordByDetail: state => state.search.searchWordByDetail,
+      searchCateByDetail: state => state.search.searchCateByDetail,
+      searchByDetailFlag: state => state.search.searchByDetailFlag
     })
+  },
+  async mounted() {
+    if (this.searchByDetailFlag === true) {
+      window.scrollTo(0, 0);
+      this.resetEndPoint();
+      this.resetModelList();
+      this.selectedTheme = this.searchWordByDetail;
+      this.searchedWordByDetail = String(this.searchWordByDetail);
+      if (this.searchCateByDetail === "tag") {
+        this.selectedCate = 1;
+        this.searchedCateByDetail = 1;
+      } else {
+        this.selectedCate = 2;
+        this.searchedCateByDetail = 2;
+      }
+      const params = {
+        append: false,
+        page: 1
+      };
+      if (this.searchCateByDetail === "tag") {
+        params["tag"] = this.searchWordByDetail;
+      } else if (this.searchCateByDetail === "theme") {
+        params["theme"] = this.searchWordByDetail;
+      }
+      const result = await this.getModels(params);
+      if (result === false) {
+        alert("검색결과 없음");
+        return;
+      }
+      if (this.endPoint === true) {
+        return;
+      }
+      this.loading = false;
+
+      this.resetSearchByDetailFlag();
+    }
   },
   beforeDestroy() {
     this.resetModelList();
   },
   methods: {
     ...mapActions("search", ["getModels"]),
-    ...mapMutations("search", ["resetEndPoint", "resetModelList"]),
+    ...mapMutations("search", [
+      "resetEndPoint",
+      "resetModelList",
+      "resetSearchByDetailFlag"
+    ]),
     setCate(value) {
       this.loading = true;
       this.selectedCate = value;

@@ -289,6 +289,10 @@ export default {
   text-align: center;
   z-index: 5;
 }
+.go_detail_btn:hover {
+  background-color: gold;
+  color: white;
+}
 .mySlides {
   display: none;
 }

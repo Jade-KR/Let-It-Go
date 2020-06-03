@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
   data() {
@@ -50,7 +50,8 @@ export default {
   },
   computed: {
     ...mapState({
-      parts: state => state.write.pickedParts
+      parts: state => state.write.pickedParts,
+      pickedReset: state => state.write.pickedReset
     }),
     start: function() {
       return this.page - 1;
@@ -62,13 +63,20 @@ export default {
       setTimeout(() => {
         this.slicedParts = this.parts.slice(this.start * 25, this.page * 25);
       }, 300);
+    },
+    page() {
+      this.resetPickedPartByImg();
+    },
+    pickedReset() {
+      for (let i = 0; i < this.slicedParts.length; ++i) {
+        var nonTarget = document.getElementById(`checked-${i}`);
+        nonTarget.style.display = "";
+      }
     }
   },
   methods: {
     ...mapActions("write", ["pickPartBytImg"]),
-    // onPickPart(id) {
-    //   this.pickPart(id);
-    // },
+    ...mapMutations("write", ["resetPickedPartByImg"]),
     onPickPart(part, idx) {
       for (let i = 0; i < this.slicedParts.length; ++i) {
         if (i === idx) {
@@ -80,8 +88,6 @@ export default {
           }
           continue;
         }
-        var nonTarget = document.getElementById(`checked-${i}`);
-        nonTarget.style.display = "";
       }
       this.pickPartBytImg(part);
     }

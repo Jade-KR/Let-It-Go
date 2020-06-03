@@ -7,7 +7,7 @@
   >
     <div id="home_show">
       <div v-if="!isCate">
-        <user-category>
+        <user-category @cateSubmit="cateSubmit">
           <span slot="userCategory" id="userCategory" />
         </user-category>
       </div>
@@ -21,7 +21,7 @@
       <div v-else @click="styleCheck()" class="home_show_btn">크게보기</div>
     </div>
     <div v-if="!isCate && homeCate === 3" id="home_no_show">
-      카테고리를 골라 주세요
+      선호 카테고리를 선택해 주세요
     </div>
     <div :style="styleFlag ? matrixWidth : instaWidth" v-else>
       <div
@@ -46,7 +46,7 @@
 
 <script>
 import HomeCard from "@/components/Home/HomeCard";
-import UserCategory from "../components/Home/UserCategory";
+import UserCategory from "@/components/Home/UserCategory";
 import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
@@ -160,6 +160,9 @@ export default {
     },
     setCate() {
       this.isCate = false;
+    },
+    cateSubmit(value) {
+      this.isCate = value;
     }
   }
 };
