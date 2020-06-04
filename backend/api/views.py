@@ -29,10 +29,20 @@ recommend_review_num = 10
 # 성별정보 수치화
 male_value = 5
 female_value = 0
-# 리뷰를 평가하기 위해 필요한 최소 리뷰 갯수
+# 리뷰를 평가하기 위해 필요한 최소 리뷰 갯수(의미있는 리뷰 갯수)
 min_review = 5
 # user_based knn 알고리즘에서 적용할 클러스터 갯수
 cluster_num = 4
+# 남성에 해당하는 값
+male_value = 5
+# 여성에 해당하는 값
+female_value = 0
+# user category에 존재시 값
+exist_value = 10
+# user category에 존재 안할 시 값
+nonexist_value = 0
+# 존재하는 user category
+category_list = ["건축물", "장난감", "공상과학", "레이싱", "클래식", "창작품", "게임", "히어로", "공룡"]
 
 with open("data/knn_item_based.p", "rb") as f:
     global knn_item_based
@@ -53,17 +63,20 @@ with open('data/k_means_user_based.p', 'rb') as f:
     cluster_list = pickle.load(f)
     centroid = pickle.load(f)
 
-def get_cluster(age, gender):
+def get_cluster(age, gender, categories):
+    if not categories:
+        categories = ''
     gtoi = female_value if gender else male_value
+    category_set = set(categories.split('|'))
 
     index = -1
     init_distance = 9999999
     if cluster_num != len(centroid):
         reset_user_based_k_means()
     for i in range(cluster_num):
-        distance_y = centroid[i][0]
-        distance_x = centroid[i][1]
-        distance = (distance_y-age)*(distance_y-age) + (distance_x-gtoi)*(distance_x-gtoi)
+        distance = (centroid[i][0] - age)**2 + (centroid[i][1] - gtoi)**2
+        for j in range(2, 11):
+            distance += (centroid[i][j] - (exist_value if category_list[j-2] in category_set else nonexist_value))**2
         if init_distance > distance:
             init_distance = distance
             index = i
@@ -602,7 +615,7 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 else:
                     serializer_data = serializers.LegoSetSerializer(queryset, many=True).data
             else:
-                queryset = [LegoSet.objects.get(id=legoset_id) for legoset_id in cluster_list[get_cluster(user.age, user.gender)]]
+                queryset = [LegoSet.objects.get(id=legoset_id) for legoset_id in cluster_list[get_cluster(user.age, user.gender, user.categories)]]
                 page = self.paginate_queryset(queryset)
                 if page is not None:
                     serializer_data = serializers.LegoSetSerializer(page, many=True).data
@@ -697,7 +710,6 @@ def UpdateUserPart2(self):
     if user.is_authenticated:
         data = self.data
         UserPart2.objects.create(user=user, part_id=data["part_id"], color_id=data["color_id"])
-
     return Response("수정 완료")
 
 @api_view(['POST'])
@@ -720,7 +732,6 @@ def CreateLegoSet(self):
     }
     '''
     user = self.user
-    # user = CustomUser.objects.get(id=self.user)
     if user.is_authenticated:
         data = self.data
         cur_id = LegoSet.objects.all().order_by('-id')[0].id + 1
@@ -940,20 +951,13 @@ def reset_user_based_knn(self):
     knn_user_based.fit(trainset)
     with open("data/knn_user_based.p", "wb") as f:
         pickle.dump(knn_user_based, f)
-        
     return Response("reset user based knn completed")
 
 @api_view(['GET'])
 def reset_user_based_k_means(self):
     global centroid, cluster_list
-    # user_df = pd.DataFrame(CustomUser.objects.filter(review_count__gte=10))
     user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender", "categories"))
-    male_value = 5
-    female_value = 0
-    exist_value = 10
-    nonexist_value = 0
-    min_review = 5
-    
+
     # None값을 ""로 변경
     user_df["categories"] = user_df["categories"].fillna("")
     
@@ -1081,8 +1085,6 @@ def update_user_set_inventory(self):
                     return Response("갱신 완료")
                 return Response("갱신 실패 - 처리 오류")
             return Response("갱신 실패 - 재고 부족")
-
-            
         if self.data.get("sub_set"):
             legoset_id = self.data.get("sub_set")
             userset_q = user.userset_set.filter(legoset_id=legoset_id)
