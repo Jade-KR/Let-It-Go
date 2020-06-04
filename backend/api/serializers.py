@@ -59,14 +59,14 @@ class LegoSetSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "nickname",
-            "image",
+            "images",
             "review_count",
             "like_count",
         ]
     def get_nickname(self, obj):
         return obj.user.nickname if obj.user else "Official Set"
-    def get_image(self, obj):
-        return obj.images[0] if obj.images else ""
+    # def get_image(self, obj):
+    #     return obj.images[0] if obj.images else ""
 
 class LegoSetSerializer2(serializers.ModelSerializer):
     reviews = ReviewSerializer(source="review_set", many=True)

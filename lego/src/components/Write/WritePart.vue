@@ -35,6 +35,7 @@
           hide-details
           label="부품"
           placeholder="부품을 골라주세요"
+          multiple
         />
       </div>
       <div id="img_input" v-else>
@@ -237,16 +238,13 @@ export default {
       "deletePart",
       "onWriteSubmit"
     ]),
-    // ...mapActions("write", ["enrollPart"]),
-    // ...mapActions("write", ["deletePart"]),
-    // ...mapActions("write", ["onWriteSubmit"]),
     ...mapMutations("write", [
       "setSteps",
       "setCurrentStep",
       "setPickStep",
-      "setPickedPartByImg"
+      "setPickedPartByImg",
+      "resetPickedPartByImg"
     ]),
-    // ...mapMutations("write", ["setCurrentStep"]),
     goStep(idx) {
       if (this.currentStep >= idx || this.step >= idx) {
         this.setCurrentStep(idx);
@@ -272,7 +270,7 @@ export default {
         this.inputFlag = "img";
       }
       this.setPickStep(0);
-      this.setPickedPartByImg([]);
+      this.resetPickedPartByImg();
     },
     partEnroll() {
       if (this.pickedPartByImg.length !== 0) {
@@ -285,15 +283,18 @@ export default {
           alert("필수값을 채워 주세요");
           return;
         }
-        const params = {
-          partName: this.pickedPartByImg[0],
-          partImg: this.pickedPartByImg[1],
-          partId: this.pickedPartByImg[2],
-          partColor: this.partColor[this.colorIdx]["colorRgb"],
-          partColorId: this.partColor[this.colorIdx]["colorId"],
-          partQuantity: this.partQuantity
-        };
-        this.enrollPart(params);
+        for (let i = 0; i < this.pickedPartByImg.length; ++i) {
+          const params = {
+            partName: this.pickedPartByImg[i][0],
+            partImg: this.pickedPartByImg[i][1],
+            partId: this.pickedPartByImg[i][2],
+            partColor: this.partColor[this.colorIdx]["colorRgb"],
+            partColorId: this.partColor[this.colorIdx]["colorId"],
+            partQuantity: this.partQuantity
+          };
+          this.enrollPart(params);
+        }
+        this.resetPickedPartByImg();
         this.colorIdx = "";
         this.partQuantity = 0;
       } else {
@@ -308,15 +309,17 @@ export default {
           alert("필수값을 채워 주세요");
           return;
         }
-        const params = {
-          partName: this.partList[this.partIdx]["partName"],
-          partImg: this.partList[this.partIdx]["partImg"],
-          partId: this.partList[this.partIdx]["partId"],
-          partColor: this.partColor[this.colorIdx]["colorRgb"],
-          partColorId: this.partColor[this.colorIdx]["colorId"],
-          partQuantity: this.partQuantity
-        };
-        this.enrollPart(params);
+        for (let i = 0; i < this.partIdx.length; ++i) {
+          const params = {
+            partName: this.partList[this.partIdx[i]]["partName"],
+            partImg: this.partList[this.partIdx[i]]["partImg"],
+            partId: this.partList[this.partIdx[i]]["partId"],
+            partColor: this.partColor[this.colorIdx]["colorRgb"],
+            partColorId: this.partColor[this.colorIdx]["colorId"],
+            partQuantity: this.partQuantity
+          };
+          this.enrollPart(params);
+        }
         this.partIdx = [];
         this.colorIdx = "";
         this.partQuantity = 0;

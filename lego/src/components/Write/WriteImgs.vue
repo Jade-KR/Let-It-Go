@@ -13,20 +13,9 @@
           <a id="next" @click="plusSlides(1)">❯</a>
         </div>
         <div class="row">
-          <div
-            class="column"
-            v-for="(img, i) in modelImgs"
-            :key="`thumbnail-${i}`"
-          >
-            <img
-              class="demo cursor"
-              :src="img"
-              @click="currentSlide(i + 1)"
-              :id="`thumbnail-${i}`"
-            />
-            <div class="delete_btn" @click="removeImage(i)">
-              삭제
-            </div>
+          <div class="column" v-for="(img, i) in modelImgs" :key="`thumbnail-${i}`">
+            <img class="demo cursor" :src="img" @click="currentSlide(i + 1)" :id="`thumbnail-${i}`" />
+            <div class="delete_btn" @click="removeImage(i)">삭제</div>
           </div>
         </div>
       </div>
@@ -42,23 +31,14 @@
       </div>
     </div>
     <div>
-      <button @click="onPrev(step - 1)" class="before_btn">
-        이전
-      </button>
-      <button
-        @click="onNext(step + 1)"
-        :disabled="modelImgs.length === 0"
-        class="after_btn"
-      >
-        다음
-      </button>
+      <button @click="onPrev(step - 1)" class="before_btn">이전</button>
+      <button @click="onNext(step + 1)" :disabled="modelImgs.length === 0" class="after_btn">다음</button>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
-// import axios from "axios";
 
 export default {
   data() {
@@ -95,10 +75,7 @@ export default {
   },
   methods: {
     ...mapActions("write", ["next", "prev", "removeImg"]),
-    // ...mapActions("write", ["prev"]),
-    // ...mapActions("write", ["removeImg"]),
     ...mapMutations("write", ["setSteps", "setCurrentStep"]),
-    // ...mapMutations("write", ["setCurrentStep"]),
     goStep(idx) {
       if (this.currentStep >= idx || this.step >= idx) {
         this.setCurrentStep(idx);
@@ -107,31 +84,6 @@ export default {
     onStep(idx) {
       this.setStep(idx);
     },
-    // onNext() {
-    //   // console.log(this.modelImgs[0].slice(22));
-    //   var myHeaders = new Headers();
-    //   myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
-
-    //   for (let i = 0; i < this.modelImgs.length; ++i) {
-    //     var formdata = new FormData();
-    //     formdata.append("image", this.modelImgs[i].slice(22));
-
-    //     var requestOptions = {
-    //       method: "POST",
-    //       headers: myHeaders,
-    //       body: formdata,
-    //       redirect: "follow"
-    //     };
-
-    //     fetch("https://api.imgur.com/3/image", requestOptions)
-    //       .then(response => response.text())
-    //       .then(result => {
-    //         const test = JSON.parse(result);
-    //         console.log(test);
-    //       })
-    //       .catch(error => console.log("error", error));
-    //   }
-    // },
     onNext(idx) {
       const params = {
         idx: idx,

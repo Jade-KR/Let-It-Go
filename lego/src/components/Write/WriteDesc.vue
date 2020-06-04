@@ -189,9 +189,7 @@ export default {
 
   methods: {
     ...mapActions("write", ["next", "prev"]),
-    // ...mapActions("write", ["prev"]),
     ...mapMutations("write", ["setSteps", "setCurrentStep"]),
-    // ...mapMutations("write", ["setCurrentStep"]),
     goStep(idx) {
       if (this.currentStep >= idx || this.step >= idx) {
         this.setCurrentStep(idx);

@@ -1,58 +1,35 @@
 <template>
-  <div class="home-card-body">
-    <div class="home-card-header">
-      Title
+  <div class="home_card_body">
+    <div class="home_card_header">
+      {{ name }}
     </div>
-    <div class="home-card-imgs">
-      <div class="slideshow-container">
+    <div class="home_card_imgs">
+      <div class="slideshow_container">
         <div
-          class="go-detail-btn"
-          @click="goDetail()"
+          class="go_detail_btn"
+          @click="goDetail(id)"
           :style="styleFlag ? matrixStyle[4] : instaStyle[4]"
         >
           상세보기
         </div>
-        <div :class="`mySlides${idx} fade`">
-          <img
-            src="../../assets/git.png"
-            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
-          />
-        </div>
 
-        <div :class="`mySlides${idx} fade`">
-          <img
-            src="../../assets/logo.png"
-            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
-          />
-        </div>
-
-        <div :class="`mySlides${idx} fade`">
-          <img
-            src="../../assets/JS.png"
-            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
-          />
-        </div>
-
-        <div :class="`mySlides${idx} fade`">
-          <img
-            src="../../assets/logo.png"
-            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
-          />
-        </div>
-
-        <div :class="`mySlides${idx} fade`">
-          <img
-            src="../../assets/side_bg.png"
-            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
-          />
-        </div>
-
-        <div :class="`mySlides${idx} fade`">
-          <img
-            src="../../assets/JS.png"
-            style="width:100%"
-            :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
-          />
+        <div v-for="(url, i) in imageList" :key="`url-${i}`">
+          <div :class="`mySlides${idx} fade`" :id="`mySlide-${i}`">
+            <img
+              src="../../assets/icons/no_img.jpg"
+              :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
+              :id="`slideImg-${i}-${idx}`"
+              v-if="!images"
+            />
+            <img
+              :src="url"
+              alt=""
+              :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
+              :id="`slideImg-${i}-${idx}`"
+              v-else
+              @load="showSlides(1), onResizeHeight()"
+            />
+          </div>
         </div>
 
         <a class="prev" @click.stop="plusSlides(-1)">&#10094;</a>
@@ -60,26 +37,25 @@
       </div>
     </div>
     <div
-      class="home-card-footer"
+      class="home_card_footer"
       :style="styleFlag ? matrixStyle[1] : instaStyle[1]"
     >
-      <div :style="styleFlag ? matrixStyle[0] : instaStyle[0]">
-        <span :class="`dot${idx}`" @click="currentSlide(1)"></span>
-        <span :class="`dot${idx}`" @click="currentSlide(2)"></span>
-        <span :class="`dot${idx}`" @click="currentSlide(3)"></span>
-        <span :class="`dot${idx}`" @click="currentSlide(4)"></span>
-        <span :class="`dot${idx}`" @click="currentSlide(5)"></span>
-        <span :class="`dot${idx}`" @click="currentSlide(6)"></span>
+      <div :style="styleFlag ? matrixStyle[0] : instaStyle[5]">
+        <div
+          :style="styleFlag ? matrixStyle[5] : instaStyle[0]"
+          v-for="i in imageLength"
+          :key="`dots-${i}`"
+        >
+          <span :class="`dot${idx} dotdot`" @click="currentSlide(i + 1)"></span>
+        </div>
       </div>
       <div :style="styleFlag ? matrixStyle[2] : instaStyle[2]">
-        <div class="home-card-footer-director">
-          Director. Nalbo_Nalbo
-        </div>
-        <div class="home-card-footer-btns">
-          <button v-if="like" class="home-card-like" @click="pushLike()">
+        <div class="home_card_footer_director">Director. {{ nickname }}</div>
+        <div class="home_card_footer_btns">
+          <button v-if="like" class="home_card_like" @click="pushLike()">
             <i class="fas fa-heart" />
           </button>
-          <button v-else class="home-card-like" @click="pushLike()">
+          <button v-else class="home_card_like" @click="pushLike()">
             <i class="far fa-heart" />
           </button>
         </div>
@@ -90,6 +66,7 @@
 
 <script>
 import router from "../../router";
+import { mapActions } from "vuex";
 
 export default {
   props: {
@@ -100,20 +77,42 @@ export default {
     styleFlag: {
       type: Boolean,
       default: false
+    },
+    id: {
+      type: Number,
+      default: 0
+    },
+    images: {
+      type: String,
+      default: ""
+    },
+    name: {
+      type: String,
+      default: ""
+    },
+    nickname: {
+      type: String,
+      default: ""
+    },
+    isLike: {
+      type: Number,
+      default: -1
     }
   },
   data() {
     return {
       like: false,
       slideIndex: 1,
+      imageList: ["images/icons/no_img.jpg"],
+      imageLength: 0,
       matrixStyle: [
         {
-          display: "block",
-          textAlign: "center"
+          display: "block"
         },
         {
           padding: "5px",
-          display: "block"
+          display: "block",
+          textAlign: "center"
         },
         {
           width: "100%",
@@ -125,13 +124,14 @@ export default {
         },
         {
           left: "80%"
+        },
+        {
+          display: "inline-block"
         }
       ],
       instaStyle: [
         {
-          position: "absolute",
-          right: "50%",
-          transform: "translateX(50%)"
+          display: "inline-block"
         },
         {
           padding: "10px",
@@ -146,38 +146,76 @@ export default {
         },
         {
           left: "87.7%"
+        },
+        {
+          position: "absolute",
+          right: "50%",
+          transform: "translateX(50%)"
         }
       ]
     };
   },
-  mounted() {
-    var i;
-    var n = 1;
-    var slides = document.getElementsByClassName(`mySlides${this.idx}`);
-    var dots = document.getElementsByClassName(`dot${this.idx}`);
-    if (n > slides.length) {
-      this.slideIndex = 1;
+  watch: {
+    imageList() {
+      this.imageLength = this.imageList.length;
     }
-    if (n < 1) {
-      this.slideIndex = slides.length;
+  },
+  async mounted() {
+    if (this.isLike === 0) {
+      this.like = false;
+    } else {
+      this.like = true;
     }
-    for (i = 0; i < slides.length; i++) {
-      slides[i].style.display = "none";
+    if (this.images) {
+      this.imageList = await this.images.split("|");
     }
-    for (i = 0; i < dots.length; i++) {
-      dots[i].className = dots[i].className.replace(" active", "");
-    }
-    slides[this.slideIndex - 1].style.display = "block";
-    dots[this.slideIndex - 1].className += " active";
   },
   methods: {
-    goDetail() {
-      router.push("/detail");
+    ...mapActions("home", ["onLike"]),
+    onResizeHeight() {
+      if (this.styleFlag == true) {
+        for (let i = 0; i < this.imageList.length; ++i) {
+          document.getElementById(`slideImg-${i}-${this.idx}`).style.height =
+            "250px";
+        }
+        return;
+      }
+      var maxHeight = 0;
+      // var minHeight = 614;
+      for (let i = 0; i < this.imageList.length; ++i) {
+        var naturalHeight = document.getElementById(`slideImg-${i}-${this.idx}`)
+          .naturalHeight; // img 높이
+        if (maxHeight < naturalHeight) {
+          maxHeight = naturalHeight;
+        }
+        // if (minHeight > naturalHeight) {
+        //   minHeight = naturalHeight;
+        // }
+      }
+      if (maxHeight > 614) {
+        maxHeight = 614;
+      }
+      // if (minHeight < 200) {
+      //   minHeight = 300;
+      // }
+      for (let i = 0; i < this.imageList.length; ++i) {
+        document.getElementById(`slideImg-${i}-${this.idx}`).style.height =
+          String(maxHeight) + "px";
+        // String(minHeight) + "px";
+      }
     },
-    pushLike() {
-      if (this.like === false) {
+    goDetail() {
+      window.scrollTo(0, 0);
+      router.push("/detail" + "/" + this.id);
+    },
+    async pushLike() {
+      const params = {
+        set_id: this.id
+      };
+      const result = await this.onLike(params);
+      if (result === "좋아요") {
         this.like = true;
-      } else {
+      } else if (result === "좋아요 취소") {
         this.like = false;
       }
     },
@@ -211,34 +249,37 @@ export default {
 </script>
 
 <style scoped>
-.home-card-body {
+.home_card_body {
   text-align: initial;
 }
-.home-card-header {
+.home_card_header {
   padding: 10px;
+  padding-left: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 18px;
+  font-weight: 700;
 }
-.home-card-imgs {
+.home_card_imgs {
   border-top: 5px solid gold;
   border-bottom: 5px solid gold;
 }
-/* .home-card-img {
-  height: 100%;
-  width: 100%;
-} */
-/* .home-card-footer {
-  padding: 10px;
-  display: flex;
-} */
-.home-card-footer-director {
+
+.home_card_footer_director {
   padding: 5px;
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: start;
 }
-.home-card-like {
+.home_card_like {
   color: red;
   font-size: 25px;
   float: right;
 }
-.go-detail-btn {
+.go_detail_btn {
   position: absolute;
   cursor: pointer;
   background-color: rgba(255, 215, 0, 0.5);
@@ -246,7 +287,11 @@ export default {
   font-weight: 700;
   padding: 5px;
   text-align: center;
-  z-index: 10;
+  z-index: 5;
+}
+.go_detail_btn:hover {
+  background-color: gold;
+  color: white;
 }
 .mySlides {
   display: none;
@@ -254,13 +299,9 @@ export default {
 img {
   vertical-align: middle;
 }
-.slideshow-container {
-  /* max-width: 1000px; */
+.slideshow_container {
   position: relative;
   margin: auto;
-  /* height: 614px; */
-  /* overflow: hidden;
-  box-sizing: content-box; */
 }
 .prev,
 .next {
@@ -287,16 +328,7 @@ img {
 .next:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
-.dot1,
-.dot2,
-.dot3,
-.dot4,
-.dot5,
-.dot6,
-.dot7,
-.dot8,
-.dot9,
-.dot10 {
+.dotdot {
   cursor: pointer;
   height: 10px;
   width: 10px;

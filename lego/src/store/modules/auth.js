@@ -1,22 +1,47 @@
 import api from "../../api";
 import router from "../../router";
 
-const state = {};
+const state = {
+  authFlag: false,
+  isCategory: false
+};
 
 const actions = {
+  async isTokenVerify({ commit }) {
+    commit;
+    const params = {
+      token: localStorage.getItem("token")
+    };
+    if (!params["token"]) {
+      router.push("/login");
+      return false;
+    }
+    const result = await api
+      .tokenVerify(params)
+      .then(res => res.status)
+      .catch(err => err.response.status);
+    if (result === 400) {
+      alert("정보 변조의 위험이 있어, 로그아웃합니다.");
+      await api.logout();
+      localStorage.clear();
+      router.push("/login");
+      return false;
+    }
+    return true;
+  },
   async register({ commit }, params) {
     commit;
-    await api
+    const resp = await api
       .register(params)
       .then(res => {
-        console.log("res", res);
         if (res.status == 201) {
           alert("인증 이메일을 발송하였습니다. 확인해주세요.");
+          commit("setAuthFlag", false);
           router.push("/");
+          return true;
         }
       })
       .catch(err => {
-        console.log("err", err.response);
         if (err.response.data.username && err.response.data.email) {
           alert("아이디와 이메일이 중복되었습니다.");
         } else if (err.response.data.username) {
@@ -24,7 +49,9 @@ const actions = {
         } else if (err.response.data.email) {
           alert("이메일이 중복되었습니다.");
         }
+        return false;
       });
+    return resp;
   },
   async login({ commit }, params) {
     commit;
@@ -42,7 +69,16 @@ const actions = {
         localStorage.setItem("image", user.image);
         localStorage.setItem("gender", user.gender);
         localStorage.setItem("age", user.age);
+        localStorage.setItem("categories", user.categories);
+        localStorage.setItem("isStaff", user.is_staff);
+        commit("setAuthFlag", false);
+        if (localStorage.getItem("category") === "null") {
+          commit("setIsCategory", false);
+        } else {
+          commit("setIsCategory", true);
+        }
         router.push("/");
+        location.reload();
       })
       .catch(err => {
         if (
@@ -277,10 +313,28 @@ const actions = {
 
     s = Utf8Encode(s);
     return binb2hex(core_sha256(str2binb(s), s.length * chrsz));
+  },
+  async changePassword({ commit }, params) {
+    commit;
+    await api.changePasssword(params);
+  },
+  async logout({ commit }) {
+    commit;
+    await api.logout();
+    localStorage.clear();
+    router.push("/");
+    location.reload();
   }
 };
 
-const mutations = {};
+const mutations = {
+  setAuthFlag(state, value) {
+    state.authFlag = value;
+  },
+  setIsCategory(state, value) {
+    state.isCategory = value;
+  }
+};
 
 export default {
   namespaced: true,

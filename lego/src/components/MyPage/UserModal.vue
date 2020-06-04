@@ -14,12 +14,18 @@
           :key="`menu${idx}`"
           @click="goSetting(menu, idx)"
         >
-          <p class="menu_name">{{menu}}</p>
+          <p class="menu_name">{{ menu }}</p>
         </div>
-        <div class="menu">
+        <div class="menu" @click="member()">
+          <p class="menu_name">멤버소개</p>
+        </div>
+        <div class="menu" @click="admin()" v-if="isStaff === 'true'">
+          <p class="menu_name">관리자페이지</p>
+        </div>
+        <div class="menu" @click="logout()">
           <p class="menu_name">로그아웃</p>
         </div>
-        <div class="menu" @click="dialog=false">
+        <div class="menu" @click="dialog = false">
           <p class="menu_name">취소</p>
         </div>
       </v-card>
@@ -28,19 +34,28 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
       dialog: false,
-      menus: ["프로필 편집", "비밀번호 변경", "레고레일 설정"]
+      menus: ["프로필 편집", "비밀번호 변경", "레고레일"],
+      isStaff: localStorage.getItem("isStaff")
     };
   },
   methods: {
+    ...mapActions("auth", ["logout"]),
     goSetting(title, idx) {
       this.$router.push({
         name: "UserSetting",
         params: { title: title, idx: idx }
       });
+    },
+    member() {
+      this.$router.push("/member");
+    },
+    admin() {
+      this.$router.push("/admin");
     }
   }
 };
