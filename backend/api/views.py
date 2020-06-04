@@ -598,19 +598,13 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 predictions.sort(key=lambda x: x[0])
                 recommend = [legoset for score, legoset in predictions[:recommend_num]]
                 serializer_data = serializers.LegoSetSerializer(recommend, many=True).data
-
-                if user.is_authenticated:
-                    for legoset in serializer_data:
-                        legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user.id) else 0
-                        legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user.id) else 0
-                else:
-                    for legoset in serializer_data:
-                        legoset["is_like"] = 0
-                        legoset["is_review"] = 0
-                return Response(serializer_data)
             else:
                 queryset = [LegoSet.objects.get(id=x) for x in cluster_list[get_cluster(user.age, user.gender)]]
-                return Response(serializers.LegoSetSerializer(queryset, many=True).data)
+                serializer_data = serializers.LegoSetSerializer(queryset, many=True).data
+            for legoset in serializer_data:
+                legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user.id) else 0
+                legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user.id) else 0
+            return Response(serializer_data)
         else:
             return Response("로그인이 필요합니다.")
 
