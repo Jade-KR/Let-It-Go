@@ -579,6 +579,7 @@ class ItemBasedRecommendViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewS
 
 class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
+    pagination_class = SmallPagination
     queryset = LegoSet.objects.all()
 
     def list(self, request):
@@ -596,14 +597,48 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                         queryset.append(legoset)
                 predictions = [[knn_user_based.predict(user.id, legoset_id).est, legoset_id] for legoset_id in queryset]
                 predictions.sort(key=lambda x: x[0])
-                recommend = [legoset for score, legoset in predictions[:recommend_num]]
-                serializer_data = serializers.LegoSetSerializer(recommend, many=True).data
+                queryset = [LegoSet.objects.get(id=legoset_id) for score, legoset in predictions]
+                page = self.paginate_queryset(queryset)
+                if page is not None:
+                    serializer_data = serializers.LegoSetSerializer(page, many=True).data
+                else:
+                    serializer_data = serializers.LegoSetSerializer(queryset, many=True).data
             else:
-                queryset = [LegoSet.objects.get(id=x) for x in cluster_list[get_cluster(user.age, user.gender)]]
-                serializer_data = serializers.LegoSetSerializer(queryset, many=True).data
+                queryset = [LegoSet.objects.get(id=legoset_id) for legoset_id in cluster_list[get_cluster(user.age, user.gender)]]
+                page = self.paginate_queryset(queryset)
+                if page is not None:
+                    serializer_data = serializers.LegoSetSerializer(page, many=True).data
+                else:
+                    serializer_data = serializers.LegoSetSerializer(queryset, many=True).data
             for legoset in serializer_data:
                 legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user.id) else 0
                 legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user.id) else 0
+            
+            
+            
+            
+        # page = self.paginate_queryset(queryset)
+        # user = request.user
+
+        # if page is not None:
+        #     serializer_data = serializers.LegoSetSerializer(page, many=True).data
+        #     if request.user.is_authenticated:
+        #         user_id = request.user.id
+        #         for legoset in serializer_data:
+        #             legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
+        #             legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user.id) else 0
+        #         return self.get_paginated_response(serializer_data)
+        #     else:
+        #         for legoset in serializer_data:
+        #             legoset["is_like"] = 0
+        #             legoset["is_review"] = 0
+        #         return self.get_paginated_response(serializer_data)
+        #     serializer = serializers.LegoSetSerializer(page, many=True)
+        #     return self.get_paginated_response(serializer.data)
+
+        # serializer = serializers.LegoSetSerializer(queryset, many=True)
+        # return Response(serializer.data)
+            
             return Response(serializer_data)
         else:
             return Response("로그인이 필요합니다.")
@@ -683,12 +718,9 @@ def UpdateUserPart(self):
 @api_view(['POST'])
 def UpdateUserPart2(self):
     user = self.user
-    print(user)
-    print(self.data)
     if user.is_authenticated:
         data = self.data
         UserPart2.objects.create(user=user, part_id=data["part_id"], color_id=data["color_id"])
-        print(1)
 
     return Response("수정 완료")
 
@@ -993,3 +1025,17 @@ def reset_user_based_k_means(self):
         pickle.dump(cluster_list, f)
         pickle.dump(centroid, f)
     return Response("reset user based k_means completed")
+
+@api_view(['POST'])
+def update_user_set_inventory(self):
+    user = self.user
+    if user.is_authenticated:
+        # if self.data.get("add_set"):
+        #     # 세트 추가하기
+        # if self.data.get("sub_set"):
+        #     # 세트 삭제하기
+
+
+        return Response("update_user_set_inventory 갱신 완료")
+    else:
+        return Response("로그인이 필요합니다.")
