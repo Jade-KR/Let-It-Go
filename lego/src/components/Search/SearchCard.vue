@@ -1,13 +1,14 @@
 <template>
   <div class="item" @click="goDetail()">
     <div class="body_img_box">
-      <img class="body_img" :src="image" alt="image" v-if="image !== null" />
       <img
         class="body_img"
         src="../../assets/icons/no_img.jpg"
         alt="no_image"
-        v-else
+        v-if="image === null || image === ''"
       />
+      <img class="body_img" :src="image" alt="image" v-else />
+
       <div class="body_img_hover">
         <div class="body_img_desc">
           <div class="body_img_name">

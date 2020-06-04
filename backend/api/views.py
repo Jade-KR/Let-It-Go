@@ -351,7 +351,7 @@ class FollowingUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserSerializer
     pagination_class = SmallPagination
-    queryset = CustomUser.objects.all()
+    queryset = CustomUser.objects.all().order_by("-date_joined")
 
     def list(self, request):
         if request.user.is_staff:

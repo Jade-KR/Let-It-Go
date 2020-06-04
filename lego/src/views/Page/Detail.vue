@@ -167,7 +167,6 @@ export default {
           this.pickedList.push(randomNum);
         }
       }
-      console.log(this.pickedList);
     }
   },
   beforeDestroy() {
