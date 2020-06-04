@@ -33,6 +33,8 @@ router.register(r"User", views.UserViewSet, basename="User")
 router.register(r"UserLegoSet", views.UserLegoSetViewSet, basename="UserLegoSet")
 router.register(r"UserLikeLegoSet", views.UserLikeLegoSetViewSet, basename="UserLikeLegoSet")
 router.register(r"LegoSetRanking", views.LegoSetRankingViewSet, basename="LegoSetRanking")
+router.register(r"ItemBasedRecommend", views.ItemBasedRecommendViewSet, basename="ItemBasedRecommend")
+router.register(r"UserBasedRecommend", views.UserBasedRecommendViewSet, basename="UserBasedRecommend")
 
 urlpatterns = [
     *router.urls,
