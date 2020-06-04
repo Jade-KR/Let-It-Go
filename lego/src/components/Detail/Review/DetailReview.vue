@@ -2,17 +2,13 @@
   <div class="detail_review_card">
     <div class="detail_review_show">
       <img
-        :src="userImage"
-        alt="user_image"
-        class="detail_review_img"
-        v-if="userImage !== 'null'"
-      />
-      <img
         src="../../../../public/images/user.png"
         alt="img"
         class="detail_review_img"
-        v-else
+        v-if="userImage === 'null' || userImage === null"
       />
+      <img :src="userImage" alt="user_image" class="detail_review_img" v-else />
+
       <div class="rating" v-if="updateFlag === false">
         <div v-if="ratingTest === 5">
           <i class="fas fa-star gold_star"></i>

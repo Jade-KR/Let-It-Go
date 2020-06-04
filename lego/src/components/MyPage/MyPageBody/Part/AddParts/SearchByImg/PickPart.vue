@@ -6,7 +6,7 @@
         class="lego_parts_box"
         v-for="(part, idx) in slicedParts"
         :key="idx"
-        @click="goAddPart(part[0])"
+        @click="goAddPart(part[0], idx)"
       >
         <img
           :src="
@@ -20,12 +20,19 @@
         <div class="part_info">
           <p class="part_id">{{ part[0] }}</p>
         </div>
+        <div class="part_info">
+          <i class="fas fa-check checked" :id="`checked-${idx}`"></i>
+        </div>
       </div>
     </div>
     <v-layout justify-center>
       <v-flex xs8>
         <v-card-text>
-          <v-pagination :length="pageLength" v-model="page"></v-pagination>
+          <v-pagination
+            :length="pageLength"
+            v-model="page"
+            color="rgb(255, 215, 0)"
+          ></v-pagination>
         </v-card-text>
       </v-flex>
     </v-layout>
@@ -37,7 +44,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -67,14 +74,32 @@ export default {
         this.slicedParts = this.parts.slice(this.start * 25, this.page * 25);
       }, 300);
     },
-    pickedPart() {
-      console.log(this.pickedPart);
+    page() {
+      this.resetPart();
     }
   },
   methods: {
     ...mapActions("Parts", ["changeStep", "pickPart"]),
-    goAddPart(id) {
-      this.pickPart(id);
+    ...mapMutations("Parts", ["resetPart"]),
+    goAddPart(id, idx) {
+      var isHave = false;
+      for (let i = 0; i < this.slicedParts.length; ++i) {
+        if (i === idx) {
+          const target = document.getElementById(`checked-${idx}`);
+          if (target.style.display === "") {
+            target.style.display = "block";
+          } else {
+            target.style.display = "";
+            isHave = true;
+          }
+          continue;
+        }
+      }
+      const params = {
+        id: id,
+        isHave: isHave
+      };
+      this.pickPart(params);
     },
     back() {
       this.changeStep("back");
@@ -171,5 +196,15 @@ export default {
 .modal_footer {
   display: flex;
   justify-content: space-between;
+}
+.checked {
+  display: none;
+  font-size: 50px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  z-index: 5;
 }
 </style>

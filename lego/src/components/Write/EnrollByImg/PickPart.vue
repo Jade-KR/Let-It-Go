@@ -25,7 +25,11 @@
     <v-layout justify-center>
       <v-flex xs8>
         <v-card-text>
-          <v-pagination :length="pageLength" v-model="page"></v-pagination>
+          <v-pagination
+            :length="pageLength"
+            v-model="page"
+            color="rgb(255, 215, 0)"
+          ></v-pagination>
         </v-card-text>
       </v-flex>
     </v-layout>
@@ -78,6 +82,7 @@ export default {
     ...mapActions("write", ["pickPartBytImg"]),
     ...mapMutations("write", ["resetPickedPartByImg"]),
     onPickPart(part, idx) {
+      var isHave = false;
       for (let i = 0; i < this.slicedParts.length; ++i) {
         if (i === idx) {
           const target = document.getElementById(`checked-${idx}`);
@@ -85,11 +90,16 @@ export default {
             target.style.display = "block";
           } else {
             target.style.display = "";
+            isHave = true;
           }
           continue;
         }
       }
-      this.pickPartBytImg(part);
+      const params = {
+        part: part,
+        isHave: isHave
+      };
+      this.pickPartBytImg(params);
     }
   }
 };

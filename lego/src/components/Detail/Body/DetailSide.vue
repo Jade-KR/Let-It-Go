@@ -188,9 +188,6 @@ export default {
         this.tagList = await this.tags.split("|");
       }
     },
-    theme() {
-      this.themeName = this.legoThemeList[this.theme - 1][2];
-    },
     isLike() {
       if (this.isLike === 1) {
         this.likeFlag = true;
@@ -277,7 +274,13 @@ export default {
     if (this.tags) {
       this.tagList = await this.tags.split("|");
     }
-    this.themeName = this.legoThemeList[this.theme - 1][2];
+    var temp = "";
+    for (let i = 0; i < this.legoThemeList.length; ++i) {
+      if (Number(this.legoThemeList[i][0]) === Number(this.theme)) {
+        temp = this.legoThemeList[i][2];
+      }
+    }
+    this.themeName = temp;
     if (this.isLike === 1) {
       this.likeFlag = true;
     } else if (this.isLike === 0) {
@@ -300,6 +303,10 @@ export default {
       window.open("https://www.lego.com/ko-kr");
     },
     async pushLike() {
+      if (!localStorage.getItem("pk")) {
+        alert("로그인 후 사용해 주세요");
+        return;
+      }
       const params = {
         set_id: this.id
       };

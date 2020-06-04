@@ -5,6 +5,10 @@
     infinite-scroll-distance="10"
   >
     <div class="container" v-if="userParts.length !== 0">
+      <div style="margin-left: 40px;">
+        총 <b style="color:green; font-size: 24px;">{{ userAllParts.length }}</b
+        >개의 부품을 가지고 있습니다.
+      </div>
       <div class="part_box">
         <div class="search_box">
           <div id="search_bar">
@@ -20,7 +24,7 @@
               multiple
             >
               <template v-slot:item="data">
-                <div style="margin-right: 10px; width: 40px;">
+                <div style="margin-right: 100px; width: 40px;">
                   {{ data.item.name }}
                 </div>
                 <div

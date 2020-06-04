@@ -29,8 +29,21 @@
           이런 설계도는 어떠세요?
         </div>
         <div style="display: flex;">
-          <div v-for="i in 4" :key="i" class="detail_rec_card">
-            <detail-rec-card></detail-rec-card>
+          <div
+            v-for="(v, i) in pickedList"
+            :key="`recc-${i}`"
+            class="detail_rec_card"
+          >
+            <detail-rec-card
+              :id="recommendList[v].id"
+              :name="recommendList[v].name"
+              :images="recommendList[v].images"
+              :nickname="recommendList[v].nickname"
+              :isLike="recommendList[v].is_like"
+              :isReview="recommendList[v].is_review"
+              :likeCount="recommendList[v].like_count"
+              :reviewCount="recommendList[v].review_count"
+            ></detail-rec-card>
           </div>
         </div>
       </div>
@@ -56,7 +69,11 @@
       <div id="detail_desc">
         <div v-if="btnFlag == 'reviews'">
           <detail-review-write :id="model.id"></detail-review-write>
-          <div v-for="(review, i) in reviewList" :key="`review-${i}`" id="test">
+          <div
+            v-for="(review, i) in slicedReviews"
+            :key="`review-${i}`"
+            id="test"
+          >
             <detail-review
               :content="review.content"
               :nickname="review.nickname"
@@ -68,6 +85,17 @@
               :setId="model.id"
             ></detail-review>
           </div>
+          <v-layout justify-center>
+            <v-flex xs8>
+              <v-card-text>
+                <v-pagination
+                  :length="pageLength"
+                  v-model="page"
+                  color="rgb(255, 215, 0)"
+                ></v-pagination>
+              </v-card-text>
+            </v-flex>
+          </v-layout>
         </div>
         <detail-part
           v-if="btnFlag == 'parts'"
@@ -118,14 +146,22 @@ export default {
         }
       ],
       reviewList: [],
-      avgScore: 0
+      avgScore: 0,
+      pickedList: [],
+      page: 1,
+      pageLength: 1,
+      slicedReviews: []
     };
   },
   computed: {
     ...mapState({
       model: state => state.detail.model,
-      reviews: state => state.detail.reviews
-    })
+      reviews: state => state.detail.reviews,
+      recommendList: state => state.detail.recommendList
+    }),
+    start: function() {
+      return this.page - 1;
+    }
   },
   watch: {
     reviews() {
@@ -138,6 +174,29 @@ export default {
       if (isNaN(this.avgScore)) {
         this.avgScore = 0;
       }
+    },
+    recommendList() {
+      while (this.pickedList.length !== 4) {
+        const randomNum = Math.floor(Math.random() * this.recommendList.length);
+        var flag = false;
+        for (let i = 0; i < this.pickedList.length; ++i) {
+          if (this.pickedList[i] === randomNum) {
+            flag = true;
+          }
+        }
+        if (flag === false) {
+          this.pickedList.push(randomNum);
+        }
+      }
+    },
+    start() {
+      this.slicedReviews = [];
+      setTimeout(() => {
+        this.slicedReviews = this.reviews.slice(
+          this.start * 10,
+          this.page * 10
+        );
+      }, 300);
     }
   },
   beforeDestroy() {
@@ -157,10 +216,13 @@ export default {
     } else {
       this.avgScore = 0;
     }
+    await this.getModelsByItemBased(modelId);
+    this.pageLength = Math.ceil(this.reviews.length / 10);
+    this.slicedReviews = this.reviews.slice(this.start * 10, this.page * 10);
     this.loading = false;
   },
   methods: {
-    ...mapActions("detail", ["getModelDetail"]),
+    ...mapActions("detail", ["getModelDetail", "getModelsByItemBased"]),
     ...mapMutations("detail", ["resetModel", "resetMyParts"]),
     onReviews() {
       this.btnFlag = "reviews";

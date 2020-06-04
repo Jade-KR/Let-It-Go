@@ -156,3 +156,8 @@ class UserLikeLegoSet(models.Model):
     class Meta:
         managed = False
         db_table = 'api_legoset_like_users'
+
+class UserSet(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    legoset = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
+    quantity = models.IntegerField()

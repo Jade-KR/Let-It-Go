@@ -170,6 +170,11 @@
       <button @click="onPrev(step - 1)" class="before_btn">
         이전
       </button>
+      <div id="enroll_cnt">
+        총
+        <b style="color: green; font-size: 24px;">{{ enrolledPart.length }}</b
+        >개의 부품이 등록되었습니다.
+      </div>
       <button @click="onSubmit()" class="after_btn" :disabled="!flag">
         글작성
       </button>
@@ -441,5 +446,11 @@ export default {
 .after_btn:disabled:hover {
   background-color: gray;
   color: black;
+}
+#enroll_cnt {
+  text-align: center;
+  margin-left: 160px;
+  font-size: 20px;
+  display: inline-block;
 }
 </style>

@@ -73,39 +73,39 @@
               ID
             </th>
             <th>
-              NAME
+              USER ID
             </th>
             <th>
-              BRANCH
+              NICKNAME
             </th>
             <th>
-              TEL
+              SCORE
             </th>
             <th>
-              ADDRESS
+              CONTENT
             </th>
             <th>
               DELETE
             </th>
           </tr>
-          <tr v-for="i in 10" :key="i">
+          <tr v-for="(review, i) in reviews" :key="`review-${i}`">
             <th>
-              i
+              {{ review.id }}
             </th>
             <th>
-              i
+              {{ review.user_id }}
             </th>
             <th>
-              i
+              {{ review.nickname }}
             </th>
             <th>
-              i
+              {{ review.score }}
             </th>
             <th>
-              i
+              {{ review.content }}
             </th>
             <th>
-              <div class="deleteBtn" @click="deleteReview()">
+              <div class="deleteBtn" @click="delReview(review.id)">
                 DELETE
               </div>
             </th>
@@ -160,6 +160,13 @@
             </th>
             <th>
               {{ v.is_staff }}
+              <div
+                style="display: inline;"
+                class="chageBtn"
+                @click="changeStaff(v.id)"
+              >
+                권한변경
+              </div>
             </th>
             <th>
               {{ v.age }}
@@ -203,7 +210,9 @@ export default {
       modelPage: s => s.admin.modelPage,
       models: s => s.admin.modelList,
       userPage: s => s.admin.userPage,
-      users: s => s.admin.userList
+      users: s => s.admin.userList,
+      reviewPage: s => s.admin.reviewPage,
+      reviews: s => s.admin.reviewList
     })
   },
   async mounted() {
@@ -217,7 +226,10 @@ export default {
       "getModels",
       "deleteModel",
       "getUsers",
-      "deleteUser"
+      "deleteUser",
+      "isStaff",
+      "getReviews",
+      "deleteReview"
     ]),
     ...mapMutations("auth", ["setAuthFlag"]),
     goHome() {
@@ -261,6 +273,9 @@ export default {
       };
       await this.getUsers(params);
     },
+    async changeStaff(value) {
+      this.isStaff(value);
+    },
 
     async showReviews() {
       var target = document.getElementById("tab2").style;
@@ -284,13 +299,21 @@ export default {
       } else {
         this.reviewFlag = false;
       }
-      // const params = {
-      //   page: 1,
-      //   append: true,
-      //   page_size: 10,
-      //   reset: true,
-      // };
-      // await this.getUserReview(params);
+      const params = {
+        page: 1,
+        append: false
+      };
+      await this.getReviews(params);
+    },
+    async delReview(review_id) {
+      await this.deleteReview(review_id);
+    },
+    async moreReview() {
+      const params = {
+        append: true,
+        page: this.reviewPage
+      };
+      await this.getReviews(params);
     },
 
     async showModels() {

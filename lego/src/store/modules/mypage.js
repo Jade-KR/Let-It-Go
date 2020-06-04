@@ -9,34 +9,35 @@ const state = {
   userModelPage: "1",
   likeModelList: [],
   likeModelPage: "1",
-  stopScroll: false,
+  stopScroll: false
 };
 
 const actions = {
-  async onFollow({
-    commit
-  }, params) {
+  async onFollow({ commit }, params) {
     commit;
     const resp = await api
       .setFollow(params)
       .then(res => res.data)
       .catch(err => err);
-    const user_id = location.pathname.slice(8, 9);
-    // console.log(user_id);
-    actions.follower({
-      commit
-    }, user_id);
-    actions.following({
-      commit
-    }, user_id);
+    const user_id = location.pathname.slice(8);
+    actions.follower(
+      {
+        commit
+      },
+      user_id
+    );
+    actions.following(
+      {
+        commit
+      },
+      user_id
+    );
     actions.myFollowing({
       commit
     });
     return resp;
   },
-  async onFollowInModal({
-    commit
-  }, params) {
+  async onFollowInModal({ commit }, params) {
     commit;
     const resp = await api
       .setFollow(params)
@@ -44,28 +45,20 @@ const actions = {
       .catch(err => err);
     return resp;
   },
-  async follower({
-    commit
-  }, params) {
+  async follower({ commit }, params) {
     const resp = await api.getFollower(params).then(res => res.data.results);
     commit("setFollowerList", resp);
   },
-  async following({
-    commit
-  }, params) {
+  async following({ commit }, params) {
     const resp = await api.getFollowing(params).then(res => res.data.results);
     commit("setFollowingList", resp);
   },
-  async myFollowing({
-    commit
-  }) {
+  async myFollowing({ commit }) {
     const params = localStorage.getItem("pk");
     const resp = await api.getFollowing(params).then(res => res.data.results);
     commit("setMyFollowingList", resp);
   },
-  async getUserInfo({
-    commit
-  }, params) {
+  async getUserInfo({ commit }, params) {
     commit;
     const resp = await api
       .getUserInfo(params.user_id)
@@ -73,14 +66,11 @@ const actions = {
       .catch(err => err.response.status);
     return resp;
   },
-  async getUserModels({
-    commit
-  }, params) {
+  async getUserModels({ commit }, params) {
     commit;
     const append = params.append;
     const resp = await api.getUserModels(params).then(res => res.data);
     const models = resp.results.map(e => e);
-    // console.log(models)
     if (append) {
       commit("addUserModelList", models);
     } else {
@@ -88,14 +78,11 @@ const actions = {
     }
     commit("setUserModelPage", resp.next);
   },
-  async getLikeModels({
-    commit
-  }, params) {
+  async getLikeModels({ commit }, params) {
     commit;
     const append = params.append;
     const resp = await api.getUserLikeModels(params).then(res => res.data);
     const models = resp.results.map(e => e);
-    // console.log(resp)
     if (append) {
       commit("addLikeModelList", models);
     } else {
@@ -103,12 +90,9 @@ const actions = {
     }
     commit("setLikeModelPage", resp.next);
   },
-  checkModelsCnt({
-    commit
-  }, params) {
+  checkModelsCnt({ commit }, params) {
     commit;
-    return api.getUserModels(params)
-
+    return api.getUserModels(params);
   }
 };
 
@@ -130,7 +114,7 @@ const mutations = {
   },
   setUserModelPage(state, url) {
     if (url == null) {
-      return state.stopScroll = true
+      return (state.stopScroll = true);
     }
     state.userModelPage = new URL(url).searchParams.get("page");
   },
@@ -142,7 +126,7 @@ const mutations = {
   },
   setLikeModelPage(state, url) {
     if (url == null) {
-      return state.stopScroll = true
+      return (state.stopScroll = true);
     }
     state.likeModelPage = new URL(url).searchParams.get("page");
   }
