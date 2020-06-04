@@ -47,7 +47,7 @@
 import MyPageHeader from "@/components/MyPage/MyPageHeader/MyPageHeader.vue";
 import Models from "@/components/MyPage/MyPageBody/Model/Models.vue";
 import Like from "@/components/MyPage/MyPageBody/Like/Like.vue";
-import Parts from "@/components/MyPage/MyPageBody/Parts/Parts.vue";
+import Parts from "@/components/MyPage/MyPageBody/Part/Parts.vue";
 import Inventory from "@/components/MyPage/MyPageBody/Inventory/Inventory.vue";
 import { mapActions } from "vuex";
 import router from "../../router";
