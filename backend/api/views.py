@@ -59,7 +59,7 @@ def get_cluster(age, gender):
     index = -1
     init_distance = 9999999
     if cluster_num != len(centroid):
-        rerererere4()
+        reset_user_based_k_means()
     for i in range(cluster_num):
         distance_y = centroid[i][0]
         distance_x = centroid[i][1]
@@ -204,10 +204,12 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
     def retrieve(self, request, pk=None):
         legoset = get_object_or_404(LegoSet, id=pk)
         serializer_data = serializers.LegoSetSerializer2(legoset).data
-        if request.user.is_authenticated and UserLikeLegoSet.objects.filter(legoset_id=pk, customuser_id=request.user.id):
-            serializer_data["is_like"] = 1
+        if request.user.is_authenticated:
+            serializer_data["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=pk, customuser_id=request.user.id) else 0
+            serializer_data["is_review"] = 1 if Review.objects.filter(lego_set_id=pk, customuser_id=user_id) else 0
         else:
             serializer_data["is_like"] = 0
+            serializer_data["is_review"] = 0
         reviews = serializers.ReviewSerializer(legoset.review_set.all().order_by("-created_at"), many=True).data
         serializer_data["reviews"] = reviews
         return Response(serializer_data)
@@ -227,6 +229,7 @@ class LegoPartViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets
 class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserPartSerializer
     pagination_class = SmallPagination
+    queryset = UserPart.objects.all()
 
     def list(self, request):
         if request.user.is_authenticated:
@@ -284,10 +287,24 @@ class CustomLoginView(LoginView):
         orginal_response.data["user"].update(mydata)
         return orginal_response
 
-class ReviewViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class ReviewViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.ReviewSerializer
     pagination_class = SmallPagination
-    queryset = Review.objects.all()
+    queryset = Review.objects.all().order_by('-id')
+
+    def list(self, request):
+        if request.user.is_staff:
+            queryset = self.get_queryset()
+            page = self.paginate_queryset(queryset)
+
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            return Response("스태프 권한이 필요합니다.")
 
     def create(self, request):
         if request.user.is_authenticated:
@@ -304,12 +321,11 @@ class ReviewViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Des
 
     def update(self, request, pk=None):
         review = get_object_or_404(Review, pk=pk)
-        user_id = request.user.id
+        user_id = request.user_id
         if request.user.is_authenticated and review.user_id == user_id:
             data = request.data
             review.content = data["content"]
             review.score = data["score"]
-            review.save()
             return Response("수정 완료")
         return Response("수정 실패")
 
@@ -330,6 +346,7 @@ class ReviewViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Des
 class FollowUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserSerializer
     pagination_class = SmallPagination
+    queryset = CustomUser.objects.all()
 
     def retrieve(self, request, pk=None):
         user = get_object_or_404(get_user_model(), pk=pk)
@@ -346,6 +363,7 @@ class FollowUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 class FollowingUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserSerializer
     pagination_class = SmallPagination
+    queryset = CustomUser.objects.all()
 
     def retrieve(self, request, pk=None):
         user = get_object_or_404(get_user_model(), pk=pk)
@@ -437,6 +455,7 @@ def UpdateUserProfile(self):
 class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
     pagination_class = SmallPagination
+    queryset = LegoSet.objects.all()
 
     def retrieve(self, request, pk=None):
         user = request.user
@@ -448,7 +467,7 @@ class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user.id) else 0
                 legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user.id) else 0
             if page is not None:
-                return self.get_paginated_response(serializer.data)
+                return self.get_paginated_response(serializer_data)
             return Response(serializer_data)
         else:
             return Response("로그인이 필요합니다.")
@@ -456,6 +475,7 @@ class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 class UserLikeLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
     pagination_class = SmallPagination
+    queryset = LegoSet.objects.all()
 
     def retrieve(self, request, pk=None):
         user = get_object_or_404(get_user_model(), id=pk)
@@ -476,6 +496,7 @@ class LegoSetRankingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def list(self, request):
         queryset = LegoSet.objects.all().order_by("-like_count")
         page = self.paginate_queryset(queryset)
+        user = request.user
 
         if page is not None:
             serializer_data = serializers.LegoSetSerializer(page, many=True).data
@@ -499,20 +520,45 @@ class LegoSetRankingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 class ItemBasedRecommendViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
     pagination_class = SmallPagination
+    queryset = LegoSet.objects.all()
     
     def retrieve(self, request, pk=None):
         legoset = LegoSet.objects.get(pk=pk)
         if legoset.review_count >= recommend_review_num:
-            lego_set_inner_id = knn_item_based.trainset.to_inner_iid(int(pk))
-            top_neighbors = knn_item_based.get_neighbors(lego_set_inner_id, k=recommend_num)
-            top_neighbors = [LegoSet.objects.get(id=knn_item_based.trainset.to_raw_iid(inner_id)) for inner_id in top_neighbors]
-            top_neighbors = top_neighbors + all_legoset_calculated[:recommend_num-len(top_neighbors)]
-            serializer_data = self.get_serializer(top_neighbors, many=True).data
+            try:
+                lego_set_inner_id = knn_item_based.trainset.to_inner_iid(int(pk))
+                top_neighbors = knn_item_based.get_neighbors(lego_set_inner_id, k=recommend_num)
+                top_neighbors = [LegoSet.objects.get(id=knn_item_based.trainset.to_raw_iid(inner_id)) for inner_id in top_neighbors]
+                serializer_data = self.get_serializer(top_neighbors, many=True).data
+            except:
+                queryset = theme_legoset[legoset.theme.root_id]
+                for i in range(len(queryset)):
+                    if queryset[i].id == pk:
+                        queryset[i], queryset[-1] = queryset[-1], queryset[i]
+                        queryset.pop()
+                        break
+                i = 0
+                qeuryset = queryset[:recommend_num]
+                while len(queryset) <= recommend_num:
+                    if all_legoset_calculated[i].id != pk:
+                        queryset.append(all_legoset_calculated[i])
+                queryset = [LegoSet.objects.get(id=legoset.id) for legoset in queryset]
+                serializer_data = self.get_serializer(queryset, many=True).data
         else:
-            queryset = theme_legoset[legoset_theme_root[int(pk)]][:recommend_num]
-            queryset = queryset + all_legoset_calculated[:recommend_num-len(queryset)]
+            queryset = theme_legoset[legoset.theme.root_id]
+            for i in range(len(queryset)):
+                if queryset[i].id == pk:
+                    queryset[i], queryset[-1] = queryset[-1], queryset[i]
+                    queryset.pop()
+                    break
+            i = 0
+            qeuryset = queryset[:recommend_num]
+            while len(queryset) <= recommend_num:
+                if all_legoset_calculated[i].id != pk:
+                    queryset.append(all_legoset_calculated[i])
+            queryset = [LegoSet.objects.get(id=legoset.id) for legoset in queryset]
+            
             serializer_data = self.get_serializer(queryset, many=True).data
-        
         user = request.user
         if user.is_authenticated:
             for legoset in serializer_data:
@@ -527,6 +573,7 @@ class ItemBasedRecommendViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewS
 
 class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
+    queryset = LegoSet.objects.all()
 
     def list(self, request):
         user = request.user
@@ -556,7 +603,7 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                         legoset["is_review"] = 0
                 return Response(serializer_data)
             else:
-                return Response(cluster_list[get_cluster(user.age, user.gender)])
+                return Response(serializers.LegoSetSerializer(cluster_list[get_cluster(user.age, user.gender)], many=True).data)
         else:
             return Response("로그인이 필요합니다.")
 
@@ -774,7 +821,8 @@ def user_parts_registered_by_IoT(self):
     else:
         return Response("비 인증 유저")
 
-def rerererere():
+@api_view(['GET'])
+def reset_item_based_knn(self):
     global knn_item_based
     user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
     review_df = pd.DataFrame(Review.objects.all().values("user_id", "score", "lego_set_id"))
@@ -806,8 +854,10 @@ def rerererere():
     knn_item_based.fit(trainset)
     with open("data/knn_item_based.p", "wb") as f:
         pickle.dump(knn_item_based, f)
+    return Response("reset item based knn completed")
 
-def rerererere2():
+@api_view(['GET'])
+def reset_item_based_k_means(self):
     global theme_legoset, legoset_theme_root, all_legoset_calculated
     theme_root = dict()
     theme_legoset = dict()
@@ -851,9 +901,11 @@ def rerererere2():
         pickle.dump(theme_legoset, f)
         pickle.dump(legoset_theme_root, f)
         pickle.dump(all_legoset_calculated, f)
+    return Response("reset item based k_means completed")
 
-def rerererere3():
-    global knn_item_based
+@api_view(['GET'])
+def reset_user_based_knn(self):
+    global knn_user_based
     user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
     review_df = pd.DataFrame(Review.objects.all().values("user_id", "score", "lego_set_id"))
 
@@ -884,8 +936,11 @@ def rerererere3():
     knn_user_based.fit(trainset)
     with open("data/knn_user_based.p", "wb") as f:
         pickle.dump(knn_user_based, f)
+        
+    return Response("reset user based knn completed")
 
-def rerererere4():
+@api_view(['GET'])
+def reset_user_based_k_means(self):
     global centroid, cluster_list
     # user_df = pd.DataFrame(CustomUser.objects.filter(review_count__gte=10))
     user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
@@ -936,3 +991,4 @@ def rerererere4():
     with open('data/k_means_user_based.p', 'wb') as f:
         pickle.dump(cluster_list, f)
         pickle.dump(centroid, f)
+    return Response("reset user based k_means completed")

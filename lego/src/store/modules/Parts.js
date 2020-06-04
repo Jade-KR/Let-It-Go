@@ -97,12 +97,21 @@ const actions = {
     commit("setCurrentStep", params);
   },
   pickPart({ commit }, params) {
-    for (let i = 0; i < state.pickedPart.length; ++i) {
-      if (state.pickedPart[i] === params) {
-        return;
+    if (params["isHave"] === true) {
+      const temp = [];
+      for (let i = 0; i < state.pickedPart.length; ++i) {
+        if (state.pickedPart[i] === params["id"]) {
+          continue;
+        }
+        temp.push(state.pickedPart[i]);
       }
+      commit("resetPart");
+      for (let i = 0; i < temp.length; ++i) {
+        commit("setPart", temp[i]);
+      }
+      return;
     }
-    commit("setPart", params);
+    commit("setPart", params["id"]);
   },
   addBasket({ commit }, params) {
     commit("setBasket", params);
@@ -111,7 +120,12 @@ const actions = {
     commit("takeOutBasket", params);
   },
   async updateParts({ commit }, params) {
-    await api.addUserParts(params);
+    await api.addUserParts(params).then(res => {
+      res;
+      api.getUserPartsAll().then(res => {
+        commit("setUserPartsAll", res.data.results);
+      });
+    });
     commit("resetBasket");
   },
   async getUserParts({ commit }, page) {

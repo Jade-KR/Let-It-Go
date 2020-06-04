@@ -139,6 +139,13 @@
       </div>
     </div>
     <div class="modal_footer">
+      <button class="before_btn no_show">
+        안보이나
+      </button>
+      <div id="baske_cnt">
+        총 <b style="color: green; font-size: 24px;">{{ basket.length }}</b
+        >개의 부품이 등록되었습니다.
+      </div>
       <button class="after_btn" :disabled="!flag" @click="onSubmit()">
         부품 등록
       </button>
@@ -298,7 +305,7 @@ export default {
 }
 .modal_footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
 }
 .before_btn,
 .after_btn {
@@ -328,5 +335,16 @@ export default {
 .after_btn:disabled:hover {
   background-color: gray;
   color: black;
+}
+#baske_cnt {
+  margin-top: 20px;
+  display: inline-block;
+  font-size: 20px;
+}
+.no_show {
+  color: white;
+  background-color: white;
+  opacity: 0;
+  cursor: default;
 }
 </style>

@@ -1,28 +1,49 @@
 <template>
   <div class="container">
-    <div>
-      <div v-for="(url, i) in imageList" :key="`url-${i}`">
-        <div class="mySlides">
-          <img :src="url" class="detail-imgs" v-if="images" />
+    <div v-if="imgFlag === true">
+      <div>
+        <div v-for="(url, i) in imageList" :key="`url-${i}`">
+          <div class="mySlides">
+            <img
+              :src="url"
+              class="detail-imgs"
+              v-if="images"
+              @error="imgError"
+            />
+            <img
+              src="../../../assets/icons/no_img.jpg"
+              alt="no_images"
+              class="detail-imgs"
+              v-else
+            />
+          </div>
+        </div>
+
+        <a class="prev" @click="plusSlides(-1)" v-if="images">❮</a>
+        <a class="next" @click="plusSlides(1)" v-if="images">❯</a>
+      </div>
+      <div class="row">
+        <div
+          class="column"
+          v-for="(url, i) in imageList"
+          :key="`thumnail-${i}`"
+        >
           <img
-            src="../../../assets/icons/no_img.jpg"
-            alt="no_images"
-            class="detail-imgs"
-            v-else
+            class="demo cursor"
+            :src="url"
+            @click="currentSlide(i + 1)"
+            v-if="images"
           />
         </div>
       </div>
-
-      <a class="prev" @click="plusSlides(-1)" v-if="images">❮</a>
-      <a class="next" @click="plusSlides(1)" v-if="images">❯</a>
     </div>
-    <div class="row">
-      <div class="column" v-for="(url, i) in imageList" :key="`thumnail-${i}`">
+
+    <div v-else>
+      <div>
         <img
-          class="demo cursor"
-          :src="url"
-          @click="currentSlide(i + 1)"
-          v-if="images"
+          src="../../../assets/icons/no_img.jpg"
+          alt="no_images"
+          class="detail-imgs"
         />
       </div>
     </div>
@@ -40,23 +61,20 @@ export default {
   data() {
     return {
       slideIndex: 1,
-      imageList: ["images/icons/no_img.jpg"]
+      imageList: ["images/icons/no_img.jpg"],
+      imgFlag: true
     };
   },
-  // watch: {
-  //   async images() {
-  //     if (this.images) {
-  //       this.imageList = await this.images.split("|");
-  //     }
-  //   }
-  // },
-  async mounted() {
+  mounted() {
     if (this.images) {
-      this.imageList = await this.images.split("|");
+      this.imageList = this.images.split("|");
     }
     this.showSlides(this.slideIndex);
   },
   methods: {
+    imgError() {
+      this.imgFlag = false;
+    },
     plusSlides(n) {
       this.showSlides((this.slideIndex += n));
     },
