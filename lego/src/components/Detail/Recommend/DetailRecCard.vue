@@ -1,26 +1,35 @@
 <template>
   <div class="rec_card_main">
     <div>
-      <img src="../../../assets/login_bg.jpg" alt="image" class="rec_img" />
+      <img
+        :src="`${images}`"
+        alt="image"
+        class="rec_img"
+        @error="imgError()"
+        v-if="imgFlag === true"
+      />
+      <img
+        src="../../../assets/icons/no_img.jpg"
+        alt="no_image"
+        class="rec_img"
+        v-else
+      />
     </div>
     <div class="rec_card_info">
-      <div class="rec_card_box">
-        <!-- <div class="rec_card_name">NAME NAME NAMENAME NAME NAME</div> -->
-        <div class="rec_card_name">NAME NAME</div>
-        <div class="rec_card_bricks">By. 이상해씨꼬부기파이리삐까</div>
+      <div class="rec_card_box" @click="goDetail(id)">
+        <div class="rec_card_name">{{ name }}</div>
+        <div class="rec_card_bricks">By. {{ nickname }}</div>
         <div class="rec_card_icon">
           <i
             class="fas fa-heart"
             :style="isLike === 1 ? likeStyle[0] : likeStyle[1]"
           ></i>
-          <!-- <span>{{ likeCount }}</span> -->
-          <span style="margin-right: 15px;">12</span>
+          <span style="margin-right: 15px;">{{ likeCount }}</span>
           <i
             class="fas fa-comment"
             :style="isReview === 1 ? reviewStyle[0] : reviewStyle[1]"
           ></i>
-          <!-- <span>{{ reviewCount }}</span> -->
-          <span>142</span>
+          <span>{{ reviewCount }}</span>
         </div>
       </div>
     </div>
@@ -29,10 +38,43 @@
 
 <script>
 export default {
+  props: {
+    id: {
+      type: Number,
+      default: 0
+    },
+    name: {
+      type: String,
+      default: ""
+    },
+    images: {
+      type: String,
+      default: ""
+    },
+    nickname: {
+      type: String,
+      default: ""
+    },
+    isLike: {
+      type: Number,
+      default: -1
+    },
+    isReview: {
+      type: Number,
+      default: -1
+    },
+    likeCount: {
+      type: Number,
+      default: 0
+    },
+    reviewCount: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
-      isLike: 1,
-      isReview: 1,
+      imgFlag: true,
       likeStyle: [
         {
           color: "red"
@@ -50,6 +92,20 @@ export default {
         }
       ]
     };
+  },
+  methods: {
+    goDetail(value) {
+      const toPath = Number(value);
+      const now = Number(this.$route.params.modelId);
+      if (toPath === now) {
+        return;
+      }
+      this.$router.push("/detail/" + value);
+      window.scrollTo(0, 0);
+    },
+    imgError() {
+      this.imgFlag = false;
+    }
   }
 };
 </script>
@@ -62,6 +118,7 @@ export default {
 .rec_img {
   width: 200px;
   height: 200px;
+  border: 0.5px solid gold;
 }
 .rec_card_info {
   width: 200px;

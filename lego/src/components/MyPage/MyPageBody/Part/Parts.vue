@@ -24,7 +24,7 @@
               multiple
             >
               <template v-slot:item="data">
-                <div style="margin-right: 10px; width: 40px;">
+                <div style="margin-right: 100px; width: 40px;">
                   {{ data.item.name }}
                 </div>
                 <div

@@ -155,5 +155,8 @@ export default {
   },
   deleteReview(params) {
     return http.delete(`${apiUrl}/Review/${params}`, { headers });
+  },
+  getModelsByItemBased(params) {
+    return http.get(`${apiUrl}/ItemBasedRecommend/${params}`, { headers });
   }
 };

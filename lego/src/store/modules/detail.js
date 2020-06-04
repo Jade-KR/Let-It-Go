@@ -17,7 +17,8 @@ const state = {
     parts: []
   },
   reviews: [],
-  myparts: []
+  myparts: [],
+  recommendList: []
 };
 
 const actions = {
@@ -76,6 +77,15 @@ const actions = {
       .then(res => res.data)
       .catch(err => err.response);
     return resp;
+  },
+  async getModelsByItemBased({ commit }, params) {
+    const resp = await api
+      .getModelsByItemBased(params)
+      .then(res => res.data)
+      .catch(err => err.response);
+    if (resp.length === 10) {
+      commit("setRecommendList", resp);
+    }
   }
 };
 
@@ -110,6 +120,9 @@ const mutations = {
   },
   resetMyParts(state) {
     state.myparts = [];
+  },
+  setRecommendList(state, models) {
+    state.recommendList = models;
   }
 };
 
