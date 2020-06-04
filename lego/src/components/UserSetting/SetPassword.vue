@@ -4,61 +4,138 @@
       <div class="photo_box">
         <div class="label_box">
           <div class="photo_frame">
-            <img
-              src="https://images.unsplash.com/photo-1472457974886-0ebcd59440cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-              alt
-              class="photo"
-            />
+            <img :src="profilePic" alt class="photo" />
           </div>
         </div>
         <div class="input_box">
           <div class="photo_desc">
-            <h1 class="user_id">Jade</h1>
+            <h1 class="user_id">{{name}}</h1>
           </div>
         </div>
       </div>
-      <div class="form_box">
-        <div class="label_box">
-          <p class="label_name">현재 비밀번호</p>
+      <ValidationObserver ref="obs" v-slot="{ invalid, validated }">
+        <div class="form_box">
+          <div class="label_box">
+            <p class="label_name">현재 비밀번호</p>
+          </div>
+          <div class="input_box">
+            <ValidationProvider name="비밀번호" rules="required">
+              <div slot-scope="{ errors }" style="margin-bottom: 20px; position:relative">
+                <div class="value_box">
+                  <input type="password" v-model="currentPw" />
+                </div>
+                <br />
+                <span v-if="errors" class="error_box">{{ errors[0] }}</span>
+              </div>
+            </ValidationProvider>
+          </div>
         </div>
-        <div class="input_box">
-          <v-col cols="12" sm="6" md="10" class="text_box">
-            <v-text-field solo dense type="password"></v-text-field>
-          </v-col>
+        <div class="form_box">
+          <div class="label_box">
+            <p class="label_name">새 비밀번호</p>
+          </div>
+          <div class="input_box">
+            <ValidationProvider
+              name="비밀번호"
+              vid="pwd_confirmation"
+              rules="required|password|min:8|max:100"
+            >
+              <div slot-scope="{ errors }" style="margin-bottom: 20px; position:relative">
+                <div class="value_box">
+                  <input type="password" v-model="newPw" />
+                </div>
+                <br />
+                <span v-if="errors" class="error_box">{{ errors[0] }}</span>
+              </div>
+            </ValidationProvider>
+          </div>
         </div>
-      </div>
-      <div class="form_box">
-        <div class="label_box">
-          <p class="label_name">새 비밀번호</p>
+        <div class="form_box">
+          <div class="label_box">
+            <p class="label_name">새 비밀번호 확인</p>
+          </div>
+          <div class="input_box">
+            <ValidationProvider name="비밀번호 확인" rules="required|confirmed:pwd_confirmation">
+              <div
+                slot-scope="{ errors }"
+                style="margin-bottom: 20px; height:20px; position:relative"
+              >
+                <div class="value_box">
+                  <input type="password" v-model="checkPw" />
+                </div>
+                <br />
+                <span v-if="errors" class="error_box">{{ errors[0] }}</span>
+              </div>
+            </ValidationProvider>
+          </div>
         </div>
-        <div class="input_box">
-          <v-col cols="12" sm="6" md="10" class="text_box">
-            <v-text-field solo dense type="password"></v-text-field>
-          </v-col>
+        <div class="form_box">
+          <div class="label_box"></div>
+          <div class="input_box">
+            <button class="submit_btn" @click="onSubmit()" :disabled="invalid || !validated">비밀번호 변경</button>
+          </div>
         </div>
-      </div>
-      <div class="form_box">
-        <div class="label_box">
-          <p class="label_name">새 비밀번호 확인</p>
-        </div>
-        <div class="input_box">
-          <v-col cols="12" sm="6" md="10" class="text_box">
-            <v-text-field solo dense type="password"></v-text-field>
-          </v-col>
-        </div>
-      </div>
-      <div class="form_box">
-        <div class="label_box"></div>
-        <div class="input_box">
-          <button class="submit_btn">비밀번호 변경</button>
-        </div>
-      </div>
+      </ValidationObserver>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import { ValidationProvider, ValidationObserver } from "vee-validate";
+import { mapActions, mapState } from "vuex";
+export default {
+  components: {
+    ValidationProvider,
+    ValidationObserver
+  },
+  data() {
+    return {
+      currentPw: "",
+      newPw: "",
+      checkPw: "",
+      profilePic:
+        localStorage.getItem("image") == "null" || ""
+          ? require("../../../public/images/user.png")
+          : localStorage.getItem("image"),
+      name: localStorage.getItem("username")
+    };
+  },
+  computed: {
+    ...mapState({
+      photoFlag: state => state.user.photoFlag
+    })
+  },
+  watch: {
+    photoFlag() {
+      const tmp =
+        localStorage.getItem("image") == "null" || ""
+          ? require("../../../public/images/user.png")
+          : localStorage.getItem("image");
+      this.profilePic = tmp;
+    }
+  },
+  methods: {
+    ...mapActions("auth", ["changePassword", "SHA256", "logout"]),
+    async onSubmit() {
+      let oldHash = "";
+      let newHash = "";
+      await this.SHA256(String(this.currentPw)).then(res => {
+        oldHash = res;
+      });
+      await this.SHA256(String(this.newPw)).then(res => {
+        newHash = res;
+      });
+      const params = {
+        new_password1: newHash,
+        new_password2: newHash,
+        old_password: oldHash
+      };
+      await this.changePassword(params);
+      alert("다시 로그인해주세요");
+      this.logout();
+    }
+  }
+};
 </script>
 
 <style scoped>
@@ -99,7 +176,13 @@ input,
 textarea {
   width: 80%;
   height: 100%;
-  border: silver 1px solid;
+  width: 97%;
+}
+.value_box {
+  border: 1px solid silver;
+  width: 25vw;
+  height: 40px;
+  background: rgb(248, 248, 248);
 }
 .photo_frame {
   width: 50px;
@@ -110,7 +193,7 @@ textarea {
 .photo {
   width: 100%;
   height: 100%;
-  border-radius: 180%;
+  border-radius: 50%;
 }
 .user_id {
   text-align: left;
@@ -129,11 +212,25 @@ textarea {
 .text_box {
   padding: 0;
 }
-.submit_btn {
+.submit_btn:disabled {
   background: lightblue;
+}
+.submit_btn {
+  background: rgb(96, 187, 218);
   color: white;
   width: 120px;
   height: 30px;
   border-radius: 5%;
+  margin-top: 40px;
+}
+.error_box {
+  width: 100%;
+  position: absolute;
+  color: red;
+  background-color: unset;
+  right: 50%;
+  top: 50px;
+  left: 0px;
+  font-size: 13px;
 }
 </style>

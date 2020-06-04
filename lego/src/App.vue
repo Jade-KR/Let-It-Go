@@ -1,9 +1,12 @@
 <template>
   <v-app id="app">
     <div class="nav">
-      <Nav></Nav>
+      <Nav v-if="!authFlag"></Nav>
     </div>
-    <route-view :key="$route.fullPath" style="padding-top: 90px;" />
+    <route-view
+      :key="$route.fullPath"
+      :style="!authFlag ? viewStyle[0] : viewStyle[1]"
+    />
     <go-top />
   </v-app>
 </template>
@@ -13,6 +16,8 @@ import RouteView from "@/components/RouteView";
 import GoTop from "@/components/GoTop";
 import Nav from "@/components/Nav";
 
+import { mapState } from "vuex";
+
 export default {
   name: "App",
 
@@ -21,10 +26,23 @@ export default {
     GoTop,
     Nav
   },
-
-  data: () => ({
-    //
-  })
+  data() {
+    return {
+      viewStyle: [
+        {
+          paddingTop: "90px"
+        },
+        {
+          paddingTop: "0px"
+        }
+      ]
+    };
+  },
+  computed: {
+    ...mapState({
+      authFlag: state => state.auth.authFlag
+    })
+  }
 };
 </script>
 
