@@ -206,8 +206,8 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
         legoset = get_object_or_404(LegoSet, id=pk)
         serializer_data = serializers.LegoSetSerializer2(legoset).data
         if request.user.is_authenticated:
-            serializer_data["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=pk, customuser_id=request.user.id) else 0
-            serializer_data["is_review"] = 1 if Review.objects.filter(lego_set_id=pk, customuser_id=user_id) else 0
+            serializer_data["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=pk, customuser_id=user_id) else 0
+            serializer_data["is_review"] = 1 if Review.objects.filter(lego_set_id=pk, user_id=user_id) else 0
         else:
             serializer_data["is_like"] = 0
             serializer_data["is_review"] = 0
@@ -488,10 +488,10 @@ class UserLikeLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet)
             legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
             legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user_id) else 0
         if page is not None:
-            return self.get_paginated_response(serializer.data)
+            return self.get_paginated_response(serializer_data)
 
         serializer = serializers.LegoSetSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer_data)
 
 class LegoSetRankingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer2
@@ -546,6 +546,7 @@ class ItemBasedRecommendViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewS
                 while len(queryset) <= recommend_num:
                     if all_legoset_calculated[i].id != pk:
                         queryset.append(all_legoset_calculated[i])
+                    i += 1
                 queryset = [LegoSet.objects.get(id=legoset.id) for legoset in queryset]
                 serializer_data = self.get_serializer(queryset, many=True).data
         else:
@@ -560,6 +561,7 @@ class ItemBasedRecommendViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewS
             while len(queryset) <= recommend_num:
                 if all_legoset_calculated[i].id != pk:
                     queryset.append(all_legoset_calculated[i])
+                i += 1
             queryset = [LegoSet.objects.get(id=legoset.id) for legoset in queryset]
             
             serializer_data = self.get_serializer(queryset, many=True).data
