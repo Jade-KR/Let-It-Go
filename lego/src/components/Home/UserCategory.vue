@@ -90,12 +90,17 @@ export default {
           this.params.push(i);
         }
       }
+      if (this.params.length === 0) {
+        alert("선호 카테고리를 선택해주세요");
+        return;
+      }
       const params = {
         categories: ""
       };
       params["categories"] = this.params.join("|");
       this.setUserCategory(params);
       this.userCategory = false;
+      this.$emit("cateSubmit", true);
     }
   }
 };

@@ -1,22 +1,13 @@
 <template>
   <div>
     <div class="no_content_box">
-      <h2 class="no_content_header">보유하고 있는 부품이 없습니다</h2>
-      <br />
+      <h2 class="no_content_header">보관중인 설계도가 없습니다</h2>
       <div class="no_content_body" v-if="check === true">
-        <div class="no_content_body_left">
-          <p class="no_content_contents">레고레일에서</p>
-          <p class="no_content_contents">분류된 부품들 추가하기</p>
-          <i class="fas fa-angle-double-down no_content_icons"></i>
-          <button class="no_content_btn" @click.prevent="goLegoRail()">Go Lego Rail!</button>
-        </div>
         <div class="no_content_body_right">
-          <p class="no_content_contents">직접</p>
-          <p class="no_content_contents">부품 추가하기</p>
+          <p class="no_content_contents">설계도</p>
+          <p class="no_content_contents">보관하기</p>
           <i class="fas fa-angle-double-down no_content_icons"></i>
-          <AddParts @close="added">
-            <button class="no_content_btn" slot="click">Add Parts!</button>
-          </AddParts>
+          <button class="no_content_btn" @click="goHome()">KEEP Model!</button>
         </div>
       </div>
       <div v-else></div>
@@ -25,11 +16,7 @@
 </template>
 
 <script>
-import AddParts from "./AddParts/AddParts";
 export default {
-  components: {
-    AddParts
-  },
   data() {
     return {
       check: ""
@@ -41,14 +28,8 @@ export default {
       : (this.check = false);
   },
   methods: {
-    goLegoRail() {
-      this.$router.push({
-        name: "UserSetting",
-        params: { title: "레고레일", idx: 2 }
-      });
-    },
-    added() {
-      this.$emit("added");
+    goHome() {
+      this.$router.push("/");
     }
   }
 };
@@ -68,20 +49,12 @@ export default {
   border-bottom: rgb(255, 194, 80) 2px dotted;
 }
 .no_content_body {
-  border-top: solid rgb(255, 209, 124) 1px;
+  /* border-top: solid rgb(255, 209, 124) 1px; */
   width: 90%;
   margin: auto;
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
-}
-.no_content_body_left {
-  border-right: solid rgb(255, 209, 124) 2px;
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  width: 100%;
-  margin-top: 10px;
 }
 .no_content_body_right {
   display: flex;

@@ -24,6 +24,16 @@
       <div id="detail_desc">
         <detail-desc :description="model.description"></detail-desc>
       </div>
+      <div id="detail_recommend">
+        <div id="detail_recommend_header">
+          이런 설계도는 어떠세요?
+        </div>
+        <div style="display: flex;">
+          <div v-for="i in 4" :key="i" class="detail_rec_card">
+            <detail-rec-card></detail-rec-card>
+          </div>
+        </div>
+      </div>
       <div id="detail_btns">
         <div
           class="detail_btn"
@@ -81,6 +91,7 @@ import DetailSide from "../../components/Detail/Body/DetailSide.vue";
 import DetailReviewWrite from "../../components/Detail/Review/DetailReviewWrite.vue";
 import DetailReview from "../../components/Detail/Review/DetailReview.vue";
 import DetailPart from "../../components/Detail/Part/DetailPart.vue";
+import DetailRecCard from "../../components/Detail/Recommend/DetailRecCard.vue";
 import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
@@ -90,7 +101,8 @@ export default {
     DetailSide,
     DetailReviewWrite,
     DetailReview,
-    DetailPart
+    DetailPart,
+    DetailRecCard
   },
   data() {
     return {
@@ -178,6 +190,27 @@ export default {
 #detail_desc {
   border: 3px solid gold;
   padding: 30px;
+}
+#detail_recommend {
+  width: 1000px;
+  margin: auto;
+  margin-top: 20px;
+  border: 3px solid gold;
+  padding: 10px 5px;
+}
+#detail_recommend_header {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  width: 80%;
+  margin: auto;
+  margin-bottom: 20px;
+  border-bottom: 3px dashed gold;
+  padding-bottom: 5px;
+}
+.detail_rec_card {
+  flex: 1;
+  margin: 0 5px;
 }
 #detail_btns {
   width: 1000px;

@@ -8,15 +8,13 @@ const state = {
 
 const mutations = {
   setFlag(state, params) {
-    state.photoFlag = params
+    state.photoFlag = params;
   }
 };
 
 const actions = {
-  async updateImg({
-    commit
-  }, params) {
-    var modelImgUrl = ''
+  async updateImg({ commit }, params) {
+    var modelImgUrl = "";
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
 
@@ -37,32 +35,26 @@ const actions = {
         modelImgUrl = test.data.link;
         params = {
           profile_url: modelImgUrl
-        }
-        await api.changeProfilePic(params)
-        localStorage.setItem("image", modelImgUrl)
-        commit("setFlag", state.photoFlag === false ? true : false)
-      })
-      .catch(error => console.log("error", error));
+        };
+        await api.changeProfilePic(params);
+        localStorage.setItem("image", modelImgUrl);
+        commit("setFlag", state.photoFlag === false ? true : false);
+      });
   },
-  async updateInfo({
-    commit
-  }, params) {
+  async updateInfo({ commit }, params) {
     commit;
-    await api.updateUserInfo(params)
+    await api.updateUserInfo(params);
   },
-  async deleteImg({
-    commit
-  }, params) {
-    const imgUrl = null
+  async deleteImg({ commit }, params) {
+    const imgUrl = null;
     params = {
       profile_url: imgUrl
-    }
-    await api.changeProfilePic(params)
-    localStorage.setItem("image", imgUrl)
-    commit("setFlag", state.photoFlag === false ? true : false)
-
+    };
+    await api.changeProfilePic(params);
+    localStorage.setItem("image", imgUrl);
+    commit("setFlag", state.photoFlag === false ? true : false);
   }
-}
+};
 
 export default {
   namespaced: true,

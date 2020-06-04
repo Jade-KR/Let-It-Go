@@ -46,11 +46,14 @@
         </div>
         <div class="info_bottom" v-if="comment === 'null'">
           레고를 안 산 사람은 있어도, 하나만 산 사람은 없다.
-          <br />레고와 함께라면 놀이가 교육이다.
-          <br />무엇을 생각하는가? 일단 지르고 고민해라.
-          <br />레고는 아름답고, 쌓을만한 가치가 있다.
+          <br />레고와 함께라면 놀이가 교육이다. <br />무엇을 생각하는가? 일단
+          지르고 고민해라. <br />레고는 아름답고, 쌓을만한 가치가 있다.
         </div>
-        <div class="info_bottom" v-else>{{ comment }}</div>
+        <div class="info_bottom" v-else>
+          <div v-for="(comment, i) in comments" :key="`comm-${i}`">
+            {{ comment }}
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -94,7 +97,8 @@ export default {
     return {
       isMe: true,
       followFlag: true,
-      modelCnt: 0
+      modelCnt: 0,
+      comments: []
     };
   },
   async mounted() {
@@ -105,6 +109,7 @@ export default {
     };
     const resp = await this.checkModelsCnt(params);
     this.modelCnt = resp.data.count;
+    this.comments = this.comment.split("\n");
   },
   computed: {
     ...mapState({
@@ -135,6 +140,9 @@ export default {
         }
         this.followFlag = false;
       }
+    },
+    comment() {
+      this.comments = this.comment.split("\n");
     }
   },
   methods: {

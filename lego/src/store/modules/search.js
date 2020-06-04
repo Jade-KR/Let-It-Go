@@ -19,7 +19,10 @@ const state = {
   modelList: [],
   modelPage: "1",
   themes: LegoThemes["rows"],
-  endPoint: false
+  endPoint: false,
+  searchWordByDetail: "",
+  searchCateByDetail: "",
+  searchByDetailFlag: false
 };
 
 const actions = {
@@ -36,6 +39,11 @@ const actions = {
       commit("setModels", models);
     }
     await commit("setModelPage", resp.next);
+  },
+  searchByDetail({ commit }, params) {
+    commit("setSearchWordByDetail", params["word"]);
+    commit("setSearchCateByDetail", params["type"]);
+    commit("setSearchByDetailFlag");
   }
 };
 
@@ -58,6 +66,18 @@ const mutations = {
   },
   resetModelList(state) {
     state.modelList = [];
+  },
+  setSearchWordByDetail(state, word) {
+    state.searchWordByDetail = word;
+  },
+  setSearchCateByDetail(state, cate) {
+    state.searchCateByDetail = cate;
+  },
+  setSearchByDetailFlag(state) {
+    state.searchByDetailFlag = true;
+  },
+  resetSearchByDetailFlag(state) {
+    state.searchByDetailFlag = false;
   }
 };
 

@@ -18,11 +18,25 @@
               <div class="body_img_box">
                 <img class="body_img" :src="item.images" alt />
                 <div class="body_img_hover">
-                  <div class="body_img_info">
-                    <i class="fas fa-heart"></i>
-                    <span>{{item.like_count}}</span>
-                    <i class="fas fa-comment"></i>
-                    <span>{{item.review_count}}</span>
+                  <div class="body_img_desc">
+                    <div class="body_img_name">
+                      <b>{{ item.name }}</b>
+                    </div>
+                    <div class="body_img_nick">By. {{ item.nickname }}</div>
+                    <div class="body_img_info">
+                      <i
+                        class="fas fa-heart"
+                        :style="isLike === 1 ? likeStyle[0] : likeStyle[1]"
+                      ></i>
+                      <span>{{ item.like_count }}</span>
+                      <i
+                        class="fas fa-comment"
+                        :style="
+                          isReview === 1 ? reviewStyle[0] : reviewStyle[1]
+                        "
+                      ></i>
+                      <span>{{ item.review_count }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -31,21 +45,39 @@
         </div>
       </div>
       <div v-else>
-        <NoContentsModel></NoContentsModel>
+        <NoContentsLike></NoContentsLike>
       </div>
     </div>
   </div>
 </template>
 <script>
 import { mapActions, mapState } from "vuex";
-import NoContentsModel from "./NoContentsModel";
+import NoContentsLike from "./NoContentsLike";
 export default {
   components: {
-    NoContentsModel
+    NoContentsLike
   },
   data() {
     return {
-      loading: true
+      loading: true,
+      likeStyle: [
+        {
+          color: "red"
+        },
+        {
+          color: "white"
+        }
+      ],
+      reviewStyle: [
+        {
+          color: "gold"
+        },
+        {
+          color: "white"
+        }
+      ],
+      isLike: 1,
+      isReview: 1
     };
   },
   async mounted() {
@@ -54,7 +86,7 @@ export default {
       append: false,
       id: this.$route.params.user_id
     };
-    await this.getUserModels(params);
+    await this.getLikeModels(params);
     if (this.stopScroll === true) {
       return;
     }
@@ -62,13 +94,13 @@ export default {
   },
   computed: {
     ...mapState({
-      userModels: state => state.mypage.userModelList,
-      page: state => state.mypage.userModelPage,
+      userModels: state => state.mypage.likeModelList,
+      page: state => state.mypage.likeModelPage,
       stopScroll: state => state.mypage.stopScroll
     })
   },
   methods: {
-    ...mapActions("mypage", ["getUserModels"]),
+    ...mapActions("mypage", ["getLikeModels"]),
     async loadMore() {
       this.loading = true;
       const params = {
@@ -76,7 +108,7 @@ export default {
         append: true,
         id: this.$route.params.user_id
       };
-      await this.getUserModels(params);
+      await this.getLikeModels(params);
       if (this.stopScroll === true) {
         return;
       }
@@ -119,7 +151,6 @@ export default {
 .body_img_box > img {
   width: 100%;
   height: 100%;
-  /* border-radius: 180%; */
 }
 .body_img_hover {
   transition: 0.5s ease;
@@ -129,8 +160,21 @@ export default {
   transform: translate(-50%, -90%);
   width: 100%;
   height: 100%;
-  display: flex;
+  display: table;
   align-items: center;
+}
+.body_img_desc {
+  display: table-cell;
+  vertical-align: middle;
+  color: white;
+  text-align: center;
+}
+.body_img_name {
+  font-size: 24px;
+}
+.body_img_nick {
+  font-size: 16px;
+  margin-bottom: 15px;
 }
 .body_img {
   opacity: 1;
@@ -149,10 +193,10 @@ export default {
 .body_img_info {
   width: 100%;
   text-align: center;
-  position: absolute;
   display: flex;
   justify-content: center;
   align-items: baseline;
+  transform: translate(10px, -10px);
 }
 .body_img_info > i {
   font-size: 25px;

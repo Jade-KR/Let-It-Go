@@ -52,7 +52,6 @@
         <v-autocomplete
           v-model="searchWords"
           :items="themes"
-          outlined
           hide-details
           placeholder="검색어를 입력해주세요."
           color="rgb(255, 215, 0)"
@@ -72,6 +71,16 @@
 import { mapState } from "vuex";
 
 export default {
+  props: {
+    searchedWordByDetail: {
+      type: String,
+      default: ""
+    },
+    searchedCateByDetail: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
       searchWords: "",
@@ -94,6 +103,12 @@ export default {
     ...mapState({
       themesRows: state => state.search.themes
     })
+  },
+  watch: {
+    searchedCateByDetail() {
+      this.searchWords = this.searchedWordByDetail;
+      this.selectedCate = this.searchedCateByDetail;
+    }
   },
   created() {
     window.addEventListener("scroll", this.scrollEvent);

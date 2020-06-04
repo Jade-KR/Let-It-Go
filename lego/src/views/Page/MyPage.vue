@@ -24,7 +24,11 @@
           </button>
         </div>
         <div v-else>
-          <button class="menu" @click.prevent="menuState(`설계도`, 0)" :style="btnStyle[0]">
+          <button
+            class="menu"
+            @click.prevent="menuState(`설계도`, 0)"
+            :style="btnStyle[0]"
+          >
             <i class="fas fa-scroll">&nbsp;설계도</i>
           </button>
         </div>
@@ -33,6 +37,7 @@
         <Models v-if="currentState === 0"></Models>
         <Like v-if="currentState === 1"></Like>
         <Parts v-if="currentState === 2"></Parts>
+        <Inventory v-if="currentState === 3"></Inventory>
       </div>
     </div>
   </div>
@@ -40,25 +45,28 @@
 
 <script>
 import MyPageHeader from "@/components/MyPage/MyPageHeader/MyPageHeader.vue";
-import Models from "@/components/MyPage/MyPageBody/Models.vue";
-import Like from "@/components/MyPage/MyPageBody/Like.vue";
-import Parts from "@/components/MyPage/MyPageBody/Parts.vue";
+import Models from "@/components/MyPage/MyPageBody/Model/Models.vue";
+import Like from "@/components/MyPage/MyPageBody/Like/Like.vue";
+import Parts from "@/components/MyPage/MyPageBody/Parts/Parts.vue";
+import Inventory from "@/components/MyPage/MyPageBody/Inventory/Inventory.vue";
 import { mapActions } from "vuex";
-import router from "../router";
+import router from "../../router";
 
 export default {
   components: {
     MyPageHeader,
     Models,
     Like,
-    Parts
+    Parts,
+    Inventory
   },
   data() {
     return {
       menus: [
         { title: "설계도", icon: "fas fa-scroll" },
         { title: "좋아요", icon: "fas fa-heart" },
-        { title: "부품", icon: "fas fa-cubes" }
+        { title: "부품", icon: "fas fa-cubes" },
+        { title: "보관함", icon: "fas fa-archive" }
         // { title: "조합", icon: "fas fa-puzzle-piece" },
         // { title: "등등", icon: "fas fa-scroll" }
       ],
@@ -155,8 +163,11 @@ hr {
 .menu {
   font-size: 17px;
   color: rgb(160, 159, 159);
-  margin-right: 40px;
+  margin-right: 70px;
   width: 6vw;
+}
+#menu3 {
+  margin-right: 0;
 }
 .menu:hover {
   color: black;
