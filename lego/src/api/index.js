@@ -161,7 +161,7 @@ export default {
   getModelsByItemBased(params) {
     return http.get(`${apiUrl}/ItemBasedRecommend/${params}`, { headers });
   },
-  getModelsByUserBased() {
-    return http.get(`${apiUrl}/UserBasedRecommend`, { headers });
+  getModelsByUserBased(params) {
+    return http.get(`${apiUrl}/UserBasedRecommend`, { params, headers });
   }
 };

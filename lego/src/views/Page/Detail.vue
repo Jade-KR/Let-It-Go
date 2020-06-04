@@ -91,7 +91,7 @@
                 <v-pagination
                   :length="pageLength"
                   v-model="page"
-                  color="gold"
+                  color="rgb(255, 215, 0)"
                 ></v-pagination>
               </v-card-text>
             </v-flex>

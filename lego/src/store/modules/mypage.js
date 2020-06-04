@@ -19,8 +19,7 @@ const actions = {
       .setFollow(params)
       .then(res => res.data)
       .catch(err => err);
-    const user_id = location.pathname.slice(8, 9);
-    // console.log(user_id);
+    const user_id = location.pathname.slice(8);
     actions.follower(
       {
         commit
@@ -72,7 +71,6 @@ const actions = {
     const append = params.append;
     const resp = await api.getUserModels(params).then(res => res.data);
     const models = resp.results.map(e => e);
-    // console.log(models)
     if (append) {
       commit("addUserModelList", models);
     } else {
@@ -85,7 +83,6 @@ const actions = {
     const append = params.append;
     const resp = await api.getUserLikeModels(params).then(res => res.data);
     const models = resp.results.map(e => e);
-    // console.log(resp)
     if (append) {
       commit("addLikeModelList", models);
     } else {
