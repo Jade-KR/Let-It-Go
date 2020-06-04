@@ -195,3 +195,137 @@ hsv 방식
 코드 최적화
 
 학습이미지 추출
+
+```python
+lego_images = os.listdir('gdrive/My Drive/Colab Notebooks/input/red3')
+img_bg=cv2.imread('gdrive/My Drive/Colab Notebooks/input/various_bg.jpg')
+
+for index in range(len(lego_images)):
+  img_example=cv2.imread('gdrive/My Drive/Colab Notebooks/input/red3/{}'.format(lego_images[index]))
+
+  example_b, example_g, example_r = cv2.split(img_example)
+  back_b, back_g, back_r = cv2.split(img_bg)
+
+  diff_b=cv2.absdiff(back_b,example_b)
+  diff_g=cv2.absdiff(back_g,example_g)
+  diff_r=cv2.absdiff(back_r,example_r)
+
+  ret_b, img_tresh_b = cv2.threshold(diff_b, 100, 255,cv2.THRESH_BINARY)
+  ret_g, img_tresh_g = cv2.threshold(diff_g, 100, 255,cv2.THRESH_BINARY)
+  ret_r, img_tresh_r = cv2.threshold(diff_r, 100, 255,cv2.THRESH_BINARY)
+
+  img_tresh_all = img_tresh_b + img_tresh_g + img_tresh_r
+
+  diff_gray_blur = cv2.GaussianBlur(img_tresh_all,(5,5),0)
+
+  ret, img_tresh = cv2.threshold(diff_gray_blur, 0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+
+  # let's now draw the contour
+  arr_cnt, a2 = cv2.findContours(img_tresh, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+
+  # let's copy the example image, so we don't paint over it
+  img_with_allcontours=img_example.copy()
+
+  cv2.drawContours(img_with_allcontours, arr_cnt, -1, (0,255,0), 3)
+
+  # !!! It may be possible that various contours are showing at this stage, we'll solve that below.
+  
+  # Just in case, we need to make sure we 'weed out' any contour noise that might generate as images have variations.
+
+  # get the dimensions of the image
+  height, width, channels = img_example.shape
+
+  # shorten the variable names
+  w=width
+  h=height
+
+  validcontours=[]
+  contour_index=-1
+
+  # iterate through each contour found
+  for i in arr_cnt:
+
+      contour_index=contour_index+1
+      ca=cv2.contourArea(i)
+
+      # Calculate W/H Ratio of image
+      x,y,w,h = cv2.boundingRect(i)
+      aspect_ratio = float(w)/h
+
+      # Flag as edge_noise if the object is at a Corner
+      # Contours at the edges of the image are most likely not valid contours
+      edge_noise=False
+      # if contour starts at x=0 then it's on th edge
+      if x==0:
+          edge_noise=True
+      if y==0:
+          edge_noise=True
+      # if the contour x value + its contour width exceeds image width, it is on an edge
+      if (x+w)==width:
+          edge_noise=True
+      if (y+h)==height:
+          edge_noise=True
+              
+      # DISCARD noise with measure by area (1x1 round plate dimensions is 1300)
+      # if by any chance a contour is drawn on one pixel, this catches it.
+      if ca>1300:
+
+          # DISCARD as noise if W/H ratio > 7 to 1 (1x6 plate is 700px to 100px)
+          # the conveyor belt has a join line that sometimes is detected as a contour, this ignores it based on w/h ratio
+          if aspect_ratio<=6:
+              
+              # DISCARD if at the Edge
+              if edge_noise==False:
+                  validcontours.append(contour_index)
+
+  # copy the original picture
+  img_withcontours=img_example.copy()
+                  
+  # call out if more than 1 valid contour is found
+  if len(validcontours)>1:
+      print("There is more than 1 object in the picture")
+  else:
+      if len(validcontours)==1:
+          print("One object detected")
+      else:
+          print("No objects detected")
+          # FYI: code below will most likely error out as it tries to iterate on an array
+      
+  # it might be possible we have more than 1 validcontour, iterating through them here
+  # if there is zero contours, this most likely will error out
+  print('{}번째 레고'.format(index))
+  print(validcontours)
+  print("===================================================================")
+  for k in range(len(validcontours)):
+      cv2.drawContours(img_withcontours, arr_cnt,validcontours[k], (0,255,0), 3)
+
+  img_withrectangle=img_example.copy()
+  add = 40
+  limit = 100
+  object_position = []
+  for j in validcontours:
+      x,y,w,h = cv2.boundingRect(arr_cnt[j])
+      c_x = x + int(w//2)
+      c_y = y + int(h//2)
+      n_w = int(w//2)+add
+      n_h = int(h//2)+add
+      if c_x + n_w < width - limit and c_y + n_h < height - limit and 0 + limit <= c_x - n_w and 0 + limit <= c_y - n_h: 
+        if w > h:
+            cv2.rectangle(img_withrectangle,(c_x-n_w, c_y-n_w),(c_x+n_w, c_y+n_w),(0,255,0),2)
+            object_position.append((c_x-n_w, c_y-n_w, c_x+n_w, c_y+n_w))
+        else:
+            cv2.rectangle(img_withrectangle,(c_x-n_h, c_y-n_h),(c_x+n_h, c_y+n_h),(0,255,0),2)
+            object_position.append((c_x-n_h, c_y-n_h, c_x+n_h, c_y+n_h))
+
+  selected_lego = []
+  max_length = 0
+  for p in object_position:
+      try:
+        if p[3] - p[1] > max_length:
+          selected_lego = p
+      except:
+        continue
+  if selected_lego != []:
+    previewImg('selected_lego',img_example[selected_lego[1]:selected_lego[3], selected_lego[0]:selected_lego[2]])
+```
+
