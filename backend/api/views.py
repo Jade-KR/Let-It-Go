@@ -560,7 +560,6 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         else:
             return Response("로그인이 필요합니다.")
 
-
 @api_view(['POST'])
 def UpdateUserPart(self):
     '''
