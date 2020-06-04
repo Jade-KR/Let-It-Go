@@ -300,6 +300,10 @@ export default {
       window.open("https://www.lego.com/ko-kr");
     },
     async pushLike() {
+      if (!localStorage.getItem("pk")) {
+        alert("로그인 후 사용해 주세요");
+        return;
+      }
       const params = {
         set_id: this.id
       };

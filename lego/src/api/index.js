@@ -104,7 +104,8 @@ export default {
   },
   getUserModels(params) {
     return http.get(`${apiUrl}/UserLegoSet/${params.id}?page_size=12`, {
-      params
+      params,
+      headers
     });
   },
   changeProfilePic(params) {

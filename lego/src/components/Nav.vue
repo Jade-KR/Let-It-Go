@@ -13,19 +13,43 @@
         <button class="button" id="nav_pop" @click="onHomeCate(2)">
           <span data-title="인기도순!">POP!</span>
         </button>
-        <button class="button" id="nav_you" @click="onHomeCate(3)">
+        <button
+          class="button"
+          id="nav_you"
+          @click="onHomeCate(3)"
+          v-if="checkLogin === true"
+        >
           <span data-title="추천순!">YOU!</span>
         </button>
       </div>
       <div class="nav_right">
         <div class="icons_box">
           <i class="fas fa-search right_icon" @click="goSearch"></i>
-          <i class="fas fa-plus right_icon" @click="goWrite"></i>
+          <i
+            class="fas fa-plus right_icon"
+            @click="goWrite"
+            v-if="checkLogin === true"
+          ></i>
           <div class="mypage" @click="goMyPage" v-show="checkLogin">
-            <img :src="profilePic" alt="noImage" class="picture" id="right_img" />
+            <img
+              :src="profilePic"
+              alt="noImage"
+              class="picture"
+              id="right_img"
+            />
           </div>
-          <span class="login_btn logRegi" v-if="checkLogin === false" @click="goLogin()">로그인</span>
-          <span class="register_btn logRegi" v-if="checkLogin === false" @click="goRegister()">회원가입</span>
+          <span
+            class="login_btn logRegi"
+            v-if="checkLogin === false"
+            @click="goLogin()"
+            >로그인</span
+          >
+          <span
+            class="register_btn logRegi"
+            v-if="checkLogin === false"
+            @click="goRegister()"
+            >회원가입</span
+          >
           <!-- <i class="fas fa-user-alt" @click="goMyPage"></i> -->
         </div>
       </div>

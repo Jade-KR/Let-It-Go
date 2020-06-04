@@ -15,6 +15,7 @@ from rest_auth.views import LoginView
 import pandas as pd
 import surprise
 import pickle
+from sklearn.cluster import KMeans
 
 API_key = '08d368a0e1830b9fec088091be154133'
 headers = {
@@ -30,6 +31,8 @@ male_value = 5
 female_value = 0
 # 리뷰를 평가하기 위해 필요한 최소 리뷰 갯수
 min_review = 5
+# user_based knn 알고리즘에서 적용할 클러스터 갯수
+cluster_num = 4
 
 with open("data/knn_item_based.p", "rb") as f:
     global knn_item_based
@@ -44,6 +47,27 @@ with open("data/k_means_item_based.p", "rb") as f:
     theme_legoset = pickle.load(f)
     legoset_theme_root = pickle.load(f)
     all_legoset_calculated = pickle.load(f)
+
+with open('data/k_means_user_based.p', 'rb') as f:
+    global cluster_list, centroid
+    cluster_list = pickle.load(f)
+    centroid = pickle.load(f)
+
+def get_cluster(age, gender):
+    gtoi = female_value if gender else male_value
+
+    index = -1
+    init_distance = 9999999
+    if cluster_num != len(centroid):
+        rerererere4()
+    for i in range(cluster_num):
+        distance_y = centroid[i][0]
+        distance_x = centroid[i][1]
+        distance = (distance_y-age)*(distance_y-age) + (distance_x-gtoi)*(distance_x-gtoi)
+        if init_distance > distance:
+            init_distance = distance
+            index = i
+    return index
 
 def crawling_part_data(pk):
     cur_page = 1
@@ -437,7 +461,7 @@ class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user.id) else 0
                 legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user.id) else 0
             if page is not None:
-                return self.get_paginated_response(serializer.data)
+                return self.get_paginated_response(serializer_data)
             return Response(serializer_data)
         else:
             return Response("로그인이 필요합니다.")
@@ -521,90 +545,38 @@ class ItemBasedRecommendViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewS
 
 class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
-    pagination_class = SmallPagination
 
     def list(self, request):
-        if request.user.review_count >= recommend_review_num:
-            # 리뷰 작성 안한 설계도 가져온다
-            queryset = []
-            user = request.user
-            user_legoset_set = set()
-            for legoset in user.legoset_set.all():
-                user_legoset_set.add(legoset.id)
-            for legoset in LegoSet.objects.filter(review_count__gte=10):
-                if legoset.id not in user_legoset_set:
-                    queryset.append(legoset)
-            predictions = [[knn_user_based.predict(user.id, legoset_id).est, legoset_id] for legoset_id in queryset]
-            predictions.sort(key=lambda x: x[0])
-            recommend = [legoset for score, legoset in predictions[:recommend_num]]
-            serializer_data = serializers.LegoSetSerializer(recommend, many=True).data
+        user = request.user
+        if user.is_authenticated:
+            if request.user.review_count >= recommend_review_num:
+                # 리뷰 작성 안한 설계도 가져온다
+                queryset = []
+                user = request.user
+                user_legoset_set = set()
+                for legoset in user.legoset_set.all():
+                    user_legoset_set.add(legoset.id)
+                for legoset in LegoSet.objects.filter(review_count__gte=10):
+                    if legoset.id not in user_legoset_set:
+                        queryset.append(legoset)
+                predictions = [[knn_user_based.predict(user.id, legoset_id).est, legoset_id] for legoset_id in queryset]
+                predictions.sort(key=lambda x: x[0])
+                recommend = [legoset for score, legoset in predictions[:recommend_num]]
+                serializer_data = serializers.LegoSetSerializer(recommend, many=True).data
 
-            if user.is_authenticated:
-                for legoset in serializer_data:
-                    legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user.id) else 0
-                    legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user.id) else 0
+                if user.is_authenticated:
+                    for legoset in serializer_data:
+                        legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user.id) else 0
+                        legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user.id) else 0
+                else:
+                    for legoset in serializer_data:
+                        legoset["is_like"] = 0
+                        legoset["is_review"] = 0
+                return Response(serializer_data)
             else:
-                for legoset in serializer_data:
-                    legoset["is_like"] = 0
-                    legoset["is_review"] = 0
-            return Response(serializer_data)
+                return Response(cluster_list[get_cluster(user.age, user.gender)])
         else:
-            
-
-
-            return self.get_paginated_response(serializer_data)
-            # 리뷰 작성 안한 레고셋들에 대해서 각 각 예측한 후 최고점 리턴하기
-            
-#         queryset = LegoSet.objects.all().order_by("-like_count")
-        # page = self.paginate_queryset(queryset)
-
-        # if page is not None:
-        #     serializer_data = serializers.LegoSetSerializer(page, many=True).data
-        #     if request.user.is_authenticated:
-        #         user_id = request.user.id
-        #         for legoset in serializer_data:
-        #             legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
-        #         return self.get_paginated_response(serializer_data)
-        #     else:
-        #         for legoset in serializer_data:
-        #             legoset["is_like"] = 0
-        #         return self.get_paginated_response(serializer_data)
-        #     serializer = serializers.LegoSetSerializer(page, many=True)
-        #     return self.get_paginated_response(serializer.data)
-
-        # serializer = serializers.LegoSetSerializer(queryset, many=True)
-        # return Response(serializer.data)
-
-# class FollowingUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-#     serializer_class = serializers.LegoSetSerializer2
-#     pagination_class = SmallPagination
-    
-#     def list(self, request):
-#         if request.user.is_authenticated:
-#             followings = request.user.followings.all()
-#             legosets = 
-#             queryset = UserPart.objects.filter(user=request.user)
-
-#         queryset = LegoSet.objects.all().order_by("-like_count")
-#         page = self.paginate_queryset(queryset)
-
-#         if page is not None:
-#             serializer_data = serializers.LegoSetSerializer(page, many=True).data
-#             if request.user.is_authenticated:
-#                 user_id = request.user.id
-#                 for legoset in serializer_data:
-#                     legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
-#                 return self.get_paginated_response(serializer_data)
-#             else:
-#                 for legoset in serializer_data:
-#                     legoset["is_like"] = 0
-#                 return self.get_paginated_response(serializer_data)
-#             serializer = serializers.LegoSetSerializer(page, many=True)
-#             return self.get_paginated_response(serializer.data)
-
-#         serializer = serializers.LegoSetSerializer(queryset, many=True)
-#         return Response(serializer.data)
-
+            return Response("로그인이 필요합니다.")
 
 @api_view(['POST'])
 def UpdateUserPart(self):
@@ -932,7 +904,7 @@ def rerererere3():
         pickle.dump(knn_user_based, f)
 
 def rerererere4():
-
+    global centroid, cluster_list
     # user_df = pd.DataFrame(CustomUser.objects.filter(review_count__gte=10))
     user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
     male_value = 5
@@ -940,10 +912,11 @@ def rerererere4():
     min_review = 5
 
     # gender 값을 정수로 변환
-    user_df['gender'] = user_df['gender'].apply(lambda x: 5*x)
+    user_df['gender'] = user_df['gender'].apply(lambda x: male_value*x)
 
     # kmeans 학습
-    kmeans = KMeans(n_clusters=5, init='k-means++', max_iter=300, random_state=0)
+    kmeans = KMeans(n_clusters=cluster_num, init='k-means++', max_iter=300, random_state=0)
+    # print(user_df[["age", "gender"]])
     kmeans.fit(user_df[["age", "gender"]])
     # print('cluster 완료')
 
@@ -958,9 +931,9 @@ def rerererere4():
     temp_df["score"] = temp_df["score"].astype(float)
 
     # 클러스터의 인덱스에 클러스터 번호에 해당하는 정보만 가져와서 저장한다.
-    cluster_list = [temp_df[["lego_set_id", "score"]][temp_df["cluster"]==i] for i in range(5)]
+    cluster_list = [temp_df[["lego_set_id", "score"]][temp_df["cluster"]==i] for i in range(cluster_num)]
 
-    for i in range(5):
+    for i in range(cluster_num):
         # cluster 각각을 store로 묶는다
         cluster_list[i] = cluster_list[i].groupby('lego_set_id').agg(['sum', 'count', 'mean'])['score']
         cluster_list[i] = cluster_list[i][cluster_list[i]['count']>=5]
@@ -978,49 +951,6 @@ def rerererere4():
     # centroid -> 저쟁해야하는 값
     centroid = kmeans.cluster_centers_
 
-    with open('k_means_user_based.p', 'wb') as f:
+    with open('data/k_means_user_based.p', 'wb') as f:
         pickle.dump(cluster_list, f)
         pickle.dump(centroid, f)
-
-    with open('k_means_user_based.p', 'rb') as f:
-        cluster_list2 = pickle.load(f)
-        centroid2 = pickle.load(f)
-
-    def get_cluster(centroid, age, gender):
-
-        def gender_to_integer(gender):
-            if gender=='남':
-                return male_value
-            else:
-                return female_value
-
-        gtoi = gender_to_integer(gender)
-
-        index = -1
-        init_distance = 9999999
-
-        for i in range(5):
-            distance_y = centroid[i][0]
-            distance_x = centroid[i][1]
-
-            distance = (distance_y-age)*(distance_y-age) + (distance_x-gtoi)*(distance_x-gtoi)
-            if(init_distance>distance):
-                init_distance = distance
-                index = i
-        return index
-
-    print('----요기')
-    print(user_df)
-    print(get_cluster(centroid, 30, '남'))
-    # 성별과 나이를 받아서 k_means하기 위한 임시값
-    temp_gender = '남'
-    temp_age = 47
-
-    #
-    cluster = get_cluster(centroid, temp_age, temp_gender)
-
-    def get_Top_stores(cluster, n=10):
-        return cluster_list[cluster][:n]
-
-    result = get_Top_stores(cluster)
-    print(result)

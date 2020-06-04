@@ -191,7 +191,6 @@ export default {
     if (this.userId === Number(localStorage.getItem("pk"))) {
       this.isMe = true;
     }
-    console.log(this.userImage);
   },
   methods: {
     ...mapActions("detail", ["reviewUpdate", "reviewDelete"]),
