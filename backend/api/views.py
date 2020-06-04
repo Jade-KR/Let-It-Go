@@ -601,6 +601,7 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             else:
                 queryset = [LegoSet.objects.get(id=x) for x in cluster_list[get_cluster(user.age, user.gender)]]
                 serializer_data = serializers.LegoSetSerializer(queryset, many=True).data
+            serializer_data = serializer_data[:10]
             for legoset in serializer_data:
                 legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user.id) else 0
                 legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user.id) else 0

@@ -69,7 +69,11 @@
       <div id="detail_desc">
         <div v-if="btnFlag == 'reviews'">
           <detail-review-write :id="model.id"></detail-review-write>
-          <div v-for="(review, i) in reviewList" :key="`review-${i}`" id="test">
+          <div
+            v-for="(review, i) in slicedReviews"
+            :key="`review-${i}`"
+            id="test"
+          >
             <detail-review
               :content="review.content"
               :nickname="review.nickname"
@@ -81,6 +85,17 @@
               :setId="model.id"
             ></detail-review>
           </div>
+          <v-layout justify-center>
+            <v-flex xs8>
+              <v-card-text>
+                <v-pagination
+                  :length="pageLength"
+                  v-model="page"
+                  color="gold"
+                ></v-pagination>
+              </v-card-text>
+            </v-flex>
+          </v-layout>
         </div>
         <detail-part
           v-if="btnFlag == 'parts'"
@@ -132,7 +147,10 @@ export default {
       ],
       reviewList: [],
       avgScore: 0,
-      pickedList: []
+      pickedList: [],
+      page: 1,
+      pageLength: 1,
+      slicedReviews: []
     };
   },
   computed: {
@@ -140,7 +158,10 @@ export default {
       model: state => state.detail.model,
       reviews: state => state.detail.reviews,
       recommendList: state => state.detail.recommendList
-    })
+    }),
+    start: function() {
+      return this.page - 1;
+    }
   },
   watch: {
     reviews() {
@@ -167,6 +188,15 @@ export default {
           this.pickedList.push(randomNum);
         }
       }
+    },
+    start() {
+      this.slicedReviews = [];
+      setTimeout(() => {
+        this.slicedReviews = this.reviews.slice(
+          this.start * 10,
+          this.page * 10
+        );
+      }, 300);
     }
   },
   beforeDestroy() {
@@ -187,6 +217,8 @@ export default {
       this.avgScore = 0;
     }
     await this.getModelsByItemBased(modelId);
+    this.pageLength = Math.ceil(this.reviews.length / 10);
+    this.slicedReviews = this.reviews.slice(this.start * 10, this.page * 10);
     this.loading = false;
   },
   methods: {

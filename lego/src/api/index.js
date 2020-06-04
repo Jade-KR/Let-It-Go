@@ -125,7 +125,8 @@ export default {
   },
   getUserLikeModels(params) {
     return http.get(`${apiUrl}/UserLikeLegoSet/${params.id}?page_size=12`, {
-      params
+      params,
+      headers
     });
   },
   getUserPartsAll() {
@@ -159,5 +160,8 @@ export default {
   },
   getModelsByItemBased(params) {
     return http.get(`${apiUrl}/ItemBasedRecommend/${params}`, { headers });
+  },
+  getModelsByUserBased() {
+    return http.get(`${apiUrl}/UserBasedRecommend`, { headers });
   }
 };

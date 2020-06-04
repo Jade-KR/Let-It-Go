@@ -56,8 +56,9 @@ const actions = {
   async getRecommendModels({ commit }, params) {
     const append = params.append;
     // 아래 api 바꾸기
-    const resp = await api.getLikeModels(params).then(res => res.data);
-    const models = resp.results.map(e => e);
+    const resp = await api.getModelsByUserBased(params).then(res => res.data);
+    console.log(resp);
+    const models = resp.map(e => e);
     if (append) {
       commit("addModelList", models);
     } else {

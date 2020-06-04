@@ -86,7 +86,6 @@ export default {
       id: this.$route.params.user_id
     };
     await this.getLikeModels(params);
-    console.log(this.userModels);
     if (this.stopScroll === true) {
       return;
     }

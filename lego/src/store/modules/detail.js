@@ -83,9 +83,7 @@ const actions = {
       .getModelsByItemBased(params)
       .then(res => res.data)
       .catch(err => err.response);
-    if (resp.length === 10) {
-      commit("setRecommendList", resp);
-    }
+    commit("setRecommendList", resp);
   }
 };
 
