@@ -202,6 +202,7 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
+        user_id = request.user.id
         legoset = get_object_or_404(LegoSet, id=pk)
         serializer_data = serializers.LegoSetSerializer2(legoset).data
         if request.user.is_authenticated:
@@ -481,9 +482,12 @@ class UserLikeLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet)
         user = get_object_or_404(get_user_model(), id=pk)
         queryset = user.like_sets.all().order_by('-created_at')
         page = self.paginate_queryset(queryset)
-
+        user_id = request.user.id
+        serializer_data = serializers.LegoSetSerializer(page, many=True).data
+        for legoset in serializer_data:
+            legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
+            legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user_id) else 0
         if page is not None:
-            serializer = serializers.LegoSetSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
         serializer = serializers.LegoSetSerializer(queryset, many=True)
@@ -603,7 +607,8 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                         legoset["is_review"] = 0
                 return Response(serializer_data)
             else:
-                return Response(serializers.LegoSetSerializer(cluster_list[get_cluster(user.age, user.gender)], many=True).data)
+                queryset = [LegoSet.objects.get(id=x) for x in cluster_list[get_cluster(user.age, user.gender)]]
+                return Response(serializers.LegoSetSerializer(queryset, many=True).data)
         else:
             return Response("로그인이 필요합니다.")
 
