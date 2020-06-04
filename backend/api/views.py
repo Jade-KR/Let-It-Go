@@ -223,10 +223,24 @@ class CustomLoginView(LoginView):
         orginal_response.data["user"].update(mydata)
         return orginal_response
 
-class ReviewViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class ReviewViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.ReviewSerializer
     pagination_class = SmallPagination
-    queryset = Review.objects.all()
+    queryset = Review.objects.all().order_by('-id')
+
+    def list(self, request):
+        if request.user.is_staff:
+            queryset = self.get_queryset()
+            page = self.paginate_queryset(queryset)
+
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            return Response("스태프 권한이 필요합니다.")
 
     def create(self, request):
         if request.user.is_authenticated:
@@ -243,12 +257,11 @@ class ReviewViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Des
 
     def update(self, request, pk=None):
         review = get_object_or_404(Review, pk=pk)
-        user_id = request.user.id
+        user_id = request.user_id
         if request.user.is_authenticated and review.user_id == user_id:
             data = request.data
             review.content = data["content"]
             review.score = data["score"]
-            review.save()
             return Response("수정 완료")
         return Response("수정 실패")
 

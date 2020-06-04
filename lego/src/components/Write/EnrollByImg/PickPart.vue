@@ -78,6 +78,7 @@ export default {
     ...mapActions("write", ["pickPartBytImg"]),
     ...mapMutations("write", ["resetPickedPartByImg"]),
     onPickPart(part, idx) {
+      var isHave = false;
       for (let i = 0; i < this.slicedParts.length; ++i) {
         if (i === idx) {
           const target = document.getElementById(`checked-${idx}`);
@@ -85,11 +86,16 @@ export default {
             target.style.display = "block";
           } else {
             target.style.display = "";
+            isHave = true;
           }
           continue;
         }
       }
-      this.pickPartBytImg(part);
+      const params = {
+        part: part,
+        isHave: isHave
+      };
+      this.pickPartBytImg(params);
     }
   }
 };

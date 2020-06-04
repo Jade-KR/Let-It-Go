@@ -146,5 +146,14 @@ export default {
   },
   delelteUser(params) {
     return http.delete(`${apiUrl}/User/${params}`, { headers });
+  },
+  changeUserStaff(params) {
+    return http.put(`${apiUrl}/User/${params}`, {}, { headers });
+  },
+  getReviews(params) {
+    return http.get(`${apiUrl}/Review`, { params, headers });
+  },
+  deleteReview(params) {
+    return http.delete(`${apiUrl}/Review/${params}`, { headers });
   }
 };

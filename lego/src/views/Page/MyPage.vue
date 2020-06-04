@@ -156,7 +156,7 @@ hr {
   display: flex;
   border-style: none;
   height: 50px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   margin-top: 10px;
   justify-content: center;
 }

@@ -151,12 +151,32 @@ const actions = {
     commit("setPickStep", params);
   },
   pickPartBytImg({ commit }, params) {
-    const part = [params[0] + " " + params[1], params[2], params[0]];
-    for (let i = 0; i < state.pickedPartByImg.length; ++i) {
-      if (params[0] === state.pickedPartByImg[i][2]) {
-        return;
+    const part = [
+      params["part"][0] + " " + params["part"][1],
+      params["part"][2],
+      params["part"][0]
+    ];
+    // for (let i = 0; i < state.pickedPartByImg.length; ++i) {
+    //   if (params["part"][0] === state.pickedPartByImg[i][2]) {
+    //     return;
+    //   }
+    // }
+
+    if (params["isHave"] === true) {
+      const temp = [];
+      for (let i = 0; i < state.pickedPartByImg.length; ++i) {
+        if (state.pickedPartByImg[i][2] === params["part"][0]) {
+          continue;
+        }
+        temp.push(state.pickedPartByImg[i]);
       }
+      commit("resetOnlyPickedPartByImg");
+      for (let i = 0; i < temp.length; ++i) {
+        commit("setPickedPartByImg", temp[i]);
+      }
+      return;
     }
+
     commit("setPickedPartByImg", part);
   },
   async onWriteSubmit({ commit }) {
@@ -242,6 +262,9 @@ const mutations = {
   resetPickedPartByImg(state) {
     state.pickedPartByImg = [];
     state.pickedReset = state.pickedReset === false ? true : false;
+  },
+  resetOnlyPickedPartByImg(state) {
+    state.pickedPartByImg = [];
   }
 };
 
