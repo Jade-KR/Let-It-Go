@@ -20,6 +20,7 @@ class Theme(models.Model):
     id = models.IntegerField(primary_key=True)
     parent_id = models.IntegerField(null=True)
     name = models.CharField(max_length=100)
+    root_id = models.IntegerField(null=True)
 
     def __str__(self):
         return self.name
@@ -155,3 +156,8 @@ class UserLikeLegoSet(models.Model):
     class Meta:
         managed = False
         db_table = 'api_legoset_like_users'
+
+class UserSet(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    legoset = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
+    quantity = models.IntegerField()

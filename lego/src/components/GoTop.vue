@@ -7,7 +7,7 @@
     fixed
     bottom
     right
-    color="blue --lighten1"
+    color="rgb(255,215,0)"
     @click="toTop"
   >
     <v-icon>mdi-chevron-up</v-icon>

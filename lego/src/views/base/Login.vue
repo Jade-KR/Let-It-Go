@@ -42,13 +42,20 @@
         계정이 없으신가요?
         <button style="color:gold;" @click="goRegi()">가입하기</button>
       </div>
+      <div>
+        or
+      </div>
+      <div>
+        홈으로
+        <button style="color:gold;" @click="goHome()">돌아가기</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import router from "../../router";
-import { mapActions } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 
 export default {
   data() {
@@ -59,12 +66,20 @@ export default {
       }
     };
   },
+  mounted() {
+    this.setAuthFlag(true);
+  },
+  destroyed() {
+    this.setAuthFlag(false);
+  },
   methods: {
     ...mapActions("auth", ["SHA256", "login"]),
+    ...mapMutations("auth", ["setAuthFlag"]),
     goRegi() {
       router.push("/register");
     },
     goHome() {
+      this.setAuthFlag(false);
       router.push("/");
     },
     async onSubmit() {

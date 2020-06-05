@@ -33,6 +33,9 @@ router.register(r"User", views.UserViewSet, basename="User")
 router.register(r"UserLegoSet", views.UserLegoSetViewSet, basename="UserLegoSet")
 router.register(r"UserLikeLegoSet", views.UserLikeLegoSetViewSet, basename="UserLikeLegoSet")
 router.register(r"LegoSetRanking", views.LegoSetRankingViewSet, basename="LegoSetRanking")
+router.register(r"ItemBasedRecommend", views.ItemBasedRecommendViewSet, basename="ItemBasedRecommend")
+router.register(r"UserBasedRecommend", views.UserBasedRecommendViewSet, basename="UserBasedRecommend")
+router.register(r"UserSet", views.UserSetViewSet, basename="UserSet")
 
 urlpatterns = [
     *router.urls,
@@ -56,5 +59,12 @@ urlpatterns = [
     path('like_set', views.like_set, name='like_set'),
     path('follow', views.follow, name='follow'),
     path('crawll/<int:idx>', views.crawll, name='crawll'),
+    path('user_parts_registered_by_IoT', views.user_parts_registered_by_IoT, name="user_parts_registered_by_IoT"),
+    path('reset_user_based_knn', views.reset_user_based_knn, name="reset_user_based_knn"),
+    path('reset_item_based_knn', views.reset_item_based_knn, name="reset_item_based_knn"),
+    path('reset_user_based_k_means', views.reset_user_based_k_means, name="reset_user_based_k_means"),
+    path('reset_item_based_k_means', views.reset_item_based_k_means, name="reset_item_based_k_means"),
+    path('update_user_set_inventory', views.update_user_set_inventory, name="update_user_set_inventory"),
+
     # path('create_review', views.create_review, name='create_review')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
