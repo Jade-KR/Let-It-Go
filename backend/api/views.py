@@ -228,7 +228,6 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
             serializer_data["set_quantity"] = 0
         reviews = serializers.ReviewSerializer(legoset.review_set.all().order_by("-created_at"), many=True).data
         serializer_data["reviews"] = reviews
-        print(serializer_data)
         return Response(serializer_data)
 
     def destroy(self, request, pk=None):
@@ -445,13 +444,16 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
         emailaddress = get_object_or_404(EmailAddress, user_id=pk)
         if request.user.is_authenticated and request.user == user:
             data = request.data
-            user.nickname = data["nickname"]
-            user.comment = data["comment"]
-            user.email = data["email"]
-            emailaddress.email = data["email"]
-            user.save()
-            emailaddress.save()
-            return Response("수정 완료")
+            if EmailAddress.objects.filter(email=data["email"]) and EmailAddress.objects.get(email=data["email"]).user_id != user.id:
+                return Response("이미 존재하는 이메일입니다.")
+            else:
+                user.nickname = data["nickname"]
+                user.comment = data["comment"]
+                user.email = data["email"]
+                emailaddress.email = data["email"]
+                user.save()
+                emailaddress.save()
+                return Response("수정 완료")
         elif request.user.is_staff and request.user != user:
             if user.is_staff:
                 user.is_staff = False
