@@ -107,7 +107,7 @@ import { mapActions, mapState } from "vuex";
 
 export default {
   props: {
-    partId: Number,
+    partId: String,
     colorId: Number,
     quantity: Number,
     idx: Number

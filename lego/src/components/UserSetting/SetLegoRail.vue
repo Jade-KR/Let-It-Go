@@ -53,43 +53,16 @@ export default {
   },
   data() {
     return {
-      mockList: [
-        { part_id: 10057, color_id: 2, quantity: 3 },
-        { part_id: 10058, color_id: 1, quantity: 3 },
-        { part_id: 10057, color_id: 2, quantity: 3 },
-        { part_id: 10058, color_id: 1, quantity: 3 },
-        { part_id: 10057, color_id: 3, quantity: 3 },
-        { part_id: 10058, color_id: 2, quantity: 3 },
-        { part_id: 10057, color_id: 4, quantity: 3 },
-        { part_id: 10058, color_id: 5, quantity: 3 },
-        { part_id: 10057, color_id: 6, quantity: 3 },
-        { part_id: 10058, color_id: 7, quantity: 3 },
-        { part_id: 10057, color_id: 8, quantity: 3 },
-        { part_id: 10058, color_id: 9, quantity: 3 },
-        { part_id: 10057, color_id: 10, quantity: 3 },
-        { part_id: 10058, color_id: 11, quantity: 3 },
-        { part_id: 10057, color_id: 12, quantity: 3 },
-        { part_id: 10058, color_id: 13, quantity: 3 },
-        { part_id: 10057, color_id: 14, quantity: 3 },
-        { part_id: 10058, color_id: 15, quantity: 3 },
-        { part_id: 10050, color_id: 4, quantity: 3 },
-        { part_id: 10050, color_id: 5, quantity: 3 },
-        { part_id: 10050, color_id: 6, quantity: 3 },
-        { part_id: 10050, color_id: 7, quantity: 3 },
-        { part_id: 10050, color_id: 0, quantity: 3 },
-        { part_id: 10050, color_id: 1, quantity: 3 },
-        { part_id: 10050, color_id: 2, quantity: 3 },
-        { part_id: 10050, color_id: 3, quantity: 3 }
-      ],
       check: LegoSort,
       realList: [],
       dialog: false,
       noImage: require("../../assets/icons/no_img.jpg")
     };
   },
-  mounted() {
+  async mounted() {
     let realList = [];
-    this.mockList.forEach(item => {
+    let partsInLegoRail = await this.getPartsFromLegoRail();
+    partsInLegoRail.forEach(item => {
       let tmp = {
         part_id: item.part_id,
         color_id: item.color_id,
@@ -103,6 +76,7 @@ export default {
   },
   methods: {
     ...mapActions("Parts", ["updateParts"]),
+    ...mapActions("user", ["getPartsFromLegoRail"]),
     change(info) {
       this.realList.forEach((item, i) => {
         if (
