@@ -84,6 +84,22 @@ const actions = {
       .then(res => res.data)
       .catch(err => err.response);
     commit("setRecommendList", resp);
+  },
+  async addInven({ commit }, params) {
+    commit;
+    const resp = await api
+      .setModelToInventory(params)
+      .then(res => res.data)
+      .catch(err => err.response);
+    return resp;
+  },
+  async subInven({ commit }, params) {
+    commit;
+    const resp = await api
+      .setModelToInventory(params)
+      .then(res => res.data)
+      .catch(err => err.response);
+    return resp;
   }
 };
 

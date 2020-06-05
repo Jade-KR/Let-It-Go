@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, UserPart2, SetPart, UserLikeLegoSet
+from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, UserPart2, SetPart, UserLikeLegoSet, UserSet
 from api import models, serializers
 from allauth.account.models import EmailAddress
 from rest_framework import viewsets, mixins
@@ -29,10 +29,20 @@ recommend_review_num = 10
 # 성별정보 수치화
 male_value = 5
 female_value = 0
-# 리뷰를 평가하기 위해 필요한 최소 리뷰 갯수
+# 리뷰를 평가하기 위해 필요한 최소 리뷰 갯수(의미있는 리뷰 갯수)
 min_review = 5
 # user_based knn 알고리즘에서 적용할 클러스터 갯수
 cluster_num = 4
+# 남성에 해당하는 값
+male_value = 5
+# 여성에 해당하는 값
+female_value = 0
+# user category에 존재시 값
+exist_value = 10
+# user category에 존재 안할 시 값
+nonexist_value = 0
+# 존재하는 user category
+category_list = ["건축물", "장난감", "공상과학", "레이싱", "클래식", "창작품", "게임", "히어로", "공룡"]
 
 with open("data/knn_item_based.p", "rb") as f:
     global knn_item_based
@@ -53,17 +63,20 @@ with open('data/k_means_user_based.p', 'rb') as f:
     cluster_list = pickle.load(f)
     centroid = pickle.load(f)
 
-def get_cluster(age, gender):
+def get_cluster(age, gender, categories):
+    if not categories:
+        categories = ''
     gtoi = female_value if gender else male_value
+    category_set = set(categories.split('|'))
 
     index = -1
     init_distance = 9999999
     if cluster_num != len(centroid):
         reset_user_based_k_means()
     for i in range(cluster_num):
-        distance_y = centroid[i][0]
-        distance_x = centroid[i][1]
-        distance = (distance_y-age)*(distance_y-age) + (distance_x-gtoi)*(distance_x-gtoi)
+        distance = (centroid[i][0] - age)**2 + (centroid[i][1] - gtoi)**2
+        for j in range(2, 11):
+            distance += (centroid[i][j] - (exist_value if category_list[j-2] in category_set else nonexist_value))**2
         if init_distance > distance:
             init_distance = distance
             index = i
@@ -139,7 +152,6 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
     theme
     
     '''
-    # queryset = LegoSet.objects.all()
     serializer_class = serializers.LegoSetSerializer2
     pagination_class = SmallPagination
 
@@ -244,7 +256,7 @@ class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
         else:
-            return Response("로그인이 필요합니다.")
+            return Response("비 인증 유저")
 
 class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.SetPartSerializer
@@ -447,7 +459,6 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
 def UpdateUserProfile(self):
     user = self.user
     if user.is_authenticated:
-        print(self.data["profile_url"])
         user.image = self.data["profile_url"]
         user.save()
         return Response("프로필 수정 완료")
@@ -471,7 +482,7 @@ class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 return self.get_paginated_response(serializer_data)
             return Response(serializer_data)
         else:
-            return Response("로그인이 필요합니다.")
+            return Response("비 인증 유저")
 
 class UserLikeLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
@@ -604,7 +615,7 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 else:
                     serializer_data = serializers.LegoSetSerializer(queryset, many=True).data
             else:
-                queryset = [LegoSet.objects.get(id=legoset_id) for legoset_id in cluster_list[get_cluster(user.age, user.gender)]]
+                queryset = [LegoSet.objects.get(id=legoset_id) for legoset_id in cluster_list[get_cluster(user.age, user.gender, user.categories)]]
                 page = self.paginate_queryset(queryset)
                 if page is not None:
                     serializer_data = serializers.LegoSetSerializer(page, many=True).data
@@ -613,35 +624,9 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             for legoset in serializer_data:
                 legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user.id) else 0
                 legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user.id) else 0
-            
-            
-            
-            
-        # page = self.paginate_queryset(queryset)
-        # user = request.user
-
-        # if page is not None:
-        #     serializer_data = serializers.LegoSetSerializer(page, many=True).data
-        #     if request.user.is_authenticated:
-        #         user_id = request.user.id
-        #         for legoset in serializer_data:
-        #             legoset["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=legoset["id"], customuser_id=user_id) else 0
-        #             legoset["is_review"] = 1 if Review.objects.filter(lego_set_id=legoset["id"], user_id=user.id) else 0
-        #         return self.get_paginated_response(serializer_data)
-        #     else:
-        #         for legoset in serializer_data:
-        #             legoset["is_like"] = 0
-        #             legoset["is_review"] = 0
-        #         return self.get_paginated_response(serializer_data)
-        #     serializer = serializers.LegoSetSerializer(page, many=True)
-        #     return self.get_paginated_response(serializer.data)
-
-        # serializer = serializers.LegoSetSerializer(queryset, many=True)
-        # return Response(serializer.data)
-            
             return self.get_paginated_response(serializer_data)
         else:
-            return Response("로그인이 필요합니다.")
+            return Response("비 인증 유저")
 
 @api_view(['POST'])
 def UpdateUserPart(self):
@@ -672,48 +657,52 @@ def UpdateUserPart(self):
     # user = CustomUser.objects.get(id=self.user)
     if user.is_authenticated:
         update_d = self.data.get("UpdateList")
-        # 유저 보유 데이터 정리하기
-        inventory_dict = dict()
-        for userpart in UserPart.objects.filter(user=user):
-            if not inventory_dict.get(userpart.part_id):
-                inventory_dict[userpart.part_id] = dict()
+        if update_d:
+            # 유저 보유 데이터 정리하기
+            inventory_dict = dict()
+            for userpart in UserPart.objects.filter(user=user):
+                if not inventory_dict.get(userpart.part_id):
+                    inventory_dict[userpart.part_id] = dict()
 
-            inventory_dict[userpart.part_id][userpart.color_id] = userpart
+                inventory_dict[userpart.part_id][userpart.color_id] = userpart
 
-        # 갱신리스트
-        a = []
-        # 삭제리스트
-        b = []
-        # 생성리스트
-        c = []
-        # 사용자 요청 데이터들에 대해서 반복문을 돌리며 갱신 혹은 삭제할 것들 확인한다.
-        for part in update_d:
-            # 유저가 보유하고 있는 아이템이라면
-            if inventory_dict.get(part["part_id"]) and inventory_dict[part["part_id"]].get(part["color_id"]):
-                tmp = inventory_dict[part["part_id"]][part["color_id"]]
-                # 증감 후에도 0보다 크다면
-                if tmp.quantity + part["qte"] > 0:
-                    # 업데이트리스트에 추가
-                    tmp.quantity += part["qte"]
-                    a.append(tmp)
-                # 0보다 작거나 같으면
+            # 갱신리스트
+            u = []
+            # 삭제리스트
+            d = []
+            # 생성리스트
+            c = []
+            # 사용자 요청 데이터들에 대해서 반복문을 돌리며 갱신 혹은 삭제할 것들 확인한다.
+            for part in update_d:
+                # 유저가 보유하고 있는 아이템이라면
+                if inventory_dict.get(part["part_id"]) and inventory_dict[part["part_id"]].get(part["color_id"]):
+                    tmp = inventory_dict[part["part_id"]][part["color_id"]]
+                    # 증감 후에도 0보다 크다면
+                    if tmp.quantity + part["qte"] > 0:
+                        # 업데이트리스트에 추가
+                        tmp.quantity += part["qte"]
+                        u.append(tmp)
+                    # 0보다 작거나 같으면
+                    else:
+                        # 삭제리스트에 추가
+                        d.append(tmp)
+                # 유저가 보유하고 있지 않은 아이템이라면
                 else:
-                    # 삭제리스트에 추가
-                    b.append(tmp)
-            # 유저가 보유하고 있지 않은 아이템이라면
-            else:
-                if part["qte"] > 0:
-                    c.append(UserPart(user=user, part_id=part["part_id"], color_id=part["color_id"], quantity=part["qte"]))
-        # 갱신해야하는 값들을 갱신한다
-        UserPart.objects.bulk_update(a, ["quantity"])
-        # 생성해야하는 값들을 생성한다
-        UserPart.objects.bulk_create(c)
-        # 삭제해야할 값들을 삭제한다.
-        for userpart in b:
-            userpart.delete()
-
-    return Response("수정 완료")
-
+                    if part["qte"] > 0:
+                        c.append(UserPart(user=user, part_id=part["part_id"], color_id=part["color_id"], quantity=part["qte"]))
+            
+            with transaction.atomic():
+                # 갱신해야하는 값들을 갱신한다
+                UserPart.objects.bulk_update(u, ["quantity"])
+                # 생성해야하는 값들을 생성한다
+                UserPart.objects.bulk_create(c)
+                # 삭제해야할 값들을 삭제한다.
+                for userpart in d:
+                    userpart.delete()
+                return Response("수정 완료")
+            return Response("수정 실패 - 오류")
+        return Response("UpdateList: [{part_id, color_id, qte}]를 입력하세요")
+    return Response("비 인증 유저")
 
 @api_view(['POST'])
 def UpdateUserPart2(self):
@@ -721,7 +710,6 @@ def UpdateUserPart2(self):
     if user.is_authenticated:
         data = self.data
         UserPart2.objects.create(user=user, part_id=data["part_id"], color_id=data["color_id"])
-
     return Response("수정 완료")
 
 @api_view(['POST'])
@@ -744,7 +732,6 @@ def CreateLegoSet(self):
     }
     '''
     user = self.user
-    # user = CustomUser.objects.get(id=self.user)
     if user.is_authenticated:
         data = self.data
         cur_id = LegoSet.objects.all().order_by('-id')[0].id + 1
@@ -771,6 +758,7 @@ def CreateLegoSet(self):
         SetPart.objects.bulk_create(create_part_list)
 
     return Response("등록 완료")
+
 def go_to_myhome(request):
     return redirect("http://127.0.0.1:8000/api/swagger/")
 
@@ -818,7 +806,6 @@ def follow(self):
     else:
         return Response("비 인증 유저")
 
-
 @api_view(['GET'])
 def crawll(self, idx):
     for i in range(idx, idx + 50):
@@ -828,7 +815,6 @@ def crawll(self, idx):
                 crawling_part_data(i)
             except:
                 print('fail on ' + str(i))
-
     
 @api_view(['GET'])
 def user_parts_registered_by_IoT(self):
@@ -844,10 +830,8 @@ def user_parts_registered_by_IoT(self):
                     user_part_dict[part.part_id][part.color_id] = {"part_id": part.part_id, "color_id": part.color_id, "quantity": 1}
             else:
                 user_part_dict[part.part_id] = {part.color_id: {"part_id": part.part_id, "color_id": part.color_id, "quantity": 1}}
-        # print(user_part_dict)
         res = []
         for part_id, color_dict in user_part_dict.items():
-            # print(color_dict)
             for color_id, part in color_dict.items():
                 res.append(part)
         return Response(res)
@@ -874,7 +858,6 @@ def reset_item_based_knn(self):
     ten_review_df = ten_review_df[ten_review_df['lego_set_id'].isin(ten_lego_set)]
 
     ratings_df = ten_review_df[['user_id', 'lego_set_id', 'score']]
-    # print(ratings_df)
 
     # reader => 범위 설정  & 학습 부분
     reader = surprise.Reader(rating_scale=(1, 5))
@@ -956,7 +939,6 @@ def reset_user_based_knn(self):
     ten_review_df = ten_review_df[ten_review_df['lego_set_id'].isin(ten_lego_set)]
 
     ratings_df = ten_review_df[['user_id', 'lego_set_id', 'score']]
-    # print(ratings_df)
 
     # reader => 범위 설정  & 학습 부분
     reader = surprise.Reader(rating_scale=(1, 5))
@@ -969,26 +951,33 @@ def reset_user_based_knn(self):
     knn_user_based.fit(trainset)
     with open("data/knn_user_based.p", "wb") as f:
         pickle.dump(knn_user_based, f)
-        
     return Response("reset user based knn completed")
 
 @api_view(['GET'])
 def reset_user_based_k_means(self):
     global centroid, cluster_list
-    # user_df = pd.DataFrame(CustomUser.objects.filter(review_count__gte=10))
-    user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
-    male_value = 5
-    female_value = 0
-    min_review = 5
+    user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender", "categories"))
+
+    # None값을 ""로 변경
+    user_df["categories"] = user_df["categories"].fillna("")
+    
+    # 각 태그가 존재하면 exist_value, 없으면 nonexist_value
+    user_df["건축물"] = user_df["categories"].apply(lambda x: exist_value if "건축물" in x else nonexist_value)
+    user_df["장난감"] = user_df["categories"].apply(lambda x: exist_value if "장난감" in x else nonexist_value)
+    user_df["공상과학"] = user_df["categories"].apply(lambda x: exist_value if "공상과학" in x else nonexist_value)
+    user_df["레이싱"] = user_df["categories"].apply(lambda x: exist_value if "레이싱" in x else nonexist_value)
+    user_df["클래식"] = user_df["categories"].apply(lambda x: exist_value if "클래식" in x else nonexist_value)
+    user_df["창작품"] = user_df["categories"].apply(lambda x: exist_value if "창작품" in x else nonexist_value)
+    user_df["게임"] = user_df["categories"].apply(lambda x: exist_value if "게임" in x else nonexist_value)
+    user_df["히어로"] = user_df["categories"].apply(lambda x: exist_value if "히어로" in x else nonexist_value)
+    user_df["공룡"] = user_df["categories"].apply(lambda x: exist_value if "공룡" in x else nonexist_value)
 
     # gender 값을 정수로 변환
     user_df['gender'] = user_df['gender'].apply(lambda x: male_value*x)
 
     # kmeans 학습
     kmeans = KMeans(n_clusters=cluster_num, init='k-means++', max_iter=300, random_state=0)
-    # print(user_df[["age", "gender"]])
-    kmeans.fit(user_df[["age", "gender"]])
-    # print('cluster 완료')
+    kmeans.fit(user_df[["age", "gender", "건축물", "장난감", "공상과학", "레이싱", "클래식", "창작품", "게임", "히어로", "공룡"]])
 
     # kmeans.labels_ : 몇번 클러스터인지 라벨링 붙이고 분리했었던 id col을 붙임
     user_df['cluster'] = kmeans.labels_
@@ -1028,14 +1017,103 @@ def reset_user_based_k_means(self):
 
 @api_view(['POST'])
 def update_user_set_inventory(self):
+    '''
+    입력
+    add_set: legoset_id 입력 시 부품 인벤토리 확인 후 부품 제거하고 설계도 인벤토리에 추가
+    sub_set: legoset_id 입력 시 설계도 인벤토리 확인 후 설계도 1개 감소하고 부품 인벤토리에 추가
+    '''
     user = self.user
     if user.is_authenticated:
-        # if self.data.get("add_set"):
-        #     # 세트 추가하기
-        # if self.data.get("sub_set"):
-        #     # 세트 삭제하기
+        # 유저가 보유한 재고 딕셔너리 만들기
+        inventory_dict = dict()
+        for userpart in UserPart.objects.filter(user=user):
+            if not inventory_dict.get(userpart.part_id):
+                inventory_dict[userpart.part_id] = dict()
+            inventory_dict[userpart.part_id][userpart.color_id] = userpart
+        
+        # 생성리스트
+        c = []
+        # 갱신리스트
+        u = []
+        # 삭제리스트
+        d = []
 
+        if self.data.get("add_set"):
+            legoset_id = self.data.get("add_set")
+            # UserSet.objects.create(user=user, legoset_id=legoset_id, quantity=1)
+            # 부품 모두 보유하고 있는지 확인하기
+            # 재고 이동 가능 여부 확인하기
+            chk = True
+            # 유저가 보유한 재고와 설계도 부품 비교하기
+            for setpart in get_object_or_404(LegoSet, pk=legoset_id).setpart_set.all():
+                # 유저가 보유하고 있는 아이템이라면
+                if inventory_dict.get(setpart.part_id) and inventory_dict[setpart.part_id].get(setpart.color_id):
+                    tmp = inventory_dict[setpart.part_id][setpart.color_id]
+                    # 감소 후에도 0보다 크다면
+                    if tmp.quantity - setpart.quantity > 0:
+                        # 업데이트리스트에 추가
+                        tmp.quantity -= setpart.quantity
+                        u.append(tmp)
+                    # 0이면
+                    elif tmp.quantity - setpart.quantity == 0:
+                        # 삭제리스트에 추가
+                        d.append(tmp)
+                    else:
+                        # 재고 처리 불가능한 상태이므로 리턴하기
+                        chk = False
+                        break
+                else:
+                    chk = False
+                    break
 
-        return Response("update_user_set_inventory 갱신 완료")
+            # 재고 처리 가능하다면
+            if chk:                
+                with transaction.atomic():
+                    # 갱신해야할 값들 갱신
+                    UserPart.objects.bulk_update(u, ["quantity"])
+                    # 삭제해야할 값들 삭제
+                    for userpart in d:
+                        userpart.delete()
+                    # 인벤토리에 설계도 추가
+                    userset_q = user.userset_set.filter(legoset_id=legoset_id)
+                    if userset_q:
+                        userset = userset_q[0]
+                        userset.quantity += 1
+                        userset.save()
+                    else:
+                        UserSet.objects.create(user=user, legoset_id=legoset_id, quantity=1)
+                    return Response("갱신 완료")
+                return Response("갱신 실패 - 처리 오류")
+            return Response("갱신 실패 - 재고 부족")
+        if self.data.get("sub_set"):
+            legoset_id = self.data.get("sub_set")
+            userset_q = user.userset_set.filter(legoset_id=legoset_id)
+            if userset_q:
+                userset = userset_q[0]
+                with transaction.atomic():
+                    userset.quantity -= 1
+                    if userset.quantity:
+                        userset.save()
+                    else:
+                        userset.delete()
+                    for setpart in get_object_or_404(LegoSet, id=legoset_id).setpart_set.all():
+                        # 유저가 보유하고 있는 아이템이라면
+                        if inventory_dict.get(setpart.part_id) and inventory_dict[setpart.part_id].get(setpart.color_id):
+                            # 갱신리스트에 추가
+                            tmp = inventory_dict[setpart.part_id][setpart.color_id]
+                            tmp.quantity += setpart.quantity
+                            u.append(tmp)
+                        # 보유하고 있지 않은 아이템이라면
+                        else:
+                            # 생성리스트에 추가
+                            c.append(UserPart(user=user, part_id=setpart.part_id, color_id=setpart.color_id, quantity=setpart.quantity))
+                    # 생성할 것들 생성
+                    UserPart.objects.bulk_create(c)
+                    # 갱신할 것들 갱신
+                    UserPart.objects.bulk_update(u, ["quantity"])
+                    return Response("갱신 완료")
+                return Response("갱신 실패 - 처리 오류")
+            return Response("갱신 실패 - 재고 부족")
+        return Response("add_set 혹은 sub_set를 입력하세요")
     else:
-        return Response("로그인이 필요합니다.")
+        return Response("비 인증 유저")

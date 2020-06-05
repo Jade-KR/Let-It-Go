@@ -156,9 +156,13 @@ export default {
     });
   },
   changeUserStaff(params) {
-    return http.put(`${apiUrl}/User/${params}`, {}, {
-      headers
-    });
+    return http.put(
+      `${apiUrl}/User/${params}`,
+      {},
+      {
+        headers
+      }
+    );
   },
   getReviews(params) {
     return http.get(`${apiUrl}/Review`, {
@@ -177,14 +181,16 @@ export default {
     });
   },
   getModelsByUserBased(params) {
-    return http.get(`${apiUrl}/UserBasedRecommend`, {
-      params,
+    return http.get(`${apiUrl}/UserBasedRecommend`, { params, headers });
+  },
+  setModelToInventory(params) {
+    return http.post(`${apiUrl}/update_user_set_inventory`, params, {
       headers
     });
   },
   getPartsFromLegoRail() {
     return http.get(`${apiUrl}/user_parts_registered_by_IoT`, {
       headers
-    })
+    });
   }
 };
