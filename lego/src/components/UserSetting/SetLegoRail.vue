@@ -5,7 +5,11 @@
       <i class="fas fa-share-square"></i>&nbsp; 내 부품에 추가
     </button>
     <div class="classified_list">
-      <div v-for="(item, idx) in realList" :key="`item${idx}`" class="delete_item_box">
+      <div
+        v-for="(item, idx) in realList"
+        :key="`item${idx}`"
+        class="delete_item_box"
+      >
         <div class="delete_box">
           <img
             src="../../assets/icons/delete.png"
@@ -30,10 +34,13 @@
               />
             </div>
             <div class="part_info">
-              <p class="lego_id">{{item.part_id}}</p>
+              <p class="lego_id">{{ item.part_id }}</p>
               <div class="lego_color_cnt">
-                <div class="lego_color" :style="`background-color: #${item.rgb}`"></div>
-                <span class="lego_cnt">* {{item.quantity}}</span>
+                <div
+                  class="lego_color"
+                  :style="`background-color: #${item.rgb}`"
+                ></div>
+                <span class="lego_cnt">* {{ item.quantity }}</span>
               </div>
             </div>
           </div>

@@ -59,23 +59,32 @@
           v-if="part[1] === ''"
         />
         <img v-else :src="part[1]" :alt="part[0]" class="lego_part" />
-        <div class="part_info">
-          <div class="part_id">
-            <div style="margin-bottom: 5px;">
-              {{ part[0] }}
-            </div>
-            <div style="display: flex;">
-              <div
-                :style="
-                  `width: 50px; height: 20px; background-color: #${part[2]}; border-radius: 20px; margin-right: 10px;`
-                "
-              ></div>
-              <div style="font-size: 18px; transform: translateY(-3px);">
-                <b>{{ part[3] }}</b>
+        <modify-part
+          :partId="part[0]"
+          :colorId="part[5]"
+          :quantity="part[3]"
+          :rgb="part[2]"
+          :idx="i"
+          @update="changed()"
+        >
+          <div class="part_info" slot="click">
+            <div class="part_id">
+              <div style="margin-bottom: 5px;">
+                {{ part[0] }}
+              </div>
+              <div style="display: flex;">
+                <div
+                  :style="
+                    `width: 50px; height: 20px; background-color: #${part[2]}; border-radius: 20px; margin-right: 10px;`
+                  "
+                ></div>
+                <div style="font-size: 18px; transform: translateY(-3px);">
+                  <b>{{ part[3] }}</b>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </modify-part>
       </div>
     </div>
     <v-layout justify-center>
@@ -110,6 +119,7 @@
 import AddAllParts from "./ConfirmModal/AddAllParts.vue";
 import AddNeedParts from "./ConfirmModal/AddNeedParts.vue";
 import DeleteAllParts from "./ConfirmModal/DeleteAllParts.vue";
+import ModifyPart from "./ConfirmModal/ModifyPart.vue";
 import LegoSort from "../../../../jsonData/LegoSort.json";
 import { mapState, mapActions } from "vuex";
 
@@ -117,7 +127,8 @@ export default {
   components: {
     AddAllParts,
     AddNeedParts,
-    DeleteAllParts
+    DeleteAllParts,
+    ModifyPart
   },
   props: {
     parts: {
@@ -215,6 +226,7 @@ export default {
       }
     },
     myparts() {
+      this.needParts = [];
       if (this.myparts.length === 0) {
         this.needParts = this.allParts;
         return;
@@ -459,6 +471,10 @@ export default {
       for (let i in partsObj) {
         this.preprocedParts.push(partsObj[i]);
       }
+    },
+    async changed() {
+      await this.getUserPartsAll();
+      alert("내 부품에 추가되었습니다.");
     }
   }
 };
@@ -513,7 +529,7 @@ export default {
   border: 1px black solid;
   margin: 5px;
   position: relative;
-  cursor: default;
+  cursor: pointer;
   background: black;
 }
 .lego_part {

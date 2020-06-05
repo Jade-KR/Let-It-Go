@@ -12,7 +12,7 @@
         </div>
         <div class="input_box">
           <div class="photo_desc">
-            <h1 class="user_id">{{name}}</h1>
+            <h1 class="user_id">{{ name }}</h1>
             <div class="filebox" v-if="photoCheck === true">
               <label for="ex_file">프로필 사진 변경</label>
               <input type="file" id="ex_file" @change="changeToUrl" />
@@ -80,7 +80,9 @@
         <div class="form_box">
           <div class="label_box"></div>
           <div class="input_box">
-            <button class="submit_btn" @click="onSubmit()" :disabled="invalid">제출</button>
+            <button class="submit_btn" @click="onSubmit()" :disabled="invalid">
+              제출
+            </button>
           </div>
         </div>
       </ValidationObserver>
@@ -134,7 +136,14 @@ export default {
         email: this.email,
         id: localStorage.getItem("pk")
       };
-      await this.updateInfo(params).then(alert("변경이 완료되었습니다."));
+      const result = await this.updateInfo(params);
+      if (result === "이미 존재하는 이메일입니다.") {
+        this.email = localStorage.getItem("email");
+        alert(result);
+        return;
+      } else {
+        alert("변경이 완료되었습니다.");
+      }
       localStorage.setItem("nickname", this.nickname);
       localStorage.setItem("email", this.email);
       localStorage.setItem("comment", this.comment);

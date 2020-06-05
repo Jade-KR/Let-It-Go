@@ -9,7 +9,7 @@
 
       <v-card class="modify_box">
         <div class="modify_border">
-          <h2 class="header">수량 변경 & 삭제</h2>
+          <h2 class="header">내 부품에 추가</h2>
           <div class="form_box">
             <div class="label_box">
               <p class="label_name">부품 ID</p>
@@ -36,7 +36,7 @@
           </div>
           <div class="form_box">
             <div class="label_box">
-              <p class="label_name">변경할 수량</p>
+              <p class="label_name">추가할 수량</p>
             </div>
             <div class="input_box">
               <v-col cols="12" sm="6" md="5" class="text_box">
@@ -55,8 +55,7 @@
           <div class="form_box">
             <div class="label_box"></div>
             <div class="input_box">
-              <button class="submit_btn" @click="submit">수정</button>
-              <button class="delete_btn" @click="deleteItem">삭제</button>
+              <button class="submit_btn" @click="submit">추가</button>
             </div>
           </div>
         </div>
@@ -69,67 +68,39 @@
 import { mapActions } from "vuex";
 export default {
   props: {
-    partId: String,
-    colorId: Number,
-    quantity: Number,
-    rgb: String,
-    page: Number,
-    idx: Number
+    partId: { type: String, default: "" },
+    colorId: { type: Number, default: 0 },
+    quantity: { type: Number, default: 0 },
+    rgb: { type: String, default: "" },
+    idx: { type: Number, default: 0 }
   },
   data() {
     return {
       dialog: false,
       loading: false,
-      originalCnt: 0,
       cnt: 0
     };
   },
+  watch: {
+    quantity() {
+      this.cnt = this.quantity;
+    }
+  },
   mounted() {
-    this.originalCnt = this.quantity;
     this.cnt = this.quantity;
   },
   methods: {
-    ...mapActions("Parts", ["updateParts", "getParts"]),
+    ...mapActions("Parts", ["updateParts"]),
     async submit() {
-      let num = 0;
-      if (this.cnt <= 0) {
-        num = -Number(this.originalCnt);
-      } else if (this.cnt > this.originalCnt) {
-        num = Number(this.cnt - this.originalCnt);
-      } else {
-        num = -Number(this.originalCnt - this.cnt);
-      }
       const info = [
         {
           part_id: String(this.partId),
           color_id: Number(this.colorId),
-          qte: Number(num)
+          qte: Number(this.cnt)
         }
       ];
       await this.updateParts({ UpdateList: info });
-      const params = {
-        idx: Number(this.idx),
-        quantity: Number(this.cnt)
-      };
-      this.$emit("update", params);
-      this.dialog = false;
-    },
-    async deleteItem() {
-      const info = [
-        {
-          part_id: String(this.partId),
-          color_id: Number(this.colorId),
-          qte: Number(-this.originalCnt)
-        }
-      ];
-      await this.updateParts({ UpdateList: info });
-      const params = {
-        idx: this.idx,
-        quantity: Number(0),
-        part_id: String(this.partId),
-        color_id: Number(this.colorId)
-      };
-      this.$emit("update", params);
+      this.$emit("update");
       this.dialog = false;
     }
   }
@@ -180,14 +151,7 @@ export default {
   height: 30px;
   border-radius: 10px;
   margin-bottom: 10px;
-}
-.delete_btn {
-  background: red;
-  color: white;
-  width: 80px;
-  height: 30px;
-  margin-left: 30px;
-  border-radius: 10px;
+  margin-left: 50px;
 }
 .color_box {
   width: 70px;
