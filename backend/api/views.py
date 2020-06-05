@@ -644,7 +644,7 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                         queryset.append(legoset)
                 predictions = [[knn_user_based.predict(user.id, legoset_id).est, legoset_id] for legoset_id in queryset]
                 predictions.sort(key=lambda x: x[0])
-                queryset = [LegoSet.objects.get(id=legoset_id) for score, legoset in predictions]
+                queryset = [LegoSet.objects.get(id=legoset.id) for score, legoset in predictions]
                 page = self.paginate_queryset(queryset)
                 if page is not None:
                     serializer_data = serializers.LegoSetSerializer(page, many=True).data

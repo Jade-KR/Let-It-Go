@@ -4,34 +4,39 @@
       <div @click="changeCate('all')" id="all_parts">
         <i class="fas fa-exclamation icon"></i>
         전체 부품
-        <button
-          @click.stop="addParts()"
+        <add-all-parts
+          @addAll="addParts()"
           class="plus"
-          :disabled="partFlag === 'need'"
-          v-if="isLogin === true && isNoParts === false"
+          v-if="isLogin === true && isNoParts === false && partFlag === 'all'"
         >
-          <i class="fas fa-plus"></i>
-        </button>
-        <button
-          @click.stop="minusParts()"
+          <button slot="all_add">
+            <i class="fas fa-plus"></i>
+          </button>
+        </add-all-parts>
+        <delete-all-parts
+          @deleteAll="minusParts()"
           class="minus"
-          :disabled="partFlag === 'need'"
-          v-if="isLogin === true && isNoParts === false"
+          v-if="isLogin === true && isNoParts === false && partFlag === 'all'"
         >
-          <i class="fas fa-minus"></i>
-        </button>
+          <button slot="all_del">
+            <i class="fas fa-minus"></i>
+          </button>
+        </delete-all-parts>
       </div>
       <div @click="changeCate('need')" id="need_parts">
         <i class="fas fa-question icon"></i>
         필요한 부품
-        <button
-          @click.stop="addParts()"
+        <add-need-parts
+          @addNeed="addParts()"
           class="plus"
-          :disabled="partFlag === 'all'"
-          v-if="isLogin === true && isNeedNothing === false"
+          v-if="
+            isLogin === true && isNeedNothing === false && partFlag === 'need'
+          "
         >
-          <i class="fas fa-plus"></i>
-        </button>
+          <button slot="need_add">
+            <i class="fas fa-plus"></i>
+          </button>
+        </add-need-parts>
       </div>
     </div>
     <hr id="dived_line" />
@@ -102,10 +107,18 @@
 </template>
 
 <script>
+import AddAllParts from "./ConfirmModal/AddAllParts.vue";
+import AddNeedParts from "./ConfirmModal/AddNeedParts.vue";
+import DeleteAllParts from "./ConfirmModal/DeleteAllParts.vue";
 import LegoSort from "../../../../jsonData/LegoSort.json";
 import { mapState, mapActions } from "vuex";
 
 export default {
+  components: {
+    AddAllParts,
+    AddNeedParts,
+    DeleteAllParts
+  },
   props: {
     parts: {
       type: Array
@@ -554,7 +567,7 @@ export default {
   font-size: 18px;
   width: 200px;
   position: absolute;
-  transform: translate(7px, -27px);
+  transform: translate(7px, -55px);
   border: 1px solid black;
   background-color: white;
   padding: 5px;
@@ -577,7 +590,7 @@ export default {
   font-size: 18px;
   width: 220px;
   position: absolute;
-  transform: translate(7px, -27px);
+  transform: translate(7px, -55px);
   border: 1px solid black;
   background-color: white;
   padding: 5px;

@@ -12,10 +12,6 @@
         <button style="color:gold; margin-bottom: 20px;" @click="goLogin()">
           돌아가기
         </button>
-        or 홈으로
-        <button style="color:gold; margin-bottom: 20px;" @click="goHome()">
-          돌아가기
-        </button>
       </div>
 
       <div v-if="!loading">
@@ -89,7 +85,7 @@
                 type="number"
                 step="1"
                 min="1"
-                max="100"
+                max="80"
                 id="regi-age"
                 placeholder="나이"
                 v-model="userInfo.age"
@@ -225,6 +221,10 @@ export default {
         alert("성별을 선택해 주세요");
         return;
       }
+      if (this.userInfo.age > 80 || this.userInfo.age < 0) {
+        alert("혹시 신선이신가요..? 나이를 확인해주세요");
+        return;
+      }
       this.loading = true;
       let hashPwd = "";
       await this.SHA256(String(this.userInfo.password1)).then(res => {
@@ -287,20 +287,17 @@ export default {
   text-align: center;
   height: 100vh;
   width: 100%;
-  /* background-color: black; */
   background-image: url("../../assets/login_bg.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  /* filter: blur(8px);
-  -webkit-filter: blur(8px); */
 }
 #regi-body {
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.8); /* Black w/opacity/see-through */
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.8);
   border: 5px solid gold;
   color: white;
-  width: 40vw;
+  width: 600px;
   position: absolute;
   top: 50%;
   left: 50%;
