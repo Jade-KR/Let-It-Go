@@ -1,6 +1,14 @@
 <template>
   <div>
-    <section>
+    <div v-if="isSkip === false" id="intro_box">
+      <div id="intro_skip" @click="skip()">
+        SKIP
+      </div>
+      <video autoplay controls width="80%">
+        <source src="../../assets/Intro.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <section v-else>
       <div class="slide">
         <div class="content">
           <h2>김평강</h2>
@@ -12,7 +20,7 @@
       <div class="slide">
         <div class="content">
           <h2>김사덕</h2>
-          <p>Back-End (추천, AI, 발표)</p>
+          <p>Back-End (추천, Recognition, 발표)</p>
           <p>특징 (원래확찐자)</p>
           <p>기타 (싸피 마무리 잘하자)</p>
         </div>
@@ -72,10 +80,15 @@ import router from "../../router";
 
 export default {
   data() {
-    return {};
+    return {
+      isSkip: false
+    };
   },
   async mounted() {
     this.setAuthFlag(true);
+    setTimeout(() => {
+      this.isSkip = true;
+    }, 43200);
   },
   destroyed() {
     this.setAuthFlag(false);
@@ -85,15 +98,30 @@ export default {
     goHome() {
       this.setAuthFlag(false);
       router.push("/");
+    },
+    skip() {
+      this.isSkip = true;
     }
-    // goAdmin() {
-    //   this.admin = true
-    // }
   }
 };
 </script>
 
 <style scoped>
+#intro_box {
+  text-align: center;
+  background-color: black;
+  padding: 40px;
+}
+#intro_skip {
+  position: absolute;
+  color: white;
+  border: 3px solid white;
+  width: 100px;
+  padding: 10px;
+  right: 50px;
+  top: 40px;
+  cursor: pointer;
+}
 #goAdmin {
   cursor: pointer;
   text-decoration: none;
