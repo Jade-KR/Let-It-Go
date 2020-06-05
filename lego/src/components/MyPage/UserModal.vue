@@ -16,6 +16,9 @@
         >
           <p class="menu_name">{{ menu }}</p>
         </div>
+        <!-- <div class="menu" @click="test()">
+          <p class="menu_name">LEtitGO 사용법</p>
+        </div> -->
         <div class="menu" @click="member()">
           <p class="menu_name">멤버소개</p>
         </div>
@@ -57,13 +60,16 @@ export default {
     admin() {
       this.$router.push("/admin");
     }
+    // test() {
+    //   console.log("aa");
+    // }
   }
 };
 </script>
 
 <style scoped>
 .menu_box {
-  height: 250px;
+  height: 300px;
   display: flex;
   flex-flow: column nowrap;
   border: rgb(255, 140, 46) 4px solid;

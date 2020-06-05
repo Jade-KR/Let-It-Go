@@ -521,7 +521,7 @@ export default {
   font-size: 18px;
   width: 250px;
   position: absolute;
-  transform: translate(-95%, 35%);
+  transform: translate(-50%, 0%);
   border: 1px solid black;
   background-color: white;
   padding: 5px;
@@ -543,7 +543,7 @@ export default {
   font-size: 18px;
   width: 250px;
   position: absolute;
-  transform: translate(-95%, 35%);
+  transform: translate(-50%, 0%);
   border: 1px solid black;
   background-color: white;
   padding: 5px;

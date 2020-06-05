@@ -14,19 +14,25 @@
               class="search_by_id"
               @click="currentState = 0"
               :style="currentState === 0 ? menuStyle[0] : menuStyle[1]"
-            >ID로 찾기</button>
+            >
+              ID로 찾기
+            </button>
             <button
               class="search_by_img"
               @click="checkImg()"
               :style="currentState === 1 ? menuStyle[0] : menuStyle[1]"
-            >이미지로 찾기</button>
+            >
+              이미지로 찾기
+            </button>
           </div>
           <div class="close">
             <i class="fas fa-times" @click="dialog = 0"></i>
           </div>
         </div>
-        <SearchById v-if="currentState === 0" @close="close"></SearchById>
-        <SearchByImg v-if="currentState === 1" @close="close"></SearchByImg>
+        <div style="padding: 0 20px 20px 20px;">
+          <SearchById v-if="currentState === 0" @close="close"></SearchById>
+          <SearchByImg v-if="currentState === 1" @close="close"></SearchByImg>
+        </div>
       </v-card>
     </v-dialog>
   </div>
@@ -78,7 +84,7 @@ export default {
   margin-bottom: 20px;
 }
 .close {
-  flex-basis: 10%;
+  flex-basis: 3%;
   text-align: right;
   height: 100%;
   font-size: 20px;
@@ -89,7 +95,7 @@ export default {
 }
 .search_menus {
   display: flex;
-  flex-basis: 90%;
+  flex-basis: 97%;
   justify-content: space-between;
   height: fit-content;
 }

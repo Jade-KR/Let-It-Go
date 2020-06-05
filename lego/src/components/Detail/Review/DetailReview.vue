@@ -83,7 +83,10 @@
     </div>
     <div class="detail_review_desc">
       <div class="detail_review_info">
-        <div class="detail_review_id" @click="goYourPage()">
+        <div class="detail_review_id" @click="goYourPage()" v-if="isLogin">
+          {{ nickname }}
+        </div>
+        <div class="detail_review_id cursor_default" v-else>
           {{ nickname }}
         </div>
         <div class="detail_review_date">
@@ -178,7 +181,8 @@ export default {
         {
           color: "black"
         }
-      ]
+      ],
+      isLogin: localStorage.getItem("token") ? true : false
     };
   },
   mounted() {
@@ -301,7 +305,7 @@ export default {
   font-weight: 600;
   cursor: pointer;
 }
-/* .update_cancle {
-  display: inline-block;
-} */
+.cursor_default {
+  cursor: default;
+}
 </style>
