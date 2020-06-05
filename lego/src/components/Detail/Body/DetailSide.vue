@@ -84,14 +84,23 @@
       <hr class="divide_line" />
 
       <div id="detail_side_similar">
-        <div id="detail_side_similar_text">You Can Make</div>
-        <div id="detail_side_similar_percent">{{ makePercent }}%</div>
+        <div>
+          <div id="detail_side_similar_text">You Can Make</div>
+          <div id="detail_side_similar_percent">{{ makePercent }}%</div>
+        </div>
         <div
           id="detail_side_similar_add"
           v-if="is100 === true"
           @click="addModelToInven()"
         >
           보관함에 설계도 추가하기
+        </div>
+        <div
+          id="detail_side_similar_sub"
+          v-if="is100 === true"
+          @click="subModelToInven()"
+        >
+          보관함에서 설계도 제거하기
         </div>
       </div>
     </div>
@@ -289,7 +298,12 @@ export default {
     this.likeCnt = this.likeCount;
   },
   methods: {
-    ...mapActions("detail", ["onLike", "getUserPartsAll", "addMyParts"]),
+    ...mapActions("detail", [
+      "onLike",
+      "getUserPartsAll",
+      "addInven",
+      "subInven"
+    ]),
     ...mapActions("search", ["searchByDetail"]),
     goMypage() {
       if (this.userId === null) {
@@ -338,18 +352,23 @@ export default {
     },
     async addModelToInven() {
       const params = {
-        UpdateList: []
+        add_set: Number(this.id)
       };
-      this.preprocedParts.forEach(e => {
-        params["UpdateList"].push({
-          part_id: String(e["part_id"]),
-          color_id: Number(e["color_id"]),
-          qte: -Number(e["quantity"])
-        });
-      });
-      const result = await this.addMyParts(params);
-      if (result === "수정 완료") {
+      const result = await this.addInven(params);
+      if (result === "갱신 완료") {
         alert("보관함에 저장되었습니다.");
+        location.reload();
+      } else {
+        alert("문제가 생겼습니다.");
+      }
+    },
+    async subModelToInven() {
+      const params = {
+        sub_set: Number(this.id)
+      };
+      const result = await this.subInven(params);
+      if (result === "갱신 완료") {
+        alert("보관함에서 삭제되었습니다.");
         location.reload();
       } else {
         alert("문제가 생겼습니다.");
@@ -455,11 +474,33 @@ export default {
   cursor: pointer;
 }
 #detail_side_similar_add:hover {
-  background-color: red;
+  background-color: green;
 }
 #detail_side_similar_add:hover::after {
   content: "보관함에 설계도를 추가하고 해당 설계도에 사용된 부품을 내 부품에서 삭제합니다.";
   color: gold;
+  font-size: 18px;
+  width: 250px;
+  position: absolute;
+  transform: translate(-95%, 35%);
+  border: 1px solid black;
+  background-color: white;
+  padding: 5px;
+}
+#detail_side_similar_sub {
+  font-size: 20px;
+  background-color: red;
+  padding: 3px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+#detail_side_similar_sub:hover {
+  background-color: green;
+}
+#detail_side_similar_sub:hover::after {
+  content: "보관함에서 설계도를 제거하고 해당 설계도에 사용된 부품을 내 부품에 추가합니다.";
+  color: red;
   font-size: 18px;
   width: 250px;
   position: absolute;

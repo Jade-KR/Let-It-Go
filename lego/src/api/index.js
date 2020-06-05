@@ -163,5 +163,10 @@ export default {
   },
   getModelsByUserBased(params) {
     return http.get(`${apiUrl}/UserBasedRecommend`, { params, headers });
+  },
+  setModelToInventory(params) {
+    return http.post(`${apiUrl}/update_user_set_inventory`, params, {
+      headers
+    });
   }
 };
