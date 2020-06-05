@@ -805,7 +805,7 @@ def CreateLegoSet(self):
     return Response("등록 완료")
 
 def go_to_myhome(request):
-    return redirect("http://127.0.0.1:8000/api/swagger/")
+    return redirect("https://k02d1081.p.ssafy.io")
 
 @api_view(['POST'])
 def like_set(self):
