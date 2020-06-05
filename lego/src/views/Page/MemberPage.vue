@@ -39,7 +39,8 @@
         <div class="content">
           <h2>이지훈</h2>
           <p>
-            Front-End (Home, Search, Write, Detail, Login, Register, Admin)
+            Front-End (Home, Search, Write, Detail, Login, Register, Admin,
+            BugFix)
           </p>
           <p>특징 (확진짜아주확찐자매우확찐자)</p>
           <p>기타 (코로나Out)</p>
