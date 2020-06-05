@@ -358,11 +358,12 @@ class ReviewViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Updat
 
     def update(self, request, pk=None):
         review = get_object_or_404(Review, pk=pk)
-        user_id = request.user_id
+        user_id = request.user.id
         if request.user.is_authenticated and review.user_id == user_id:
             data = request.data
             review.content = data["content"]
             review.score = data["score"]
+            review.save()
             return Response("수정 완료")
         return Response("수정 실패")
 

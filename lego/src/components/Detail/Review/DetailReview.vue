@@ -57,27 +57,27 @@
         <i
           class="fas fa-star"
           @click="ratingUpdate(1)"
-          :style="updateRating <= 0 ? ratingStyle[1] : ratingStyle[0]"
+          :style="updateRating >= 1 ? ratingStyle[0] : ratingStyle[1]"
         ></i>
         <i
           class="fas fa-star"
           @click="ratingUpdate(2)"
-          :style="updateRating <= 1 ? ratingStyle[1] : ratingStyle[0]"
+          :style="updateRating >= 2 ? ratingStyle[0] : ratingStyle[1]"
         ></i>
         <i
           class="fas fa-star"
           @click="ratingUpdate(3)"
-          :style="updateRating <= 2 ? ratingStyle[1] : ratingStyle[0]"
+          :style="updateRating >= 3 ? ratingStyle[0] : ratingStyle[1]"
         ></i>
         <i
           class="fas fa-star"
           @click="ratingUpdate(4)"
-          :style="updateRating <= 3 ? ratingStyle[1] : ratingStyle[0]"
+          :style="updateRating >= 4 ? ratingStyle[0] : ratingStyle[1]"
         ></i>
         <i
           class="fas fa-star"
           @click="ratingUpdate(5)"
-          :style="updateRating <= 4 ? ratingStyle[1] : ratingStyle[0]"
+          :style="updateRating >= 5 ? ratingStyle[0] : ratingStyle[1]"
         ></i>
       </div>
     </div>
@@ -169,7 +169,7 @@ export default {
       tempSentences: "",
       isMe: false,
       updateFlag: false,
-      updateRating: 0,
+      updateRating: 1,
       updateDesc: "",
       ratingStyle: [
         {
@@ -199,11 +199,12 @@ export default {
     },
     isUpdate() {
       this.updateFlag = true;
+      this.updateRating = this.score;
       this.tempSentences = this.sentences;
     },
     updateCancle() {
       this.updateFlag = false;
-      this.updateRating = 0;
+      this.updateRating = 1;
       this.sentences = this.tempSentences;
     },
     ratingUpdate(value) {
