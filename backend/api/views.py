@@ -22,16 +22,16 @@ headers = {
     'Authorization': 'key ' + API_key,
     'Accept': 'application/json'
 }
-# 추천할 아이템 갯수
+# 추천할 아이템 개수
 recommend_num = 10
-# 콜드스타트 기준 리뷰 갯수
+# 콜드스타트 기준 리뷰 개수
 recommend_review_num = 10
 # 성별정보 수치화
 male_value = 5
 female_value = 0
-# 리뷰를 평가하기 위해 필요한 최소 리뷰 갯수(의미있는 리뷰 갯수)
+# 리뷰를 평가하기 위해 필요한 최소 리뷰 개수(의미있는 리뷰 개수)
 min_review = 5
-# user_based knn 알고리즘에서 적용할 클러스터 갯수
+# user_based knn 알고리즘에서 적용할 클러스터 개수
 cluster_num = 4
 # 남성에 해당하는 값
 male_value = 5
@@ -217,12 +217,15 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
         user_id = request.user.id
         legoset = get_object_or_404(LegoSet, id=pk)
         serializer_data = serializers.LegoSetSerializer2(legoset).data
+        # set_quantity
         if request.user.is_authenticated:
             serializer_data["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=pk, customuser_id=user_id) else 0
             serializer_data["is_review"] = 1 if Review.objects.filter(lego_set_id=pk, user_id=user_id) else 0
+            serializer_data["set_quantity"] = UserSet.objects.get(user_id=user_id, legoset_id=legoset.id) if UserSet.objects.filter(user_id=user_id, legoset_id=legoset.id) else 0
         else:
             serializer_data["is_like"] = 0
             serializer_data["is_review"] = 0
+            serializer_data["set_quantity"] = 0
         reviews = serializers.ReviewSerializer(legoset.review_set.all().order_by("-created_at"), many=True).data
         serializer_data["reviews"] = reviews
         return Response(serializer_data)
@@ -247,6 +250,26 @@ class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def list(self, request):
         if request.user.is_authenticated:
             queryset = UserPart.objects.filter(user=request.user)
+            page = self.paginate_queryset(queryset)
+
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            return Response("비 인증 유저")
+
+class UserSetViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = serializers.UserSetSerializer
+    pagination_class = SmallPagination
+    queryset = UserPart.objects.all()
+
+    def list(self, request):
+        user = request.user
+        if user.is_authenticated:
+            queryset = UserSet.objects.filter(user=user)
             page = self.paginate_queryset(queryset)
 
             if page is not None:
@@ -538,6 +561,12 @@ class ItemBasedRecommendViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewS
     queryset = LegoSet.objects.all()
     
     def retrieve(self, request, pk=None):
+        '''
+        아이템(설계도) 기반으로 추천을 해 주는 API입니다.
+        입력한 설계도의 리뷰 개수가 충분하면(recommend_review_num 이상)
+        knn 알고리즘을 적용한 추천을 하고
+        충분하지 않으면 k-means 알고리즘을 적용한 추천을 합니다.
+        '''
         legoset = LegoSet.objects.get(pk=pk)
         if legoset.review_count >= recommend_review_num:
             try:
@@ -594,6 +623,12 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = LegoSet.objects.all()
 
     def list(self, request):
+        '''
+        유저 기반으로 추천을 해 주는 API입니다.
+        요청한 유저의 리뷰 개수가 충분하면(recommend_review_num 이상)
+        knn 알고리즘을 적용한 추천을 하고
+        충분하지 않으면 k-means 알고리즘을 적용한 추천을 합니다.
+        '''
         user = request.user
         if user.is_authenticated:
             if request.user.review_count >= recommend_review_num:
@@ -631,12 +666,14 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 @api_view(['POST'])
 def UpdateUserPart(self):
     '''
+    유저가 부품id, color_id, qte를 입력하면 보유한 부품 인벤토리를
+    입력에 맞게 변경시킵니다.
     {
         "UpdateList": [
             {
                 "part_id": String,
                 "color_id": Integer,
-                "qte": Integer
+                "qte": Integer(증감시킬 개수)
             }
         ]
     }
@@ -706,6 +743,13 @@ def UpdateUserPart(self):
 
 @api_view(['POST'])
 def UpdateUserPart2(self):
+    '''
+    IoT에서 식별된 부품을 서버로 전송하는 API 입니다.
+    {
+        part_id: integer,
+        color_id: integer
+    }
+    '''
     user = self.user
     if user.is_authenticated:
         data = self.data
@@ -715,6 +759,7 @@ def UpdateUserPart2(self):
 @api_view(['POST'])
 def CreateLegoSet(self):
     '''
+    입력된 정보를 바탕으로 새로운 설계도를 등록합니다.
     {
         "theme_id": Integer,
         "set_images": String, # ex: "img1|img2"
@@ -765,6 +810,7 @@ def go_to_myhome(request):
 @api_view(['POST'])
 def like_set(self):
     '''
+    요청을 보낸 유저가 입력한 설계도를 좋아요 혹은 좋아요 해제 하도록 합니다.
     {
         "set_id": Integer    # LegoSet.id
     }
@@ -790,6 +836,7 @@ def like_set(self):
 @api_view(['POST'])
 def follow(self):
     '''
+    요청을 보낸 유저가 입력한 유저를 팔로우 혹은 팔로우 해제 하도록 합니다.
     {
         "user_id": Integer    # CustomUser.id
     }
@@ -808,6 +855,9 @@ def follow(self):
 
 @api_view(['GET'])
 def crawll(self, idx):
+    '''
+    idx ~ idx+50까지의 레고셋 설계도에 대해서 파트 정보를 수집합니다.
+    '''
     for i in range(idx, idx + 50):
         if not SetPart.objects.filter(lego_set_id=i):
             print('crawll ' + str(i))
@@ -818,6 +868,10 @@ def crawll(self, idx):
     
 @api_view(['GET'])
 def user_parts_registered_by_IoT(self):
+    '''
+    IoT 기기에서 식별된 부품들을 유저에게 전송하는 API입니다.
+    서버에 등록된 부품을 part_id, color_id, quantity 리스트로 반환해 줍니다.
+    '''
     user = self.user
     if user.is_authenticated:
         user_parts = UserPart2.objects.filter(user=user)
@@ -840,6 +894,9 @@ def user_parts_registered_by_IoT(self):
 
 @api_view(['GET'])
 def reset_item_based_knn(self):
+    '''
+    아이템 기반 추천에 사용될 knn 모델을 재학습시킵니다.
+    '''
     global knn_item_based
     user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
     review_df = pd.DataFrame(Review.objects.all().values("user_id", "score", "lego_set_id"))
@@ -874,6 +931,9 @@ def reset_item_based_knn(self):
 
 @api_view(['GET'])
 def reset_item_based_k_means(self):
+    '''
+    아이템 기반 추천에 사용될 k-means 모델을 재학습시킵니다.
+    '''
     global theme_legoset, legoset_theme_root, all_legoset_calculated
     theme_root = dict()
     theme_legoset = dict()
@@ -921,6 +981,9 @@ def reset_item_based_k_means(self):
 
 @api_view(['GET'])
 def reset_user_based_knn(self):
+    '''
+    유저 기반 추천에 사용될 knn 모델을 재학습시킵니다.
+    '''
     global knn_user_based
     user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender"))
     review_df = pd.DataFrame(Review.objects.all().values("user_id", "score", "lego_set_id"))
@@ -955,12 +1018,14 @@ def reset_user_based_knn(self):
 
 @api_view(['GET'])
 def reset_user_based_k_means(self):
+    '''
+    유저 기반 추천에 사용될 k-means 모델을 재학습시킵니다.
+    '''
     global centroid, cluster_list
     user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender", "categories"))
 
     # None값을 ""로 변경
     user_df["categories"] = user_df["categories"].fillna("")
-    
     # 각 태그가 존재하면 exist_value, 없으면 nonexist_value
     user_df["건축물"] = user_df["categories"].apply(lambda x: exist_value if "건축물" in x else nonexist_value)
     user_df["장난감"] = user_df["categories"].apply(lambda x: exist_value if "장난감" in x else nonexist_value)
@@ -1021,6 +1086,10 @@ def update_user_set_inventory(self):
     입력
     add_set: legoset_id 입력 시 부품 인벤토리 확인 후 부품 제거하고 설계도 인벤토리에 추가
     sub_set: legoset_id 입력 시 설계도 인벤토리 확인 후 설계도 1개 감소하고 부품 인벤토리에 추가
+    {
+        add_set: 1
+        sub_set: 21
+    }
     '''
     user = self.user
     if user.is_authenticated:
