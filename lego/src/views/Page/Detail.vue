@@ -18,6 +18,7 @@
             :isLike="model.is_like"
             :likeCount="model.like_count"
             :avgScore="avgScore"
+            :setQuantity="model.set_quantity"
           ></detail-side>
         </div>
       </div>

@@ -84,20 +84,30 @@
       <hr class="divide_line" />
 
       <div id="detail_side_similar">
+        <div v-if="isInven" id="detail_side_similar_inven">
+          설계도를 보관중입니다.
+        </div>
         <div>
           <div id="detail_side_similar_text">You Can Make</div>
           <div id="detail_side_similar_percent">{{ makePercent }}%</div>
         </div>
         <div
           id="detail_side_similar_add"
-          v-if="is100 === true"
+          v-if="is100 === true && isInven === false"
+          @click="addModelToInven()"
+        >
+          보관함에 설계도 추가하기
+        </div>
+        <div
+          id="detail_side_similar_add"
+          v-if="is100 === true && isInven === true"
           @click="addModelToInven()"
         >
           보관함에 설계도 추가하기
         </div>
         <div
           id="detail_side_similar_sub"
-          v-if="is100 === true"
+          v-if="isInven === true"
           @click="subModelToInven()"
         >
           보관함에서 설계도 제거하기
@@ -159,6 +169,10 @@ export default {
     avgScore: {
       type: Number,
       default: 0
+    },
+    setQuantity: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -183,7 +197,8 @@ export default {
       makePercent: "0.0",
       likeCnt: 0,
       is100: false,
-      preprocedParts: []
+      preprocedParts: [],
+      isInven: false
     };
   },
   watch: {
@@ -296,6 +311,9 @@ export default {
       this.likeFlag = false;
     }
     this.likeCnt = this.likeCount;
+    if (this.setQuantity >= 1) {
+      this.isInven = true;
+    }
   },
   methods: {
     ...mapActions("detail", [
@@ -458,6 +476,13 @@ export default {
 }
 #detail_side_similar {
   text-align: center;
+}
+#detail_side_similar_inven {
+  font-size: 20px;
+  background-color: green;
+  padding: 3px;
+  color: white;
+  font-weight: 700;
 }
 #detail_side_similar_text {
   font-size: 28px;
