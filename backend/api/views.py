@@ -638,12 +638,12 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 user_legoset_set = set()
                 for legoset in user.legoset_set.all():
                     user_legoset_set.add(legoset.id)
-                for legoset in LegoSet.objects.filter(review_count__gte=10):
+                for legoset in LegoSet.objects.filter(review_count__gte=min_review):
                     if legoset.id not in user_legoset_set:
                         queryset.append(legoset)
                 predictions = [[knn_user_based.predict(user.id, legoset_id).est, legoset_id] for legoset_id in queryset]
                 predictions.sort(key=lambda x: x[0])
-                queryset = [LegoSet.objects.get(id=legoset_id) for score, legoset in predictions]
+                queryset = [LegoSet.objects.get(id=legoset.id) for score, legoset in predictions]
                 page = self.paginate_queryset(queryset)
                 if page is not None:
                     serializer_data = serializers.LegoSetSerializer(page, many=True).data
@@ -1022,8 +1022,8 @@ def reset_user_based_k_means(self):
     유저 기반 추천에 사용될 k-means 모델을 재학습시킵니다.
     '''
     global centroid, cluster_list
-    user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender", "categories"))
-
+    user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender", "categories", "review_count"))
+    user_df = user_df[user_df["review_count"] >= min_review]
     # None값을 ""로 변경
     user_df["categories"] = user_df["categories"].fillna("")
     # 각 태그가 존재하면 exist_value, 없으면 nonexist_value
@@ -1042,13 +1042,17 @@ def reset_user_based_k_means(self):
 
     # kmeans 학습
     kmeans = KMeans(n_clusters=cluster_num, init='k-means++', max_iter=300, random_state=0)
+
     kmeans.fit(user_df[["age", "gender", "건축물", "장난감", "공상과학", "레이싱", "클래식", "창작품", "게임", "히어로", "공룡"]])
 
     # kmeans.labels_ : 몇번 클러스터인지 라벨링 붙이고 분리했었던 id col을 붙임
     user_df['cluster'] = kmeans.labels_
     review_df = pd.DataFrame(Review.objects.all().values("user_id", "score", "lego_set_id"))
     user_df = user_df[user_df['id'].isin(set(review_df['user_id']))]
-
+    # a = [0]*10
+    # for val in user_df['cluster']:
+    #     a[val] += 1
+    # print(a)
     user_df = user_df.set_index('id')
     # 리뷰 테이블에 유저 클러스터정보를 조인해서 합쳐준다.
     temp_df = pd.merge(user_df["cluster"], review_df, left_index=True, right_on="user_id")
@@ -1063,7 +1067,7 @@ def reset_user_based_k_means(self):
         cluster_list[i] = cluster_list[i][cluster_list[i]['count']>=5]
 
         # 각 클러스터별 평균평점을 계산한다.
-        a = sum(cluster_list[i]['sum']) / sum(cluster_list[i]['count'])
+        a = sum(cluster_list[i]['sum']) / sum(cluster_list[i]['count']) if sum(cluster_list[i]['count']) else 0.0
 
         # calc 칼럼을 추가하고 거기에 인기도 점수 계산한 값을 넣어준다.
         cluster_list[i]['calc'] = cluster_list[i].apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/x['count']+min_review))*a, axis=1)
