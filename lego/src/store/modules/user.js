@@ -13,7 +13,9 @@ const mutations = {
 };
 
 const actions = {
-  async updateImg({ commit }, params) {
+  async updateImg({
+    commit
+  }, params) {
     var modelImgUrl = "";
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
@@ -41,11 +43,15 @@ const actions = {
         commit("setFlag", state.photoFlag === false ? true : false);
       });
   },
-  async updateInfo({ commit }, params) {
+  async updateInfo({
+    commit
+  }, params) {
     commit;
     await api.updateUserInfo(params);
   },
-  async deleteImg({ commit }, params) {
+  async deleteImg({
+    commit
+  }, params) {
     const imgUrl = null;
     params = {
       profile_url: imgUrl
@@ -53,6 +59,15 @@ const actions = {
     await api.changeProfilePic(params);
     localStorage.setItem("image", imgUrl);
     commit("setFlag", state.photoFlag === false ? true : false);
+  },
+  async getPartsFromLegoRail({
+    commit
+  }, params) {
+    commit;
+    params;
+    const resp = await api.getPartsFromLegoRail()
+    const items = resp.data
+    return items
   }
 };
 
