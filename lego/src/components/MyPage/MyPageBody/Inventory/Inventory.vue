@@ -83,10 +83,10 @@ export default {
   async mounted() {
     const params = {
       page: 1,
-      append: false,
-      id: this.$route.params.user_id
+      append: false
+      // id: this.$route.params.user_id
     };
-    await this.getUserModels(params);
+    await this.userModelInven(params);
     if (this.stopScroll === true) {
       return;
     }
@@ -100,15 +100,15 @@ export default {
     })
   },
   methods: {
-    ...mapActions("mypage", ["getUserModels"]),
+    ...mapActions("mypage", ["userModelInven"]),
     async loadMore() {
       this.loading = true;
       const params = {
         page: this.page,
-        append: true,
-        id: this.$route.params.user_id
+        append: true
+        // id: this.$route.params.user_id
       };
-      await this.getUserModels(params);
+      await this.userModelInven(params);
       if (this.stopScroll === true) {
         return;
       }

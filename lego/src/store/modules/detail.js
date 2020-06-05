@@ -100,6 +100,11 @@ const actions = {
       .then(res => res.data)
       .catch(err => err.response);
     return resp;
+  },
+  async userModelInven({ commit }, params) {
+    commit;
+    console.log(params);
+    // await getModelsForInven.(params).then(res => console.log(res)).catch(err => console.log(err))
   }
 };
 

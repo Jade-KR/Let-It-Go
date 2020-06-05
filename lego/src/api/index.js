@@ -192,5 +192,8 @@ export default {
     return http.get(`${apiUrl}/user_parts_registered_by_IoT`, {
       headers
     });
+  },
+  getModelsForInven(params) {
+    return http.get(`${apiUrl}/UserSet`, { params, headers });
   }
 };
