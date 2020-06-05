@@ -10,7 +10,7 @@ import Write from "../views/Page/Write.vue";
 import Search from "../views/Page/Search.vue";
 import MemberPage from "../views/Page/MemberPage.vue";
 import Admin from "../views/Page/Admin.vue";
-
+import NotFound from "../views/base/NotFound.vue";
 Vue.use(VueRouter);
 
 const routes = [
@@ -79,6 +79,11 @@ const routes = [
     meta: {
       authRequired: true
     }
+  },
+  {
+    path: "*",
+    name: "NotFound",
+    component: NotFound
   }
 ];
 

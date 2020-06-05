@@ -171,8 +171,8 @@
         이전
       </button>
       <div id="enroll_cnt">
-        총
-        <b style="color: green; font-size: 24px;">{{ enrolledPart.length }}</b
+        <b style="color: green; font-size: 28px;">{{ enrolledPart.length }}</b
+        >종류, 총 <b style="color: green; font-size: 28px;">{{ partQnt }}</b
         >개의 부품이 등록되었습니다.
       </div>
       <button @click="onSubmit()" class="after_btn" :disabled="!flag">
@@ -207,7 +207,8 @@ export default {
       partQuantity: 0,
       partIdx: [],
       colorIdx: 0,
-      flag: false
+      flag: false,
+      partQnt: 0
     };
   },
   computed: {
@@ -228,6 +229,9 @@ export default {
         this.flag = true;
       } else {
         this.flag = false;
+      }
+      for (let i = 0; i < this.enrolledPart.length; ++i) {
+        this.partQnt += Number(this.enrolledPart[i]["quantity"]);
       }
     }
   },
@@ -449,7 +453,7 @@ export default {
 }
 #enroll_cnt {
   text-align: center;
-  margin-left: 160px;
+  margin-left: 130px;
   font-size: 20px;
   display: inline-block;
 }

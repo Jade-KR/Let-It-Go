@@ -84,14 +84,33 @@
       <hr class="divide_line" />
 
       <div id="detail_side_similar">
-        <div id="detail_side_similar_text">You Can Make</div>
-        <div id="detail_side_similar_percent">{{ makePercent }}%</div>
+        <div v-if="isInven" id="detail_side_similar_inven">
+          설계도를 보관중입니다.
+        </div>
+        <div>
+          <div id="detail_side_similar_text">You Can Make</div>
+          <div id="detail_side_similar_percent">{{ makePercent }}%</div>
+        </div>
         <div
           id="detail_side_similar_add"
-          v-if="is100 === true"
+          v-if="is100 === true && isInven === false"
           @click="addModelToInven()"
         >
           보관함에 설계도 추가하기
+        </div>
+        <div
+          id="detail_side_similar_add"
+          v-if="is100 === true && isInven === true"
+          @click="addModelToInven()"
+        >
+          보관함에 설계도 추가하기
+        </div>
+        <div
+          id="detail_side_similar_sub"
+          v-if="isInven === true"
+          @click="subModelToInven()"
+        >
+          보관함에서 설계도 제거하기
         </div>
       </div>
     </div>
@@ -150,6 +169,10 @@ export default {
     avgScore: {
       type: Number,
       default: 0
+    },
+    setQuantity: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -174,7 +197,8 @@ export default {
       makePercent: "0.0",
       likeCnt: 0,
       is100: false,
-      preprocedParts: []
+      preprocedParts: [],
+      isInven: false
     };
   },
   watch: {
@@ -187,9 +211,6 @@ export default {
       if (this.tags) {
         this.tagList = await this.tags.split("|");
       }
-    },
-    theme() {
-      this.themeName = this.legoThemeList[this.theme - 1][2];
     },
     isLike() {
       if (this.isLike === 1) {
@@ -277,16 +298,30 @@ export default {
     if (this.tags) {
       this.tagList = await this.tags.split("|");
     }
-    this.themeName = this.legoThemeList[this.theme - 1][2];
+    var temp = "";
+    for (let i = 0; i < this.legoThemeList.length; ++i) {
+      if (Number(this.legoThemeList[i][0]) === Number(this.theme)) {
+        temp = this.legoThemeList[i][2];
+      }
+    }
+    this.themeName = temp;
     if (this.isLike === 1) {
       this.likeFlag = true;
     } else if (this.isLike === 0) {
       this.likeFlag = false;
     }
     this.likeCnt = this.likeCount;
+    if (this.setQuantity >= 1) {
+      this.isInven = true;
+    }
   },
   methods: {
-    ...mapActions("detail", ["onLike", "getUserPartsAll", "addMyParts"]),
+    ...mapActions("detail", [
+      "onLike",
+      "getUserPartsAll",
+      "addInven",
+      "subInven"
+    ]),
     ...mapActions("search", ["searchByDetail"]),
     goMypage() {
       if (this.userId === null) {
@@ -300,6 +335,10 @@ export default {
       window.open("https://www.lego.com/ko-kr");
     },
     async pushLike() {
+      if (!localStorage.getItem("pk")) {
+        alert("로그인 후 사용해 주세요");
+        return;
+      }
       const params = {
         set_id: this.id
       };
@@ -331,18 +370,23 @@ export default {
     },
     async addModelToInven() {
       const params = {
-        UpdateList: []
+        add_set: Number(this.id)
       };
-      this.preprocedParts.forEach(e => {
-        params["UpdateList"].push({
-          part_id: String(e["part_id"]),
-          color_id: Number(e["color_id"]),
-          qte: -Number(e["quantity"])
-        });
-      });
-      const result = await this.addMyParts(params);
-      if (result === "수정 완료") {
+      const result = await this.addInven(params);
+      if (result === "갱신 완료") {
         alert("보관함에 저장되었습니다.");
+        location.reload();
+      } else {
+        alert("문제가 생겼습니다.");
+      }
+    },
+    async subModelToInven() {
+      const params = {
+        sub_set: Number(this.id)
+      };
+      const result = await this.subInven(params);
+      if (result === "갱신 완료") {
+        alert("보관함에서 삭제되었습니다.");
         location.reload();
       } else {
         alert("문제가 생겼습니다.");
@@ -433,6 +477,13 @@ export default {
 #detail_side_similar {
   text-align: center;
 }
+#detail_side_similar_inven {
+  font-size: 20px;
+  background-color: green;
+  padding: 3px;
+  color: white;
+  font-weight: 700;
+}
 #detail_side_similar_text {
   font-size: 28px;
 }
@@ -448,11 +499,33 @@ export default {
   cursor: pointer;
 }
 #detail_side_similar_add:hover {
-  background-color: red;
+  background-color: green;
 }
 #detail_side_similar_add:hover::after {
   content: "보관함에 설계도를 추가하고 해당 설계도에 사용된 부품을 내 부품에서 삭제합니다.";
   color: gold;
+  font-size: 18px;
+  width: 250px;
+  position: absolute;
+  transform: translate(-95%, 35%);
+  border: 1px solid black;
+  background-color: white;
+  padding: 5px;
+}
+#detail_side_similar_sub {
+  font-size: 20px;
+  background-color: red;
+  padding: 3px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+#detail_side_similar_sub:hover {
+  background-color: green;
+}
+#detail_side_similar_sub:hover::after {
+  content: "보관함에서 설계도를 제거하고 해당 설계도에 사용된 부품을 내 부품에 추가합니다.";
+  color: red;
   font-size: 18px;
   width: 250px;
   position: absolute;

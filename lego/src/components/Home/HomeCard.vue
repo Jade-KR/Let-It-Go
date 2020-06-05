@@ -3,7 +3,7 @@
     <div class="home_card_header">
       {{ name }}
     </div>
-    <div class="home_card_imgs">
+    <div class="home_card_imgs" v-if="imgFlag === true">
       <div class="slideshow_container">
         <div
           class="go_detail_btn"
@@ -28,12 +28,28 @@
               :id="`slideImg-${i}-${idx}`"
               v-else
               @load="showSlides(1), onResizeHeight()"
+              @error="imgError()"
             />
           </div>
         </div>
 
         <a class="prev" @click.stop="plusSlides(-1)">&#10094;</a>
         <a class="next" @click.stop="plusSlides(1)">&#10095;</a>
+      </div>
+    </div>
+    <div class="home_card_imgs" v-else>
+      <div class="slideshow_container">
+        <div
+          class="go_detail_btn"
+          @click="goDetail(id)"
+          :style="styleFlag ? matrixStyle[4] : instaStyle[4]"
+        >
+          상세보기
+        </div>
+        <img
+          src="../../assets/icons/no_img.jpg"
+          :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
+        />
       </div>
     </div>
     <div
@@ -51,7 +67,7 @@
       </div>
       <div :style="styleFlag ? matrixStyle[2] : instaStyle[2]">
         <div class="home_card_footer_director">Director. {{ nickname }}</div>
-        <div class="home_card_footer_btns">
+        <div class="home_card_footer_btns" data-test="123">
           <button v-if="like" class="home_card_like" @click="pushLike()">
             <i class="fas fa-heart" />
           </button>
@@ -101,6 +117,7 @@ export default {
   },
   data() {
     return {
+      imgFlag: true,
       like: false,
       slideIndex: 1,
       imageList: ["images/icons/no_img.jpg"],
@@ -172,6 +189,9 @@ export default {
   },
   methods: {
     ...mapActions("home", ["onLike"]),
+    imgError() {
+      this.imgFlag = false;
+    },
     onResizeHeight() {
       if (this.styleFlag == true) {
         for (let i = 0; i < this.imageList.length; ++i) {
@@ -274,6 +294,9 @@ export default {
   white-space: nowrap;
   text-align: start;
 }
+/* .home_card_footer_btns:after {
+  content: ;
+} */
 .home_card_like {
   color: red;
   font-size: 25px;

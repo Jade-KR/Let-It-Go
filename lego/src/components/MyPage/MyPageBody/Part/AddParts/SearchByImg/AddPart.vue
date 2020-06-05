@@ -142,7 +142,8 @@
     <div class="modal_footer">
       <button class="before_btn" @click="back()">이전</button>
       <div id="baske_cnt">
-        총 <b style="color: green; font-size: 24px;">{{ basket.length }}</b
+        <b style="color: green; font-size: 24px;">{{ basket.length }}</b
+        >종류, 총 <b style="color: green; font-size: 24px;">{{ partQnt }}</b
         >개의 부품이 등록되었습니다.
       </div>
       <button class="after_btn" :disabled="!flag" @click="onSubmit">
@@ -171,7 +172,8 @@ export default {
           idx: i
         };
       }),
-      selectedColor: ""
+      selectedColor: "",
+      partQnt: 0
     };
   },
   mounted() {
@@ -183,6 +185,9 @@ export default {
       }
     }
     this.partList = this.pickedPart;
+    for (let i = 0; i < this.basket.length; ++i) {
+      this.partQnt += Number(this.basket[i]["quantity"]);
+    }
   },
   computed: {
     ...mapState({
@@ -191,6 +196,13 @@ export default {
     }),
     flag: function() {
       return this.basket.length > 0 ? true : false;
+    }
+  },
+  watch: {
+    basket() {
+      for (let i = 0; i < this.basket.length; ++i) {
+        this.partQnt += Number(this.basket[i]["quantity"]);
+      }
     }
   },
   methods: {

@@ -151,7 +151,7 @@ export default {
         params["page"] = this.likePage;
         await this.getLikeModels(params);
       } else if (this.homeCate === 3) {
-        params["page"] = this.recommendPage;
+        params["page"] = Number(this.recommendPage);
         await this.getRecommendModels(params);
       }
       setTimeout(() => {

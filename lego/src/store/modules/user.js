@@ -1,5 +1,3 @@
-// import api from "../../api";
-
 import api from "../../api";
 
 const state = {
@@ -53,6 +51,12 @@ const actions = {
     await api.changeProfilePic(params);
     localStorage.setItem("image", imgUrl);
     commit("setFlag", state.photoFlag === false ? true : false);
+  },
+  async getPartsFromLegoRail({ commit }) {
+    commit;
+    const resp = await api.getPartsFromLegoRail();
+    const items = resp.data;
+    return items;
   }
 };
 

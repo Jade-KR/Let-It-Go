@@ -32,7 +32,7 @@
                       <i
                         class="fas fa-comment"
                         :style="
-                          isReview === 1 ? reviewStyle[0] : reviewStyle[1]
+                          item.is_review === 1 ? reviewStyle[0] : reviewStyle[1]
                         "
                       ></i>
                       <span>{{ item.review_count }}</span>
@@ -76,8 +76,7 @@ export default {
           color: "white"
         }
       ],
-      isLike: 1,
-      isReview: 1
+      isLike: 1
     };
   },
   async mounted() {
