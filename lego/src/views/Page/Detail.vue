@@ -166,6 +166,8 @@ export default {
   watch: {
     reviews() {
       this.reviewList = this.reviews;
+      this.pageLength = Math.ceil(this.reviews.length / 10);
+      this.slicedReviews = this.reviews.slice(this.start * 10, this.page * 10);
       var scoreSum = 0;
       this.reviewList.forEach(e => {
         scoreSum += e.score;
