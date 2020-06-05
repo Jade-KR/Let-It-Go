@@ -228,7 +228,6 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
             serializer_data["set_quantity"] = 0
         reviews = serializers.ReviewSerializer(legoset.review_set.all().order_by("-created_at"), many=True).data
         serializer_data["reviews"] = reviews
-        print(serializer_data)
         return Response(serializer_data)
 
     def destroy(self, request, pk=None):
