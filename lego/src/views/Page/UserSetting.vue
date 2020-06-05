@@ -60,13 +60,6 @@ export default {
     menuState(title, idx) {
       this.currentState = idx;
       this.btnFlag = title;
-      // this.currentState = idx;
-      // for (let i = 0; i < n; i++) {
-      //   let target = document.getElementById(`menu${i}`);
-      //   i === idx
-      //     ? (target.style.fontWeight = "bold")
-      //     : (target.style.fontWeight = "normal");
-      // }
     }
   }
 };

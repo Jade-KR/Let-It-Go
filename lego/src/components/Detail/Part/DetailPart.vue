@@ -66,6 +66,7 @@
           :rgb="part[2]"
           :idx="i"
           @update="changed()"
+          v-if="isLogin === true"
         >
           <div class="part_info" slot="click">
             <div class="part_id">
@@ -85,6 +86,23 @@
             </div>
           </div>
         </modify-part>
+        <div class="part_info cursor_default" v-else>
+          <div class="part_id">
+            <div style="margin-bottom: 5px;">
+              {{ part[0] }}
+            </div>
+            <div style="display: flex;">
+              <div
+                :style="
+                  `width: 50px; height: 20px; background-color: #${part[2]}; border-radius: 20px; margin-right: 10px;`
+                "
+              ></div>
+              <div style="font-size: 18px; transform: translateY(-3px);">
+                <b>{{ part[3] }}</b>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <v-layout justify-center>
@@ -614,5 +632,8 @@ export default {
 }
 .minus:disabled {
   opacity: 0;
+}
+.cursor_default {
+  cursor: default;
 }
 </style>
