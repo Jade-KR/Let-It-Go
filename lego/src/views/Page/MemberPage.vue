@@ -12,28 +12,27 @@
       <div class="slide">
         <div class="content">
           <h2>김사덕</h2>
-          <p>
-            Back End (추천 시스템, 보고서 컨텐츠 기획 및 데이터 분석, K-Means,
-            KNN)
-          </p>
-          <p>특징 (싸피 출근하고 싶어함)</p>
-          <p>기타 (데이터 분석 하고 싶음)</p>
+          <p>Back-End (추천, AI, 발표)</p>
+          <p>특징 (원래확찐자)</p>
+          <p>기타 (싸피 마무리 잘하자)</p>
         </div>
       </div>
       <div class="slide">
         <div class="content">
           <h2>김정덕</h2>
-          <p>Front End (SearchPage, StoreDetail, Location Based, Word Cloud)</p>
-          <p>특징(프론트 총괄, UCC, 글로벌 글로벌, 타이완 넘버 원)</p>
-          <p>기타(지훈이형.. 2달은 우습지 ㅎㅎ)</p>
+          <p>Front-End (MyPage, UserSetting, LegoRail, UCC)</p>
+          <p>특징 (새로운 보금자리 찾는 중)</p>
+          <p>기타 (1년 빠르구나..)</p>
         </div>
       </div>
       <div class="slide">
         <div class="content">
           <h2>윤명훈</h2>
-          <p>Back End(인증 및 권한, 보고서 컨텐츠 기획 및 데이터 분석)</p>
-          <p>특징(young함)</p>
-          <p>기타(형들 말 잘들음)</p>
+          <p>Back-End (DB모델링, 인증 및 권한 관련 API)</p>
+          <p>IoT (컨베이어 벨트 제작 및 보완)</p>
+          <p>AI (Object Detection, 학습이미지 생성)</p>
+          <p>특징 (여름 싫어함)</p>
+          <p>기타 (코로나 조심합시다..ㅠ)</p>
         </div>
       </div>
       <div class="slide">

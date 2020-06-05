@@ -67,7 +67,10 @@
       </div>
       <div :style="styleFlag ? matrixStyle[2] : instaStyle[2]">
         <div class="home_card_footer_director">Director. {{ nickname }}</div>
-        <div class="home_card_footer_btns" data-test="123">
+        <div
+          class="home_card_footer_btns"
+          :data-test="`${likeCnt}명이 좋아합니다.`"
+        >
           <button v-if="like" class="home_card_like" @click="pushLike()">
             <i class="fas fa-heart" />
           </button>
@@ -113,6 +116,10 @@ export default {
     isLike: {
       type: Number,
       default: -1
+    },
+    likeCount: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -122,6 +129,7 @@ export default {
       slideIndex: 1,
       imageList: ["images/icons/no_img.jpg"],
       imageLength: 0,
+      likeCnt: 0,
       matrixStyle: [
         {
           display: "block"
@@ -186,6 +194,7 @@ export default {
     if (this.images) {
       this.imageList = await this.images.split("|");
     }
+    this.likeCnt = this.likeCount;
   },
   methods: {
     ...mapActions("home", ["onLike"]),
@@ -235,8 +244,10 @@ export default {
       const result = await this.onLike(params);
       if (result === "좋아요") {
         this.like = true;
+        this.likeCnt += 1;
       } else if (result === "좋아요 취소") {
         this.like = false;
+        this.likeCnt -= 1;
       }
     },
     plusSlides(n) {
@@ -294,9 +305,15 @@ export default {
   white-space: nowrap;
   text-align: start;
 }
-/* .home_card_footer_btns:after {
-  content: ;
-} */
+.home_card_footer_btns:hover::after {
+  content: attr(data-test);
+  position: absolute;
+  transform: translate(30px, 2px);
+  font-size: 20px;
+  background-color: white;
+  border: 1px solid gold;
+  padding: 5px 10px;
+}
 .home_card_like {
   color: red;
   font-size: 25px;

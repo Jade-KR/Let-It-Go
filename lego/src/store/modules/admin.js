@@ -160,7 +160,6 @@ const actions = {
       .deleteReview(params)
       .then(res => res.data)
       .catch(err => err.response);
-    console.log(resp);
     if (resp === "삭제 완료") {
       const temp = [];
       for (let i = 0; i < state.reviewList.length; ++i) {

@@ -38,6 +38,7 @@
           :name="model.name"
           :isLike="model.is_like"
           :styleFlag="styleFlag"
+          :likeCount="model.like_count"
         />
       </div>
     </div>
@@ -88,12 +89,16 @@ export default {
       page: state => state.home.modelPage,
       likePage: state => state.home.likeModelPage,
       recommendPage: state => state.home.recommendModelPage,
+      modelAllCnt: state => state.home.modelAllCnt,
+      likeModelAllCnt: state => state.home.likeModelAllCnt,
+      recommendModelAllCnt: state => state.home.recommendModelAllCnt,
       isCategory: state => state.auth.isCategory
     })
   },
   watch: {
     async homeCate() {
       await this.resetModels();
+      await this.resetPages();
       const params = {
         page: 1,
         append: false
@@ -131,7 +136,7 @@ export default {
   },
   methods: {
     ...mapActions("home", ["getModels", "getLikeModels", "getRecommendModels"]),
-    ...mapMutations("home", ["resetModels"]),
+    ...mapMutations("home", ["resetModels", "resetPages"]),
     styleCheck() {
       if (this.styleFlag === false) {
         this.styleFlag = true;
@@ -145,12 +150,21 @@ export default {
         append: true
       };
       if (this.homeCate === 1) {
+        if (this.modelAllCnt === Number(this.page)) {
+          return;
+        }
         params["page"] = this.page;
         await this.getModels(params);
       } else if (this.homeCate === 2) {
+        if (this.likeModelAllCnt === Number(this.likePage)) {
+          return;
+        }
         params["page"] = this.likePage;
         await this.getLikeModels(params);
       } else if (this.homeCate === 3) {
+        if (this.recommendModelAllCnt === Number(this.recommendPage)) {
+          return;
+        }
         params["page"] = Number(this.recommendPage);
         await this.getRecommendModels(params);
       }
