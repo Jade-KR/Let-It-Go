@@ -9,6 +9,8 @@ const state = {
   userModelPage: "1",
   likeModelList: [],
   likeModelPage: "1",
+  invenModelList: [],
+  invenModelPage: "1",
   stopScroll: false
 };
 
@@ -93,6 +95,21 @@ const actions = {
   checkModelsCnt({ commit }, params) {
     commit;
     return api.getUserModels(params);
+  },
+  async userModelInven({ commit }, params) {
+    commit;
+    const append = params.append;
+    const resp = await api
+      .getModelsForInven(params)
+      .then(res => res.data)
+      .catch(err => err.response);
+    const models = resp.results.map(e => e);
+    if (append) {
+      commit("addInvenModelList", models);
+    } else {
+      commit("setInvenModels", models);
+    }
+    commit("setInvenModelPage", resp.next);
   }
 };
 
@@ -129,6 +146,18 @@ const mutations = {
       return (state.stopScroll = true);
     }
     state.likeModelPage = new URL(url).searchParams.get("page");
+  },
+  addInvenModelList(state, model) {
+    state.invenModelList = state.invenModelList.concat(model);
+  },
+  setInvenModels(state, model) {
+    state.invenModelList = model.map(e => e);
+  },
+  setInvenModelPage(state, url) {
+    if (url == null) {
+      return (state.stopScroll = true);
+    }
+    state.invenModelPage = new URL(url).searchParams.get("page");
   }
 };
 
