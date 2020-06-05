@@ -8,27 +8,46 @@ from picamera import PiCamera
 from time import sleep
 from datetime import datetime
 import numpy as np
-'''
-baseURL = "http://192.168.0.220:8766/api/"
-sha256 = hashlib.sha256()
-sha256.update("asdf".encode('utf-8'))
+import tensorflow.keras.layers as Layers
+import tensorflow.keras.activations as Actications
+import tensorflow.keras.models as Models
+import tensorflow.keras.optimizers as Optimizer
+import tensorflow.keras.metrics as Metrics
+import tensorflow.keras.utils as Utils
+from keras.utils.vis_utils import model_to_dot
+import os
+import tensorflow as tf2
+
+baseURL = "https://k02d1081.p.ssafy.io:8009/api/"
+part_id = {"1x1": 3005, "1x2": 3004, "2x2": 3003, "2x3": 3002, "2x4": 3001, "2x4L": 3037}
 data = dict()
-data["username"] = input("ID:")
-data["password"] = getpass("PASSWORD:")
 while 1:
+  data["username"] = input("ID:")
+  data["password"] = hashlib.sha256(getpass("PASSWORD:").encode('utf-8')).hexdigest()
+  
   a = requests.post(baseURL + "login/", json=data)
+
   if a.status_code == 200:
     headers = {
       "Authorization": "jwt " + a.json()["token"]
     }
     break
-  else:
-    print("id or password error")
-    data["username"] = input("ID:")
-    data["password"] = getpass("PASSWORD:")
+  print("id or password error")
+  data["username"] = input("ID:")
+  data["password"] = hashlib.sha256(getpass("PASSWORD:").encode('utf-8')).hexdigest()
+  print(data["username"])
+  print(data["password"])
 print("login success")
 
-'''
+
+
+def get_classlabel(class_code):
+    labels = {4:'2x4', 5:'2x4L', 0:'1x1', 1:'1x2', 3:'2x3', 2:'2x2'}
+    
+    return labels[class_code]
+model = Models.load_model('/home/pi/IoT/my_model.h5')
+
+
 ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
 bg_img = cv2.imread("bg_img.bmp")
 print(bg_img.shape)
@@ -129,8 +148,19 @@ with PiCamera() as camera:
       if selected_lego:
         img = image[selected_lego[1]:selected_lego[3], selected_lego[0]:selected_lego[2]]
         cv2.imwrite("cropped_img_{}.bmp".format(datetime.now()), img)
-        
-        
+        img = np.array([cv2.resize(img,(150,150))])
+        pred_class = get_classlabel(model.predict_classes(img)[0])
+        pred_prob = model.predict(img).reshape(6)
+        print(part_id[pred_class])
+        print(pred_prob)
+        print(np.mean(img))
+        part = {
+          "part_id": part_id[pred_class],
+          "color_id": 0
+        }
+        requests.post(baseURL + 'UpdateUserPart2', json=part, headers=headers)
+      # complete alarm to arduino
+      
         '''
         previewImg('selected_lego',img_example[selected_lego[1]:selected_lego[3], selected_lego[0]:selected_lego[2]])
       print(object_position)
