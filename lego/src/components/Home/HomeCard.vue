@@ -67,7 +67,7 @@
       </div>
       <div :style="styleFlag ? matrixStyle[2] : instaStyle[2]">
         <div class="home_card_footer_director">Director. {{ nickname }}</div>
-        <div class="home_card_footer_btns">
+        <div class="home_card_footer_btns" data-test="123">
           <button v-if="like" class="home_card_like" @click="pushLike()">
             <i class="fas fa-heart" />
           </button>
@@ -294,6 +294,9 @@ export default {
   white-space: nowrap;
   text-align: start;
 }
+/* .home_card_footer_btns:after {
+  content: ;
+} */
 .home_card_like {
   color: red;
   font-size: 25px;
