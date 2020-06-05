@@ -221,13 +221,14 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
         if request.user.is_authenticated:
             serializer_data["is_like"] = 1 if UserLikeLegoSet.objects.filter(legoset_id=pk, customuser_id=user_id) else 0
             serializer_data["is_review"] = 1 if Review.objects.filter(lego_set_id=pk, user_id=user_id) else 0
-            serializer_data["set_quantity"] = UserSet.objects.get(user_id=user_id, legoset_id=legoset.id) if UserSet.objects.filter(user_id=user_id, legoset_id=legoset.id) else 0
+            serializer_data["set_quantity"] = UserSet.objects.get(user_id=user_id, legoset_id=legoset.id).quantity if UserSet.objects.filter(user_id=user_id, legoset_id=legoset.id) else 0
         else:
             serializer_data["is_like"] = 0
             serializer_data["is_review"] = 0
             serializer_data["set_quantity"] = 0
         reviews = serializers.ReviewSerializer(legoset.review_set.all().order_by("-created_at"), many=True).data
         serializer_data["reviews"] = reviews
+        print(serializer_data)
         return Response(serializer_data)
 
     def destroy(self, request, pk=None):
