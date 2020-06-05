@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "k02d1081.p.ssafy.io",
     "127.0.0.1",
+    "192.168.0.220",
 ]
 
 
@@ -53,6 +54,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'rest_auth.registration',
     'allauth.socialaccount',
+    'corsheaders',
 ]
 
 SITE_ID = 1
@@ -194,4 +196,17 @@ JWT_AUTH = {
 }
 
 AUTH_USER_MODEL = 'api.CustomUser'
+
 CORS_ORIGIN_ALLOW_ALL = True
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    },
+    'USE_SESSION_AUTH': False,
+    'JSON_EDITOR': True,
+}

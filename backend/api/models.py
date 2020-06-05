@@ -6,14 +6,21 @@ class CustomUser(AbstractUser):
     nickname = models.CharField(max_length=50)
     image = models.TextField(null=True)
     comment = models.CharField(max_length=300, null=True)
-    age = models.IntegerField(null=True)
-    gender = models.IntegerField(null=True)
+    age = models.IntegerField(default=30)
+    gender = models.IntegerField(default=0)
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followings')
+    review_count = models.IntegerField(default=0)
+    categories = models.TextField(null=True)
+    
+    @property
+    def category_list(self):
+        return self.categories.split("|") if self.categories else ""
 
 class Theme(models.Model):
     id = models.IntegerField(primary_key=True)
     parent_id = models.IntegerField(null=True)
     name = models.CharField(max_length=100)
+    root_id = models.IntegerField(null=True)
 
     def __str__(self):
         return self.name
@@ -31,6 +38,8 @@ class LegoSet(models.Model):
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="like_sets", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    review_count = models.IntegerField(default=0)
+    like_count = models.IntegerField(default=0)
 
     @property
     def tag_list(self):
@@ -53,9 +62,6 @@ class OfficialMapping(models.Model):
     id = models.CharField(primary_key=True, max_length=50)
     lego_set = models.ForeignKey(LegoSet, on_delete=models.SET_NULL, null=True)
 
-    def __str__(self):
-        return self.set_id
-
 class Category(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -66,7 +72,7 @@ class Category(models.Model):
 
 class Review(models.Model):
     id = models.IntegerField(primary_key=True)
-    set_id = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
+    lego_set = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
     score = models.IntegerField()
@@ -129,8 +135,29 @@ class UserPart(models.Model):
     def __str__(self):
         return self.part_id
 
+class UserPart2(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    part = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
+    color = models.ForeignKey(Color, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.part_id
+
 class SetPart(models.Model):
     lego_set = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
     part = models.ForeignKey(LegoPart, on_delete=models.CASCADE)
     color = models.ForeignKey(Color, on_delete=models.CASCADE)
     quantity = models.IntegerField(null=True)
+
+class UserLikeLegoSet(models.Model):
+    id = models.IntegerField(primary_key=True)
+    customuser = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    legoset = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
+    class Meta:
+        managed = False
+        db_table = 'api_legoset_like_users'
+
+class UserSet(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    legoset = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
+    quantity = models.IntegerField()

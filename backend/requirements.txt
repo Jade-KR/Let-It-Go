@@ -11,6 +11,7 @@ cycler==0.10.0
 defusedxml==0.6.0
 Django==3.0.6
 django-allauth==0.41.0
+django-cors-headers==3.3.0
 django-rest-auth==0.9.5
 django-rest-swagger==2.2.0
 djangorestframework==3.11.0
@@ -52,3 +53,5 @@ typed-ast==1.4.1
 uritemplate==3.0.1
 urllib3==1.25.7
 wrapt==1.11.2
+scikit-learn==0.21.3
+scikit-surprise==1.1.0

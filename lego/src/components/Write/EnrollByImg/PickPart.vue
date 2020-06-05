@@ -25,7 +25,11 @@
     <v-layout justify-center>
       <v-flex xs8>
         <v-card-text>
-          <v-pagination :length="pageLength" v-model="page"></v-pagination>
+          <v-pagination
+            :length="pageLength"
+            v-model="page"
+            color="rgb(255, 215, 0)"
+          ></v-pagination>
         </v-card-text>
       </v-flex>
     </v-layout>
@@ -33,7 +37,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
   data() {
@@ -50,7 +54,8 @@ export default {
   },
   computed: {
     ...mapState({
-      parts: state => state.write.pickedParts
+      parts: state => state.write.pickedParts,
+      pickedReset: state => state.write.pickedReset
     }),
     start: function() {
       return this.page - 1;
@@ -62,14 +67,22 @@ export default {
       setTimeout(() => {
         this.slicedParts = this.parts.slice(this.start * 25, this.page * 25);
       }, 300);
+    },
+    page() {
+      this.resetPickedPartByImg();
+    },
+    pickedReset() {
+      for (let i = 0; i < this.slicedParts.length; ++i) {
+        var nonTarget = document.getElementById(`checked-${i}`);
+        nonTarget.style.display = "";
+      }
     }
   },
   methods: {
     ...mapActions("write", ["pickPartBytImg"]),
-    // onPickPart(id) {
-    //   this.pickPart(id);
-    // },
+    ...mapMutations("write", ["resetPickedPartByImg"]),
     onPickPart(part, idx) {
+      var isHave = false;
       for (let i = 0; i < this.slicedParts.length; ++i) {
         if (i === idx) {
           const target = document.getElementById(`checked-${idx}`);
@@ -77,13 +90,16 @@ export default {
             target.style.display = "block";
           } else {
             target.style.display = "";
+            isHave = true;
           }
           continue;
         }
-        var nonTarget = document.getElementById(`checked-${i}`);
-        nonTarget.style.display = "";
       }
-      this.pickPartBytImg(part);
+      const params = {
+        part: part,
+        isHave: isHave
+      };
+      this.pickPartBytImg(params);
     }
   }
 };

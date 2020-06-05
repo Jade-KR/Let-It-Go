@@ -15,6 +15,7 @@
     "vee-validate": "^3.3.0",
     "vue": "^2.6.11",
     "vue-infinite-scroll": "^2.0.2",
+    "vue-json-excel": "^0.2.98",
     "vue-router": "^3.1.6",
     "vuetify": "^2.2.27",
     "vuetify-dialog": "^2.0.2",
