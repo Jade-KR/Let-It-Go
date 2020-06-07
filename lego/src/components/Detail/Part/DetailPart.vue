@@ -636,4 +636,24 @@ export default {
 .cursor_default {
   cursor: default;
 }
+@media screen and (max-width: 600px) {
+  #part_header {
+    transform: translateY(0);
+  }
+  #excel_export {
+    display: none;
+  }
+  .lego_parts_box {
+    margin: 0px;
+    width: 32vw;
+    height: 32vw;
+    border: 0.2px solid gray;
+  }
+  .plus {
+    display: none;
+  }
+  .minus {
+    display: none;
+  }
+}
 </style>

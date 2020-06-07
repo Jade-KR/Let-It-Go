@@ -587,4 +587,12 @@ export default {
   cursor: pointer;
   font-weight: 400;
 }
+@media screen and (max-width: 600px) {
+  #detail_side_box {
+    border: 1px solid gold;
+  }
+  .divide_line {
+    border: 0.1px solid gold;
+  }
+}
 </style>

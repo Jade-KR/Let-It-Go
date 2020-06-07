@@ -234,4 +234,23 @@ export default {
 .delete_item_box {
   position: relative;
 }
+@media screen and (max-width: 600px) {
+  .header {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .classified_list {
+    width: 100%;
+    height: 100%;
+  }
+  .items_container {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+  }
+  .delete_item_box {
+    position: relative;
+    width: 33.3%;
+  }
+}
 </style>
