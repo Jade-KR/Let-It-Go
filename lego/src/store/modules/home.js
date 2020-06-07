@@ -1,5 +1,4 @@
 import api from "../../api";
-// import router from "../../router";
 
 const state = {
   homeCate: 1,
@@ -19,13 +18,19 @@ const state = {
   modelList: [],
   modelPage: "1",
   likeModelPage: "1",
-  recommendModelPage: "1"
+  recommendModelPage: "1",
+  modelAllCnt: 0,
+  likeModelAllCnt: 0,
+  recommendModelAllCnt: 0
 };
 
 const actions = {
   async getModels({ commit }, params) {
     const append = params.append;
     const resp = await api.getModels(params).then(res => res.data);
+    if (state.modelAllCnt === 0) {
+      commit("setModelAllCnt", resp.count);
+    }
     const models = resp.results.map(e => e);
     if (append) {
       commit("addModelList", models);
@@ -45,6 +50,9 @@ const actions = {
   async getLikeModels({ commit }, params) {
     const append = params.append;
     const resp = await api.getLikeModels(params).then(res => res.data);
+    if (state.likeModelAllCnt === 0) {
+      commit("setLikeModelAllCnt", resp.count);
+    }
     const models = resp.results.map(e => e);
     if (append) {
       commit("addModelList", models);
@@ -54,9 +62,11 @@ const actions = {
     commit("setLikeModelPage", resp.next);
   },
   async getRecommendModels({ commit }, params) {
-    const append = params.append;
-    // 아래 api 바꾸기
-    const resp = await api.getLikeModels(params).then(res => res.data);
+    var append = params.append;
+    const resp = await api.getModelsByUserBased(params).then(res => res.data);
+    if (state.recommendModelAllCnt === 0) {
+      commit("setRecommendModelAllCnt", resp.count);
+    }
     const models = resp.results.map(e => e);
     if (append) {
       commit("addModelList", models);
@@ -88,18 +98,45 @@ const mutations = {
     state.modelList = state.modelList.concat(model);
   },
   setModelPage(state, url) {
-    state.modelPage = new URL(url).searchParams.get("page");
+    if (url !== null) {
+      state.modelPage = new URL(url).searchParams.get("page");
+    } else {
+      state.modelPage = String(Number(state.modelPage) + 1);
+    }
+  },
+  setModelAllCnt(state, cnt) {
+    state.modelAllCnt = Math.ceil(cnt / 10) === 1 ? 2 : Math.ceil(cnt / 10);
   },
   setLikeModelPage(state, url) {
-    state.likeModelPage = new URL(url).searchParams.get("page");
+    if (url !== null) {
+      state.likeModelPage = new URL(url).searchParams.get("page");
+    } else {
+      state.likeModelPage = String(Number(state.likeModelPage) + 1);
+    }
+  },
+  setLikeModelAllCnt(state, cnt) {
+    state.likeModelAllCnt = Math.ceil(cnt / 10) === 1 ? 2 : Math.ceil(cnt / 10);
+  },
+  setRecommendModelPage(state, url) {
+    if (url !== null) {
+      state.recommendModelPage = new URL(url).searchParams.get("page");
+    } else {
+      state.recommendModelPage = String(Number(state.recommendModelPage) + 1);
+    }
+  },
+  setRecommendModelAllCnt(state, cnt) {
+    state.recommendModelAllCnt =
+      Math.ceil(cnt / 10) === 1 ? 2 : Math.ceil(cnt / 10);
   },
   resetModels(state) {
     state.modelList = [];
     state.modelPage = "1";
     state.likeModelPage = "1";
   },
-  setRecommendModelPage(state, url) {
-    state.recommendModelPage = new URL(url).searchParams.get("page");
+  resetPages(state) {
+    state.modelPage = "1";
+    state.likeModelPage = "1";
+    state.recommendModelPage = "1";
   }
 };
 

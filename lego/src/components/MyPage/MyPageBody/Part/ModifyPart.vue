@@ -55,8 +55,8 @@
           <div class="form_box">
             <div class="label_box"></div>
             <div class="input_box">
-              <button class="delete_btn" @click="deleteItem">삭제</button>
               <button class="submit_btn" @click="submit">수정</button>
+              <button class="delete_btn" @click="deleteItem">삭제</button>
             </div>
           </div>
         </div>
@@ -178,8 +178,7 @@ export default {
   color: white;
   width: 80px;
   height: 30px;
-  border-radius: 15%;
-  margin-left: 30px;
+  border-radius: 10px;
   margin-bottom: 10px;
 }
 .delete_btn {
@@ -187,12 +186,13 @@ export default {
   color: white;
   width: 80px;
   height: 30px;
-  border-radius: 15%;
+  margin-left: 30px;
+  border-radius: 10px;
 }
 .color_box {
-  width: 30px;
+  width: 70px;
   height: 20px;
-  border-radius: 20%;
+  border-radius: 15px;
   margin-top: 9px;
 }
 </style>

@@ -3,7 +3,7 @@
     <div class="home_card_header">
       {{ name }}
     </div>
-    <div class="home_card_imgs">
+    <div class="home_card_imgs" v-if="imgFlag === true">
       <div class="slideshow_container">
         <div
           class="go_detail_btn"
@@ -28,12 +28,28 @@
               :id="`slideImg-${i}-${idx}`"
               v-else
               @load="showSlides(1), onResizeHeight()"
+              @error="imgError()"
             />
           </div>
         </div>
 
         <a class="prev" @click.stop="plusSlides(-1)">&#10094;</a>
         <a class="next" @click.stop="plusSlides(1)">&#10095;</a>
+      </div>
+    </div>
+    <div class="home_card_imgs" v-else>
+      <div class="slideshow_container">
+        <div
+          class="go_detail_btn"
+          @click="goDetail(id)"
+          :style="styleFlag ? matrixStyle[4] : instaStyle[4]"
+        >
+          상세보기
+        </div>
+        <img
+          src="../../assets/icons/no_img.jpg"
+          :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
+        />
       </div>
     </div>
     <div
@@ -51,7 +67,10 @@
       </div>
       <div :style="styleFlag ? matrixStyle[2] : instaStyle[2]">
         <div class="home_card_footer_director">Director. {{ nickname }}</div>
-        <div class="home_card_footer_btns">
+        <div
+          class="home_card_footer_btns"
+          :data-test="`${likeCnt}명이 좋아합니다.`"
+        >
           <button v-if="like" class="home_card_like" @click="pushLike()">
             <i class="fas fa-heart" />
           </button>
@@ -97,14 +116,20 @@ export default {
     isLike: {
       type: Number,
       default: -1
+    },
+    likeCount: {
+      type: Number,
+      default: 0
     }
   },
   data() {
     return {
+      imgFlag: true,
       like: false,
       slideIndex: 1,
       imageList: ["images/icons/no_img.jpg"],
       imageLength: 0,
+      likeCnt: 0,
       matrixStyle: [
         {
           display: "block"
@@ -169,9 +194,13 @@ export default {
     if (this.images) {
       this.imageList = await this.images.split("|");
     }
+    this.likeCnt = this.likeCount;
   },
   methods: {
     ...mapActions("home", ["onLike"]),
+    imgError() {
+      this.imgFlag = false;
+    },
     onResizeHeight() {
       if (this.styleFlag == true) {
         for (let i = 0; i < this.imageList.length; ++i) {
@@ -215,8 +244,10 @@ export default {
       const result = await this.onLike(params);
       if (result === "좋아요") {
         this.like = true;
+        this.likeCnt += 1;
       } else if (result === "좋아요 취소") {
         this.like = false;
+        this.likeCnt -= 1;
       }
     },
     plusSlides(n) {
@@ -273,6 +304,15 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: start;
+}
+.home_card_footer_btns:hover::after {
+  content: attr(data-test);
+  position: absolute;
+  transform: translate(30px, 2px);
+  font-size: 20px;
+  background-color: white;
+  border: 1px solid gold;
+  padding: 5px 10px;
 }
 .home_card_like {
   color: red;

@@ -25,7 +25,11 @@
     <v-layout justify-center>
       <v-flex xs8>
         <v-card-text>
-          <v-pagination :length="pageLength" v-model="page"></v-pagination>
+          <v-pagination
+            :length="pageLength"
+            v-model="page"
+            color="rgb(255, 215, 0)"
+          ></v-pagination>
         </v-card-text>
       </v-flex>
     </v-layout>

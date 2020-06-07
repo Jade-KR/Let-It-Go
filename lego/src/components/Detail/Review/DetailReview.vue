@@ -2,17 +2,13 @@
   <div class="detail_review_card">
     <div class="detail_review_show">
       <img
-        :src="userImage"
-        alt="user_image"
-        class="detail_review_img"
-        v-if="userImage !== 'null'"
-      />
-      <img
         src="../../../../public/images/user.png"
         alt="img"
         class="detail_review_img"
-        v-else
+        v-if="userImage === 'null' || userImage === null"
       />
+      <img :src="userImage" alt="user_image" class="detail_review_img" v-else />
+
       <div class="rating" v-if="updateFlag === false">
         <div v-if="ratingTest === 5">
           <i class="fas fa-star gold_star"></i>
@@ -61,33 +57,36 @@
         <i
           class="fas fa-star"
           @click="ratingUpdate(1)"
-          :style="updateRating <= 0 ? ratingStyle[1] : ratingStyle[0]"
+          :style="updateRating >= 1 ? ratingStyle[0] : ratingStyle[1]"
         ></i>
         <i
           class="fas fa-star"
           @click="ratingUpdate(2)"
-          :style="updateRating <= 1 ? ratingStyle[1] : ratingStyle[0]"
+          :style="updateRating >= 2 ? ratingStyle[0] : ratingStyle[1]"
         ></i>
         <i
           class="fas fa-star"
           @click="ratingUpdate(3)"
-          :style="updateRating <= 2 ? ratingStyle[1] : ratingStyle[0]"
+          :style="updateRating >= 3 ? ratingStyle[0] : ratingStyle[1]"
         ></i>
         <i
           class="fas fa-star"
           @click="ratingUpdate(4)"
-          :style="updateRating <= 3 ? ratingStyle[1] : ratingStyle[0]"
+          :style="updateRating >= 4 ? ratingStyle[0] : ratingStyle[1]"
         ></i>
         <i
           class="fas fa-star"
           @click="ratingUpdate(5)"
-          :style="updateRating <= 4 ? ratingStyle[1] : ratingStyle[0]"
+          :style="updateRating >= 5 ? ratingStyle[0] : ratingStyle[1]"
         ></i>
       </div>
     </div>
     <div class="detail_review_desc">
       <div class="detail_review_info">
-        <div class="detail_review_id" @click="goYourPage()">
+        <div class="detail_review_id" @click="goYourPage()" v-if="isLogin">
+          {{ nickname }}
+        </div>
+        <div class="detail_review_id cursor_default" v-else>
           {{ nickname }}
         </div>
         <div class="detail_review_date">
@@ -173,7 +172,7 @@ export default {
       tempSentences: "",
       isMe: false,
       updateFlag: false,
-      updateRating: 0,
+      updateRating: 1,
       updateDesc: "",
       ratingStyle: [
         {
@@ -182,7 +181,8 @@ export default {
         {
           color: "black"
         }
-      ]
+      ],
+      isLogin: localStorage.getItem("token") ? true : false
     };
   },
   mounted() {
@@ -203,11 +203,12 @@ export default {
     },
     isUpdate() {
       this.updateFlag = true;
+      this.updateRating = this.score;
       this.tempSentences = this.sentences;
     },
     updateCancle() {
       this.updateFlag = false;
-      this.updateRating = 0;
+      this.updateRating = 1;
       this.sentences = this.tempSentences;
     },
     ratingUpdate(value) {
@@ -304,7 +305,7 @@ export default {
   font-weight: 600;
   cursor: pointer;
 }
-/* .update_cancle {
-  display: inline-block;
-} */
+.cursor_default {
+  cursor: default;
+}
 </style>

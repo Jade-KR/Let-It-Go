@@ -357,11 +357,12 @@ class ReviewViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Updat
 
     def update(self, request, pk=None):
         review = get_object_or_404(Review, pk=pk)
-        user_id = request.user_id
+        user_id = request.user.id
         if request.user.is_authenticated and review.user_id == user_id:
             data = request.data
             review.content = data["content"]
             review.score = data["score"]
+            review.save()
             return Response("수정 완료")
         return Response("수정 실패")
 
@@ -416,7 +417,7 @@ class FollowingUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.UserSerializer
     pagination_class = SmallPagination
-    queryset = CustomUser.objects.all()
+    queryset = CustomUser.objects.all().order_by("-date_joined")
 
     def list(self, request):
         if request.user.is_staff:
@@ -646,7 +647,7 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                         queryset.append(legoset)
                 predictions = [[knn_user_based.predict(user.id, legoset_id).est, legoset_id] for legoset_id in queryset]
                 predictions.sort(key=lambda x: x[0])
-                queryset = [LegoSet.objects.get(id=legoset_id) for score, legoset in predictions]
+                queryset = [LegoSet.objects.get(id=legoset.id) for score, legoset in predictions]
                 page = self.paginate_queryset(queryset)
                 if page is not None:
                     serializer_data = serializers.LegoSetSerializer(page, many=True).data
