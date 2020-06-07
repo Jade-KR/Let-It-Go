@@ -437,4 +437,22 @@ export default {
 .regi-gender-label:focus {
   background-color: blue;
 }
+@media screen and (max-width: 600px) {
+  #regi-body {
+    width: 100%;
+  }
+  #regi-random-nick {
+    font-size: 16px;
+    transform: translateY(-3.5px);
+    /* cursor: pointer;
+    display: inline-block;
+    background-color: rgba(255, 215, 0, 0.7);
+    color: white;
+    line-height: 40px;
+    font-size: 25px;
+    text-align: center;
+    width: 20%;
+    border: 1px solid gold; */
+  }
+}
 </style>

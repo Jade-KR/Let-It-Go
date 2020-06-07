@@ -79,7 +79,8 @@ export default {
         width: "614px",
         margin: "30px auto",
         backgroundColor: "white"
-      }
+      },
+      isMobile: false
     };
   },
   computed: {
@@ -96,6 +97,13 @@ export default {
     })
   },
   watch: {
+    isMobile() {
+      if (this.isMobile === false) {
+        this.instaStyle["width"] = "614px";
+      } else {
+        this.instaStyle["width"] = "100%";
+      }
+    },
     async homeCate() {
       await this.resetModels();
       await this.resetPages();
@@ -114,6 +122,8 @@ export default {
     }
   },
   async mounted() {
+    this.onResponsiveInverted();
+    window.addEventListener("resize", this.onResponsiveInverted);
     if (localStorage.getItem("categories") === "null") {
       await this.setCate();
       document.getElementById("userCategory").click();
@@ -133,10 +143,18 @@ export default {
   },
   beforeDestroy() {
     this.resetModels();
+    window.removeEventListener("resize", this.onResponsiveInverted);
   },
   methods: {
     ...mapActions("home", ["getModels", "getLikeModels", "getRecommendModels"]),
     ...mapMutations("home", ["resetModels", "resetPages"]),
+    onResponsiveInverted() {
+      if (window.outerWidth < 600) {
+        this.isMobile = true;
+      } else {
+        this.isMobile = false;
+      }
+    },
     styleCheck() {
       if (this.styleFlag === false) {
         this.styleFlag = true;
@@ -209,5 +227,22 @@ export default {
   font-size: 50px;
   font-weight: 700;
   transform: translateX(50px);
+}
+
+@media screen and (max-width: 600px) {
+  #home_body {
+    box-sizing: border-box;
+    width: 100%;
+  }
+  #home_show {
+    display: none;
+  }
+  #home_no_show {
+    text-align: center;
+    margin-top: 100px;
+    font-size: 50px;
+    font-weight: 700;
+    transform: translateX(50px);
+  }
 }
 </style>

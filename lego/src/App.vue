@@ -7,7 +7,7 @@
       :key="$route.fullPath"
       :style="!authFlag ? viewStyle[0] : viewStyle[1]"
     />
-    <go-top />
+    <go-top :style="isMobile ? topSytle[0] : topSytle[1]" />
   </v-app>
 </template>
 
@@ -16,7 +16,7 @@ import RouteView from "@/components/RouteView";
 import GoTop from "@/components/GoTop";
 import Nav from "@/components/Nav";
 
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
   name: "App",
@@ -35,13 +35,46 @@ export default {
         {
           paddingTop: "0px"
         }
-      ]
+      ],
+      topSytle: [
+        {
+          display: "none"
+        }
+      ],
+      isMobile: false
     };
+  },
+  watch: {
+    isMobile() {
+      if (this.isMobile === false) {
+        this.viewStyle[0]["paddingTop"] = "90px";
+      } else {
+        this.viewStyle[0]["paddingTop"] = "20px";
+      }
+    }
   },
   computed: {
     ...mapState({
       authFlag: state => state.auth.authFlag
     })
+  },
+  async mounted() {
+    await this.isTokenVerify();
+    this.onResponsiveInverted();
+    window.addEventListener("resize", this.onResponsiveInverted);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResponsiveInverted);
+  },
+  methods: {
+    ...mapActions("auth", ["isTokenVerify"]),
+    onResponsiveInverted() {
+      if (window.outerWidth < 600) {
+        this.isMobile = true;
+      } else {
+        this.isMobile = false;
+      }
+    }
   }
 };
 </script>

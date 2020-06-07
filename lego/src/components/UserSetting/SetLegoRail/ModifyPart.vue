@@ -328,4 +328,9 @@ export default {
 .modal_container {
   background: white;
 }
+@media screen and (max-width: 600px) {
+  #enroll_btn {
+    width: 40%;
+  }
+}
 </style>
