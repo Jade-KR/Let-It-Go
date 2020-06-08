@@ -164,6 +164,7 @@
                 style="display: inline;"
                 class="chageBtn"
                 @click="changeStaff(v.id)"
+                v-if="v.username !== myName"
               >
                 권한변경
               </div>
@@ -178,7 +179,11 @@
               여
             </th>
             <th>
-              <div class="deleteBtn" @click="delUser(v.id)">
+              <div
+                class="deleteBtn"
+                @click="delUser(v.id)"
+                v-if="v.username !== myName"
+              >
                 DELETE
               </div>
             </th>
@@ -202,7 +207,8 @@ export default {
     return {
       modelFlag: false,
       reviewFlag: false,
-      userFlag: false
+      userFlag: false,
+      myName: localStorage.getItem("username")
     };
   },
   computed: {
