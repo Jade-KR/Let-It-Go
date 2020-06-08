@@ -32,9 +32,11 @@ int Q_go_to_confirm_distance = 2000;
 int Q_go_to_box[QSize] = {0, };
 int Q_go_to_box_front = 0;
 int Q_go_to_box_rear = 0;
-int box_status = 0;
+int box_status = 1;
 int tmp;
 int sensor;
+
+char res;
 
 void enQ(int Q[], int* rear, int val){
   tmp = (*rear - 1) % QSize;
@@ -65,6 +67,8 @@ void setup() {
   Serial.begin(9600);
   myStepper.setSpeed(10);
   myStepper2.setSpeed(10);
+  myStepper.step(1000);
+//  myStepper2.step(1000);
 }
 
 
@@ -83,14 +87,17 @@ void loop() {
       prev_status = cur_status;
       cur_count = 0;
       // push value
-      if(prev_status) enQ(Q_go_to_camera, &Q_go_to_camera_rear, Q_go_to_camera_distance);
+      if(prev_status) {
+        enQ(Q_go_to_camera, &Q_go_to_camera_rear, Q_go_to_camera_distance);
+        //Serial.println("aaaaaaaaaaaaaaaaaaaaaaa");
+      }
     }
   }
   else cur_count = 0;
   //Serial.println(Q_go_to_camera[Q_go_to_camera_front]);
   // check rasp res
   
-  if(Serial.available())Serial.println(Serial.read());
+//  if(Serial.available())Serial.println(Serial.read());
   
   // move
   
@@ -100,8 +107,8 @@ void loop() {
     Q_go_to_camera[Q_go_to_camera_front] -= nStep;
     if (Q_go_to_camera[Q_go_to_camera_front] <= 0) {
       deQ(&Q_go_to_camera_front);
-      Serial.println(1);
       delay(1000);
+      Serial.write(1);
       enQ(Q_go_to_check, &Q_go_to_check_rear, Q_go_to_check_distance);
     }
   }
@@ -110,10 +117,24 @@ void loop() {
     Q_go_to_check[Q_go_to_check_front] -= nStep;
     if (Q_go_to_check[Q_go_to_check_front] <= 0) {
       deQ(&Q_go_to_check_front);
-      enQ(Q_go_to_confirm, &Q_go_to_confirm_rear, Q_go_to_confirm_distance);
+      while(1){
+        if (Serial.available()){
+          res = Serial.read();
+          if (res) {
+            myStepper2.step(box_position[res] - box_position[box_status]);
+            box_status = res;
+          }
+          
+        //  Serial.println(res);
+          //Serial.println(box_position[res] - box_position[box_status]);
+          
+          break;
+        }
+      }
+      //enQ(Q_go_to_confirm, &Q_go_to_confirm_rear, Q_go_to_confirm_distance);
     }
   }
-  
+  /*
   if (!chkQe(Q_go_to_confirm_front, Q_go_to_confirm_rear)) {
     Q_go_to_confirm[Q_go_to_confirm_front] -= nStep;
     if (Q_go_to_confirm[Q_go_to_confirm_front] <= 0) {
@@ -142,4 +163,5 @@ void loop() {
       deQ(&Q_go_to_box_front);
     }
   }
+  */
 }

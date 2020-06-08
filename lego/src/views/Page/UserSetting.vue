@@ -68,7 +68,7 @@ export default {
 <style scoped>
 .bg {
   text-align: center;
-  height: 1000px;
+  height: 100%;
   width: 100%;
   display: flex;
   justify-content: center;
