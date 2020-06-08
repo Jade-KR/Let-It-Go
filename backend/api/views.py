@@ -548,7 +548,7 @@ class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         '''
         user = request.user
         if user.is_authenticated:
-            queryset = LegoSet.objects.filter(user_id=pk).order_by('created_at')
+            queryset = LegoSet.objects.filter(user_id=pk).order_by('-created_at')
             page = self.paginate_queryset(queryset)
             serializer_data = serializers.LegoSetSerializer(page, many=True).data
             for legoset in serializer_data:
@@ -1210,46 +1210,34 @@ def update_user_set_inventory(self):
             userset_q = user.userset_set.filter(legoset_id=legoset_id)
             if userset_q:
                 userset = userset_q[0]
+                
+                # 설계도의 부품들 중복 합쳐주기
+                setpart_dict = dict()
+                for setpart in get_object_or_404(LegoSet, id=legoset_id).setpart_set.all():
+                    if setpart_dict.get(setpart.part_id):
+                        if setpart_dict[setpart.part_id].get(setpart.color_id):
+                            setpart_dict[setpart.part_id][setpart.color_id] += setpart.quantity
+                        else:
+                            setpart_dict[setpart.part_id][setpart.color_id] = setpart.quantity
+                    else:
+                        setpart_dict[setpart.part_id] = {setpart.color_id: setpart.quantity}
+
                 with transaction.atomic():
                     userset.quantity -= 1
                     if userset.quantity:
                         userset.save()
                     else:
                         userset.delete()
-                    setpart_dict = dict()
-                    for setpart in get_object_or_404(LegoSet, id=legoset_id).setpart_set.all():
-                        if setpart_dict.get(setpart.part_id)
-                            if setpart_dict[setpart.part_id].get(setpart.color_id):
-                                inventory_dict[setpart.part_id][setpart.color_id] += setpart.quantity
-                            else:
-                                inventory_dict[setpart.part_id][setpart.color_id] = setpart.quantity
-                        else:
-                            inventory_dict[setpart.part_id] = {setpart.color_id: setpart.quantity}
-
                     for part_id, color_dict in setpart_dict.items():
                         for color_id, quantity in  color_dict.items():
+                            # 유저가 보유하고 있는 아이템이라면 갱신리스트에 추가
                             if inventory_dict.get(part_id) and inventory_dict[part_id].get(color_id):
                                 tmp = inventory_dict[part_id][color_id]
                                 tmp.quantity += setpart.quantity
                                 u.append(tmp)
+                            # 아니면 생성리스트에 추가
                             else:
                                 c.append(UserPart(user=user, part_id=part_id, color_id=color_id, quantity=quantity))
-
-
-
-                    # for setpart in get_object_or_404(LegoSet, id=legoset_id).setpart_set.all():
-                    #     # 유저가 보유하고 있는 아이템이라면
-                    #     if inventory_dict.get(setpart.part_id) and inventory_dict[setpart.part_id].get(setpart.color_id):
-                    #         # 갱신리스트에 추가
-                    #         tmp = inventory_dict[setpart.part_id][setpart.color_id]
-                    #         tmp.quantity += setpart.quantity
-                    #         u.append(tmp)
-                    #     # 보유하고 있지 않은 아이템이라면
-                    #     else:
-                    #         # 생성리스트에 추가
-                    #         c.append(UserPart(user=user, part_id=setpart.part_id, color_id=setpart.color_id, quantity=setpart.quantity))
-
-
                     # 생성할 것들 생성
                     UserPart.objects.bulk_create(c)
                     # 갱신할 것들 갱신
