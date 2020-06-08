@@ -20,9 +20,11 @@ import tensorflow as tf2
 
 baseURL = "https://k02d1081.p.ssafy.io:8009/api/"
 part_id = {"1x1": 3005, "1x2": 3004, "2x2": 3003, "2x3": 3002, "2x4": 3001, "2x4L": 3037}
+position_idx = {"1x1": b'\x01', "1x2": b'\x02', "2x2": b'\x03', "2x3": b'\x04', "2x4": b'\x05', "2x4L": b'\x06'}
+conv = {1: "1x1", 2:"1x2", 3:"2x2", 4:"2x3", 5:"2x4", 6:"2x4L"}
 data = dict()
 while 1:
-  data["username"] = input("ID:")
+  data["username"] = input("ID:")    
   data["password"] = hashlib.sha256(getpass("PASSWORD:").encode('utf-8')).hexdigest()
   
   a = requests.post(baseURL + "login/", json=data)
@@ -48,7 +50,7 @@ def get_classlabel(class_code):
 model = Models.load_model('/home/pi/IoT/my_model.h5')
 
 
-ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+ser = serial.Serial('/dev/ttyACM4', 9600, timeout=1)
 bg_img = cv2.imread("bg_img.bmp")
 print(bg_img.shape)
 bg_b, bg_g, bg_r = cv2.split(bg_img)
@@ -158,10 +160,16 @@ with PiCamera() as camera:
           "part_id": part_id[pred_class],
           "color_id": 0
         }
-        requests.post(baseURL + 'UpdateUserPart2', json=part, headers=headers)
+        #requests.post(baseURL + 'UpdateUserPart2', json=part, headers=headers)
+        ser.write(position_idx[pred_class])
+        
       # complete alarm to arduino
-      
-        '''
+      else:
+        tmppppp = int(input("input: "))
+        
+        #ser.write(b'\x00')
+        ser.write(position_idx[conv[tmppppp]])
+      '''
         previewImg('selected_lego',img_example[selected_lego[1]:selected_lego[3], selected_lego[0]:selected_lego[2]])
       print(object_position)
       
