@@ -1252,3 +1252,10 @@ def update_user_set_inventory(self):
         return Response("add_set 혹은 sub_set를 입력하세요")
     else:
         return Response("비 인증 유저")
+
+@api_view(['POST'])
+def update_user_set_inventory2(self):
+    user = self.user
+    print(user)
+    UserPart2.objects.filter(user=user).delete()
+    return Response("초기화 완료")

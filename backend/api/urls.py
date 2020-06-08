@@ -65,6 +65,7 @@ urlpatterns = [
     path('reset_user_based_k_means', views.reset_user_based_k_means, name="reset_user_based_k_means"),
     path('reset_item_based_k_means', views.reset_item_based_k_means, name="reset_item_based_k_means"),
     path('update_user_set_inventory', views.update_user_set_inventory, name="update_user_set_inventory"),
+    path('update_user_set_inventory2', views.update_user_set_inventory2, name="update_user_set_inventory2"),
 
     # path('create_review', views.create_review, name='create_review')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
