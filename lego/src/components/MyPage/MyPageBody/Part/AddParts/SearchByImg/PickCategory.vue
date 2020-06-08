@@ -66,7 +66,7 @@ export default {
 }
 .category_items_box {
   display: flex;
-  width: 90%;
+  width: 95%;
   margin: auto;
 }
 .category_items {

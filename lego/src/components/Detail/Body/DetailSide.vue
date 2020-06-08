@@ -91,41 +91,52 @@
           <div id="detail_side_similar_text">You Can Make</div>
           <div id="detail_side_similar_percent">{{ makePercent }}%</div>
         </div>
-        <div
+
+        <add-inven
           id="detail_side_similar_add"
-          v-if="is100 === true && isInven === false"
-          @click="addModelToInven()"
+          v-if="is100 === true"
+          @addInven="addModelToInven()"
         >
-          보관함에 설계도 추가하기
-        </div>
-        <div
-          id="detail_side_similar_add"
-          v-if="is100 === true && isInven === true"
-          @click="addModelToInven()"
-        >
-          보관함에 설계도 추가하기
-        </div>
-        <div
+          <div slot="add_inven">
+            보관함에 설계도 추가하기
+          </div>
+        </add-inven>
+
+        <sub-inven
           id="detail_side_similar_sub"
           v-if="isInven === true"
-          @click="subModelToInven()"
+          @subInven="subModelToInven()"
         >
-          보관함에서 설계도 제거하기
-        </div>
+          <div slot="sub_inven">
+            보관함에서 설계도 제거하기
+          </div>
+        </sub-inven>
       </div>
     </div>
-    <video controls width="100%" style="margin-top: 10px;">
-      <source src="../../../assets/zzzz.mp4" type="video/mp4" />
+    <video
+      controls
+      autoplay
+      width="100%"
+      style="margin-top: 10px;"
+      @click="goFood()"
+    >
+      <source src="../../../assets/food_curation.mp4" type="video/mp4" />
     </video>
   </div>
 </template>
 
 <script>
+import AddInven from "./ConfirmModal/AddInven.vue";
+import SubInven from "./ConfirmModal/SubInven.vue";
 import LegoThemes from "../../../../jsonData/LegoThemes.json";
 import router from "../../../router";
 import { mapActions, mapState } from "vuex";
 
 export default {
+  components: {
+    AddInven,
+    SubInven
+  },
   props: {
     id: {
       type: Number,
@@ -407,6 +418,9 @@ export default {
       };
       await this.searchByDetail(params);
       router.push("/search");
+    },
+    goFood() {
+      window.open("https://i02d106.p.ssafy.io/");
     }
   }
 };
@@ -507,7 +521,7 @@ export default {
   font-size: 18px;
   width: 250px;
   position: absolute;
-  transform: translate(-95%, 35%);
+  transform: translate(-50%, 0%);
   border: 1px solid black;
   background-color: white;
   padding: 5px;
@@ -529,7 +543,7 @@ export default {
   font-size: 18px;
   width: 250px;
   position: absolute;
-  transform: translate(-95%, 35%);
+  transform: translate(-50%, 0%);
   border: 1px solid black;
   background-color: white;
   padding: 5px;
@@ -572,5 +586,13 @@ export default {
   color: green;
   cursor: pointer;
   font-weight: 400;
+}
+@media screen and (max-width: 600px) {
+  #detail_side_box {
+    border: 1px solid gold;
+  }
+  .divide_line {
+    border: 0.1px solid gold;
+  }
 }
 </style>

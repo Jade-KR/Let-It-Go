@@ -225,6 +225,7 @@ export default {
   },
   watch: {
     enrolledPart() {
+      this.partQnt = 0;
       if (this.enrolledPart.length !== 0) {
         this.flag = true;
       } else {

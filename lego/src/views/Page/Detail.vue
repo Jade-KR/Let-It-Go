@@ -29,7 +29,7 @@
         <div id="detail_recommend_header">
           이런 설계도는 어떠세요?
         </div>
-        <div style="display: flex;">
+        <div id="detail_rec_cards">
           <div
             v-for="(v, i) in pickedList"
             :key="`recc-${i}`"
@@ -67,7 +67,7 @@
           <i class="fas fa-cubes"></i>&nbsp; 부품
         </div>
       </div>
-      <div id="detail_desc">
+      <div id="detail_reviews">
         <div v-if="btnFlag == 'reviews'">
           <detail-review-write :id="model.id"></detail-review-write>
           <div
@@ -245,14 +245,14 @@ export default {
 }
 #detail_imgs {
   width: 700px;
-  /* border: 1px solid gold; */
   padding: 0 10px;
 }
 #detail_side {
   width: 300px;
-  /* border: 1px solid gold; */
 }
 #detail_desc {
+  width: 1000px;
+  margin: 10px auto;
   border: 3px solid gold;
   padding: 30px;
 }
@@ -262,6 +262,9 @@ export default {
   margin-top: 20px;
   border: 3px solid gold;
   padding: 10px 5px;
+}
+#detail_rec_cards {
+  display: flex;
 }
 #detail_recommend_header {
   text-align: center;
@@ -299,7 +302,9 @@ export default {
   color: black;
   opacity: 1;
 }
-#detail_desc {
+#detail_reviews {
+  border: 3px solid gold;
+  padding: 30px;
   width: 1000px;
   margin: 10px auto;
   /* border: 1px solid gold; */
@@ -308,5 +313,59 @@ export default {
   text-align: center;
   margin-top: 200px;
   font-size: 100px;
+}
+@media screen and (max-width: 600px) {
+  #detail_main {
+    width: 100%;
+    display: block;
+  }
+  #detail_imgs {
+    width: 100vw;
+    height: 100%;
+  }
+  #detail_side {
+    width: 100%;
+  }
+  #detail_desc {
+    width: 100%;
+    margin: 0px;
+    padding: 10px;
+    border: 1px solid gold;
+  }
+  #detail_recommend {
+    width: 100%;
+    padding-bottom: 0;
+    margin-top: 5px;
+    border: 1px solid gold;
+  }
+  #detail_rec_cards {
+    display: inline-block;
+    text-align: center;
+  }
+  #detail_recommend_header {
+    margin-bottom: 0;
+    border-bottom: none;
+  }
+  .detail_rec_card {
+    flex: none;
+    margin: 0px;
+    display: inline-block;
+  }
+  #detail_btns {
+    width: 100%;
+    margin: 5px auto;
+    display: flex;
+    border-top: 1px solid gold;
+    border-bottom: 1px solid gold;
+  }
+  .detail_btn {
+    margin: 0;
+    flex: 1;
+  }
+  #detail_reviews {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid gold;
+  }
 }
 </style>

@@ -22,6 +22,23 @@
           >
             <i :class="menu.icon">&nbsp;{{ menu.title }}</i>
           </button>
+          <hr id="divied_line" v-if="currentState === 2" />
+          <div v-if="currentState === 2" class="sub_menu">
+            <div
+              class="fas fa-scroll sub_menu_tab"
+              @click="setSubState(1)"
+              :style="subState === 1 ? btnStyle[0] : btnStyle[1]"
+            >
+              설계도
+            </div>
+            <div
+              class="fas fa-cubes sub_menu_tab2"
+              @click="setSubState(2)"
+              :style="subState === 2 ? btnStyle[0] : btnStyle[1]"
+            >
+              부품
+            </div>
+          </div>
         </div>
         <div v-else>
           <button
@@ -36,8 +53,8 @@
       <div class="body">
         <Models v-if="currentState === 0"></Models>
         <Like v-if="currentState === 1"></Like>
-        <Parts v-if="currentState === 2"></Parts>
-        <Inventory v-if="currentState === 3"></Inventory>
+        <Inventory v-if="currentState === 2 && subState === 1"></Inventory>
+        <Parts v-if="currentState === 2 && subState === 2"></Parts>
       </div>
     </div>
   </div>
@@ -65,12 +82,11 @@ export default {
       menus: [
         { title: "설계도", icon: "fas fa-scroll" },
         { title: "좋아요", icon: "fas fa-heart" },
-        { title: "부품", icon: "fas fa-cubes" },
+        // { title: "부품", icon: "fas fa-cubes" },
         { title: "보관함", icon: "fas fa-archive" }
-        // { title: "조합", icon: "fas fa-puzzle-piece" },
-        // { title: "등등", icon: "fas fa-scroll" }
       ],
       currentState: 0,
+      subState: 1,
       btnFlag: "설계도",
       btnStyle: [
         {
@@ -110,6 +126,14 @@ export default {
   },
   methods: {
     ...mapActions("mypage", ["getUserInfo", "myFollowing"]),
+    setSubState(value) {
+      const bodyContainer = document.querySelector(".body");
+      bodyContainer.classList.add("anim-out");
+      setTimeout(() => {
+        this.subState = value;
+        bodyContainer.classList.remove("anim-out");
+      }, 300);
+    },
     menuState(title, idx) {
       const bodyContainer = document.querySelector(".body");
       bodyContainer.classList.add("anim-out");
@@ -118,17 +142,6 @@ export default {
         this.btnFlag = title;
         bodyContainer.classList.remove("anim-out");
       }, 300);
-      // this.currentState = idx;
-      // for (let i = 0; i < n; i++) {
-      //   let target = document.getElementById(`menu${i}`);
-      //   if (i === idx) {
-      //     target.style.fontWeight = "bold";
-      //     target.style.color = "black";
-      //   } else {
-      //     target.style.fontWeight = "normal";
-      //     target.style.color = "rgb(160, 159, 159)";
-      //   }
-      // }
     }
   }
 };
@@ -155,7 +168,8 @@ hr {
 .body_menu_bar {
   display: flex;
   border-style: none;
-  height: 50px;
+  min-height: 50px;
+  height: 100%;
   margin-bottom: 10px;
   margin-top: 10px;
   justify-content: center;
@@ -163,10 +177,11 @@ hr {
 .menu {
   font-size: 17px;
   color: rgb(160, 159, 159);
-  margin-right: 70px;
+  margin-right: 100px;
   width: 6vw;
+  margin-top: 10px;
 }
-#menu3 {
+#menu2 {
   margin-right: 0;
 }
 .menu:hover {
@@ -183,5 +198,70 @@ hr {
 .body.anim-out {
   opacity: 0;
   transform: scale(0.9) translateY(40px);
+}
+.sub_menu {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.sub_menu_tab,
+.sub_menu_tab2 {
+  font-size: 17px;
+  color: rgb(160, 159, 159);
+  margin-right: 100px;
+  width: 6vw;
+  cursor: pointer;
+}
+.sub_menu_tab:hover,
+.sub_menu_tab2:hover {
+  color: black;
+  font-weight: bold;
+}
+.sub_menu_tab2 {
+  margin-right: 0;
+}
+#divied_line {
+  border: 1px dashed gold;
+  width: 80%;
+  margin: auto;
+  margin-top: 20px;
+}
+@media screen and (max-width: 600px) {
+  .whole_box {
+    width: 100%;
+  }
+  .header {
+    margin-bottom: 0px;
+    height: 100%;
+  }
+  .menu {
+    width: 100px;
+    margin: 0px;
+    margin-right: 10px;
+  }
+  .body_menu_bar {
+    margin-bottom: 0;
+  }
+  .body {
+    height: 100%;
+    margin-bottom: 40px;
+  }
+  .sub_menu {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .sub_menu_tab,
+  .sub_menu_tab2 {
+    width: 80px;
+    margin: 0px;
+    margin-right: 40px;
+  }
+  .sub_menu_tab2 {
+    margin-right: 0;
+  }
+  #divied_line {
+    margin-top: 10px;
+  }
 }
 </style>

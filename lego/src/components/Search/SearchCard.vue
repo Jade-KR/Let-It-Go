@@ -5,9 +5,15 @@
         class="body_img"
         src="../../assets/icons/no_img.jpg"
         alt="no_image"
-        v-if="image === null || image === ''"
+        v-if="image === null || image === '' || errorFlag === true"
       />
-      <img class="body_img" :src="image" alt="image" v-else />
+      <img
+        class="body_img"
+        :src="image"
+        alt="image"
+        v-else
+        @error="imgError()"
+      />
 
       <div class="body_img_hover">
         <div class="body_img_desc">
@@ -88,13 +94,17 @@ export default {
         {
           color: "white"
         }
-      ]
+      ],
+      errorFlag: false
     };
   },
   methods: {
     goDetail() {
       router.push("/detail/" + this.id);
       window.scrollTo(0, 0);
+    },
+    imgError() {
+      this.errorFlag = true;
     }
   }
 };
@@ -175,5 +185,16 @@ export default {
   font-size: 25px;
   color: white;
   margin-right: 20px;
+}
+
+@media screen and (max-width: 600px) {
+  .item {
+    width: 33.3vw;
+    height: 33.3vw;
+    margin: 0;
+  }
+  .body_img_hover {
+    display: none;
+  }
 }
 </style>

@@ -37,10 +37,11 @@
           style="width:37%; display:inline-block; margin-left:10px; border: 0.5px solid gold;"
         />
       </div>
-      <button id="login-kakao">Kakao</button>
       <div>
         계정이 없으신가요?
-        <button style="color:gold;" @click="goRegi()">가입하기</button>
+        <button style="color:gold; margin-top: 20px;" @click="goRegi()">
+          가입하기
+        </button>
       </div>
       <div>
         or
@@ -102,20 +103,17 @@ export default {
   text-align: center;
   height: 100vh;
   width: 100%;
-  /* background-color: black; */
   background-image: url("../../assets/login_bg.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  /* filter: blur(8px);
-  -webkit-filter: blur(8px); */
 }
 #login-body {
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.8); /* Black w/opacity/see-through */
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.8);
   border: 5px solid gold;
   color: white;
-  width: 40vw;
+  width: 600px;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -171,5 +169,10 @@ export default {
 #login-kakao:hover {
   background-color: skyblue;
   color: white;
+}
+@media screen and (max-width: 600px) {
+  #login-body {
+    width: 100%;
+  }
 }
 </style>
