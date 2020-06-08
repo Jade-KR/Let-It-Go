@@ -222,6 +222,11 @@ export default {
     })
   },
   async mounted() {
+    const isStaff = localStorage.getItem("isStaff");
+    if (isStaff !== "true") {
+      router.push("/");
+      return;
+    }
     await this.setAuthFlag(true);
   },
   destroyed() {
