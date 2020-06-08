@@ -29,6 +29,9 @@
         3
       </div>
     </div>
+    <div id="write_desc">
+      당신의 작품을 공유해 보세요!
+    </div>
     <hr id="write_divideline" />
     <div id="write_info">
       <write-imgs v-if="currentStep === 1"></write-imgs>
@@ -129,6 +132,11 @@ export default {
   width: 150px;
   vertical-align: middle;
   border: 1px solid gold;
+}
+#write_desc {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 22px;
 }
 #write_divideline {
   width: 80%;

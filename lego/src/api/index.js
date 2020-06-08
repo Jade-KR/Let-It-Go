@@ -104,7 +104,8 @@ export default {
   },
   getUserModels(params) {
     return http.get(`${apiUrl}/UserLegoSet/${params.id}?page_size=12`, {
-      params
+      params,
+      headers
     });
   },
   changeProfilePic(params) {
@@ -124,7 +125,8 @@ export default {
   },
   getUserLikeModels(params) {
     return http.get(`${apiUrl}/UserLikeLegoSet/${params.id}?page_size=12`, {
-      params
+      params,
+      headers
     });
   },
   getUserPartsAll() {
@@ -133,10 +135,14 @@ export default {
     });
   },
   setUserCategory(params) {
-    return http.post(`${apiUrl}/set_user_category`, params, { headers });
+    return http.post(`${apiUrl}/set_user_category`, params, {
+      headers
+    });
   },
   delelteModel(params) {
-    return http.delete(`${apiUrl}/LegoSet/${params}`, { headers });
+    return http.delete(`${apiUrl}/LegoSet/${params}`, {
+      headers
+    });
   },
   getUsers(params) {
     return http.get(`${apiUrl}/User`, {
@@ -145,18 +151,49 @@ export default {
     });
   },
   delelteUser(params) {
-    return http.delete(`${apiUrl}/User/${params}`, { headers });
+    return http.delete(`${apiUrl}/User/${params}`, {
+      headers
+    });
   },
   changeUserStaff(params) {
-    return http.put(`${apiUrl}/User/${params}`, {}, { headers });
+    return http.put(
+      `${apiUrl}/User/${params}`,
+      {},
+      {
+        headers
+      }
+    );
   },
   getReviews(params) {
-    return http.get(`${apiUrl}/Review`, { params, headers });
+    return http.get(`${apiUrl}/Review`, {
+      params,
+      headers
+    });
   },
   deleteReview(params) {
-    return http.delete(`${apiUrl}/Review/${params}`, { headers });
+    return http.delete(`${apiUrl}/Review/${params}`, {
+      headers
+    });
   },
   getModelsByItemBased(params) {
-    return http.get(`${apiUrl}/ItemBasedRecommend/${params}`, { headers });
+    return http.get(`${apiUrl}/ItemBasedRecommend/${params}`, {
+      headers
+    });
+  },
+  getModelsByUserBased(params) {
+    return http.get(`${apiUrl}/UserBasedRecommend`, { params, headers });
+  },
+  setModelToInventory(params) {
+    return http.post(`${apiUrl}/update_user_set_inventory`, params, {
+      headers
+    });
+  },
+  getPartsFromLegoRail() {
+    return http.get(`${apiUrl}/user_parts_registered_by_IoT`, {
+      headers
+    });
+  },
+  getModelsForInven(params) {
+    return http.get(`${apiUrl}/UserSet`, { params, headers });
   }
 };

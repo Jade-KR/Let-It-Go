@@ -16,10 +16,14 @@
         >
           <p class="menu_name">{{ menu }}</p>
         </div>
-        <div class="menu" @click="member()">
+        <div class="menu" @click="member()" v-if="!isMobile">
           <p class="menu_name">멤버소개</p>
         </div>
-        <div class="menu" @click="admin()" v-if="isStaff === 'true'">
+        <div
+          class="menu"
+          @click="admin()"
+          v-if="isStaff === 'true' && !isMobile"
+        >
           <p class="menu_name">관리자페이지</p>
         </div>
         <div class="menu" @click="logout()">
@@ -40,8 +44,16 @@ export default {
     return {
       dialog: false,
       menus: ["프로필 편집", "비밀번호 변경", "레고레일"],
-      isStaff: localStorage.getItem("isStaff")
+      isStaff: localStorage.getItem("isStaff"),
+      isMobile: false
     };
+  },
+  mounted() {
+    this.onResponsiveInverted();
+    window.addEventListener("resize", this.onResponsiveInverted);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResponsiveInverted);
   },
   methods: {
     ...mapActions("auth", ["logout"]),
@@ -56,6 +68,13 @@ export default {
     },
     admin() {
       this.$router.push("/admin");
+    },
+    onResponsiveInverted() {
+      if (window.outerWidth < 600) {
+        this.isMobile = true;
+      } else {
+        this.isMobile = false;
+      }
     }
   }
 };
@@ -63,7 +82,7 @@ export default {
 
 <style scoped>
 .menu_box {
-  height: 250px;
+  height: 300px;
   display: flex;
   flex-flow: column nowrap;
   border: rgb(255, 140, 46) 4px solid;

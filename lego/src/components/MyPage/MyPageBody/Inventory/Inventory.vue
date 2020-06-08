@@ -16,26 +16,36 @@
               @click="goDetail(item)"
             >
               <div class="body_img_box">
-                <img class="body_img" :src="item.images" alt />
+                <img class="body_img" :src="item.image" alt />
                 <div class="body_img_hover">
                   <div class="body_img_desc">
                     <div class="body_img_name">
                       <b>{{ item.name }}</b>
                     </div>
-                    <div class="body_img_nick">By. {{ item.nickname }}</div>
+                    <div class="body_img_nick">
+                      By. {{ item.user_nickname }}
+                    </div>
                     <div class="body_img_info">
                       <i
                         class="fas fa-heart"
-                        :style="isLike === 1 ? likeStyle[0] : likeStyle[1]"
+                        :style="
+                          item.is_like === 1 ? likeStyle[0] : likeStyle[1]
+                        "
                       ></i>
                       <span>{{ item.like_count }}</span>
                       <i
                         class="fas fa-comment"
                         :style="
-                          isReview === 1 ? reviewStyle[0] : reviewStyle[1]
+                          item.is_review === 1 ? reviewStyle[0] : reviewStyle[1]
                         "
                       ></i>
                       <span>{{ item.review_count }}</span>
+                    </div>
+                    <div class="body_img_save">
+                      <b style="font-size: 26px; color: gold;">{{
+                        item.quantity
+                      }}</b
+                      >개 보관중
                     </div>
                   </div>
                 </div>
@@ -75,18 +85,16 @@ export default {
         {
           color: "white"
         }
-      ],
-      isLike: 1,
-      isReview: 1
+      ]
     };
   },
   async mounted() {
     const params = {
       page: 1,
-      append: false,
-      id: this.$route.params.user_id
+      append: false
+      // id: this.$route.params.user_id
     };
-    await this.getUserModels(params);
+    await this.userModelInven(params);
     if (this.stopScroll === true) {
       return;
     }
@@ -94,21 +102,21 @@ export default {
   },
   computed: {
     ...mapState({
-      userModels: state => state.mypage.userModelList,
-      page: state => state.mypage.userModelPage,
+      userModels: state => state.mypage.invenModelList,
+      page: state => state.mypage.invenModelPage,
       stopScroll: state => state.mypage.stopScroll
     })
   },
   methods: {
-    ...mapActions("mypage", ["getUserModels"]),
+    ...mapActions("mypage", ["userModelInven"]),
     async loadMore() {
       this.loading = true;
       const params = {
         page: this.page,
-        append: true,
-        id: this.$route.params.user_id
+        append: true
+        // id: this.$route.params.user_id
       };
-      await this.getUserModels(params);
+      await this.userModelInven(params);
       if (this.stopScroll === true) {
         return;
       }
@@ -118,7 +126,7 @@ export default {
     },
     goDetail(item) {
       this.$router.push({
-        path: `/detail/${item.id}`
+        path: `/detail/${item.legoset_id}`
       });
     }
   }
@@ -208,5 +216,32 @@ export default {
   font-size: 25px;
   color: white;
   margin-right: 20px;
+}
+.body_img_save {
+  font-size: 20px;
+}
+@media screen and (max-width: 600px) {
+  .main {
+    justify-content: start;
+    width: 100%;
+    height: 100%;
+  }
+  .whole_box {
+    width: 100%;
+    height: 100%;
+  }
+  .item {
+    width: 33.3vw;
+    height: 33.3vw;
+    margin: 0px;
+    display: inline-block;
+  }
+  .body_img_box > img {
+    width: 33.3vw;
+    height: 33.3vw;
+  }
+  .body_img_hover {
+    display: none;
+  }
 }
 </style>

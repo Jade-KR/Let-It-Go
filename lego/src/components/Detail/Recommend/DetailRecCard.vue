@@ -1,5 +1,5 @@
 <template>
-  <div class="rec_card_main">
+  <div class="rec_card_main" @click="goDetail(id)">
     <div>
       <img
         :src="`${images}`"
@@ -16,7 +16,7 @@
       />
     </div>
     <div class="rec_card_info">
-      <div class="rec_card_box" @click="goDetail(id)">
+      <div class="rec_card_box">
         <div class="rec_card_name">{{ name }}</div>
         <div class="rec_card_bricks">By. {{ nickname }}</div>
         <div class="rec_card_icon">
@@ -147,5 +147,18 @@ export default {
 }
 .rec_card_icon {
   font-size: 25px;
+}
+
+@media screen and (max-width: 600px) {
+  .rec_card_main {
+    height: 100%;
+  }
+  .rec_img {
+    width: 47vw;
+    height: 47vw;
+  }
+  .rec_card_info {
+    display: none;
+  }
 }
 </style>

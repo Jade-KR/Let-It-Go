@@ -60,13 +60,6 @@ export default {
     menuState(title, idx) {
       this.currentState = idx;
       this.btnFlag = title;
-      // this.currentState = idx;
-      // for (let i = 0; i < n; i++) {
-      //   let target = document.getElementById(`menu${i}`);
-      //   i === idx
-      //     ? (target.style.fontWeight = "bold")
-      //     : (target.style.fontWeight = "normal");
-      // }
     }
   }
 };
@@ -75,7 +68,7 @@ export default {
 <style scoped>
 .bg {
   text-align: center;
-  height: 1000px;
+  height: 100%;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -93,10 +86,6 @@ export default {
   border-right: 1px silver solid;
   width: 25%;
   height: 500px;
-}
-.right_body_box {
-  width: 75%;
-  height: fit-content;
 }
 .menu_box {
   display: flex;
@@ -117,5 +106,33 @@ export default {
 }
 .menu_box:hover {
   cursor: pointer;
+}
+@media screen and (max-width: 600px) {
+  .bg {
+    margin-top: 20px;
+  }
+  .whole_box {
+    margin: 0px;
+    display: block;
+    width: 100%;
+    position: static;
+    border: none;
+  }
+  .left_menu_box {
+    width: 100%;
+    height: 100%;
+    border-right: none;
+    border-bottom: 1px solid silver;
+    display: flex;
+  }
+  .menu_box {
+    width: 33.3%;
+    height: 100%;
+  }
+  .menu_box > p {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+  }
 }
 </style>

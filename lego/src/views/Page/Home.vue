@@ -38,6 +38,7 @@
           :name="model.name"
           :isLike="model.is_like"
           :styleFlag="styleFlag"
+          :likeCount="model.like_count"
         />
       </div>
     </div>
@@ -78,7 +79,8 @@ export default {
         width: "614px",
         margin: "30px auto",
         backgroundColor: "white"
-      }
+      },
+      isMobile: false
     };
   },
   computed: {
@@ -88,12 +90,23 @@ export default {
       page: state => state.home.modelPage,
       likePage: state => state.home.likeModelPage,
       recommendPage: state => state.home.recommendModelPage,
+      modelAllCnt: state => state.home.modelAllCnt,
+      likeModelAllCnt: state => state.home.likeModelAllCnt,
+      recommendModelAllCnt: state => state.home.recommendModelAllCnt,
       isCategory: state => state.auth.isCategory
     })
   },
   watch: {
+    isMobile() {
+      if (this.isMobile === false) {
+        this.instaStyle["width"] = "614px";
+      } else {
+        this.instaStyle["width"] = "100%";
+      }
+    },
     async homeCate() {
       await this.resetModels();
+      await this.resetPages();
       const params = {
         page: 1,
         append: false
@@ -109,6 +122,8 @@ export default {
     }
   },
   async mounted() {
+    this.onResponsiveInverted();
+    window.addEventListener("resize", this.onResponsiveInverted);
     if (localStorage.getItem("categories") === "null") {
       await this.setCate();
       document.getElementById("userCategory").click();
@@ -128,10 +143,18 @@ export default {
   },
   beforeDestroy() {
     this.resetModels();
+    window.removeEventListener("resize", this.onResponsiveInverted);
   },
   methods: {
     ...mapActions("home", ["getModels", "getLikeModels", "getRecommendModels"]),
-    ...mapMutations("home", ["resetModels"]),
+    ...mapMutations("home", ["resetModels", "resetPages"]),
+    onResponsiveInverted() {
+      if (window.outerWidth < 600) {
+        this.isMobile = true;
+      } else {
+        this.isMobile = false;
+      }
+    },
     styleCheck() {
       if (this.styleFlag === false) {
         this.styleFlag = true;
@@ -145,13 +168,22 @@ export default {
         append: true
       };
       if (this.homeCate === 1) {
+        if (this.modelAllCnt === Number(this.page)) {
+          return;
+        }
         params["page"] = this.page;
         await this.getModels(params);
       } else if (this.homeCate === 2) {
+        if (this.likeModelAllCnt === Number(this.likePage)) {
+          return;
+        }
         params["page"] = this.likePage;
         await this.getLikeModels(params);
       } else if (this.homeCate === 3) {
-        params["page"] = this.recommendPage;
+        if (this.recommendModelAllCnt === Number(this.recommendPage)) {
+          return;
+        }
+        params["page"] = Number(this.recommendPage);
         await this.getRecommendModels(params);
       }
       setTimeout(() => {
@@ -195,5 +227,22 @@ export default {
   font-size: 50px;
   font-weight: 700;
   transform: translateX(50px);
+}
+
+@media screen and (max-width: 600px) {
+  #home_body {
+    box-sizing: border-box;
+    width: 100%;
+  }
+  #home_show {
+    display: none;
+  }
+  #home_no_show {
+    text-align: center;
+    margin-top: 100px;
+    font-size: 50px;
+    font-weight: 700;
+    transform: translateX(50px);
+  }
 }
 </style>

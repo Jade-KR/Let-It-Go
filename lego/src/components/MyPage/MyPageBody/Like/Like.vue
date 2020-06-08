@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="all_back">
     <div
       id="model_body"
       v-infinite-scroll="loadMore"
@@ -32,7 +32,7 @@
                       <i
                         class="fas fa-comment"
                         :style="
-                          isReview === 1 ? reviewStyle[0] : reviewStyle[1]
+                          item.is_review === 1 ? reviewStyle[0] : reviewStyle[1]
                         "
                       ></i>
                       <span>{{ item.review_count }}</span>
@@ -76,8 +76,7 @@ export default {
           color: "white"
         }
       ],
-      isLike: 1,
-      isReview: 1
+      isLike: 1
     };
   },
   async mounted() {
@@ -207,5 +206,29 @@ export default {
   font-size: 25px;
   color: white;
   margin-right: 20px;
+}
+@media screen and (max-width: 600px) {
+  .main {
+    justify-content: start;
+    width: 100%;
+    height: 100%;
+  }
+  .whole_box {
+    width: 100%;
+    height: 100%;
+  }
+  .item {
+    width: 33.3vw;
+    height: 33.3vw;
+    margin: 0px;
+    display: inline-block;
+  }
+  .body_img_box > img {
+    width: 33.3vw;
+    height: 33.3vw;
+  }
+  .body_img_hover {
+    display: none;
+  }
 }
 </style>

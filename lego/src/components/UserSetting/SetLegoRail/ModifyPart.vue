@@ -52,8 +52,8 @@
                       <v-avatar left>
                         <div
                           :style="
-                    `background-color: #${data.item.colorRgb}; width: 100%; height: 100%;`
-                  "
+                            `background-color: #${data.item.colorRgb}; width: 100%; height: 100%;`
+                          "
                         ></div>
                       </v-avatar>
                       {{ data.item.colorName }}
@@ -61,18 +61,22 @@
                   </template>
                   <template v-slot:item="data">
                     <template v-if="typeof data.item !== 'object'">
-                      <v-list-item-content v-text="data.item"></v-list-item-content>
+                      <v-list-item-content
+                        v-text="data.item"
+                      ></v-list-item-content>
                     </template>
                     <template v-else>
                       <v-list-item-avatar>
                         <div
                           :style="
-                    `background-color: #${data.item.colorRgb}; width: 100%; height: 100%;`
-                  "
+                            `background-color: #${data.item.colorRgb}; width: 100%; height: 100%;`
+                          "
                         ></div>
                       </v-list-item-avatar>
                       <v-list-item-content>
-                        <v-list-item-title v-html="data.item.colorName"></v-list-item-title>
+                        <v-list-item-title
+                          v-html="data.item.colorName"
+                        ></v-list-item-title>
                       </v-list-item-content>
                     </template>
                   </template>
@@ -93,7 +97,12 @@
                 ></v-text-field>
               </div>
             </div>
-            <input type="submit" value="수정 완료" id="enroll_btn" @click="changeInfo()" />
+            <input
+              type="submit"
+              value="수정 완료"
+              id="enroll_btn"
+              @click="changeInfo()"
+            />
           </div>
         </div>
       </div>
@@ -107,7 +116,7 @@ import { mapActions, mapState } from "vuex";
 
 export default {
   props: {
-    partId: Number,
+    partId: String,
     colorId: Number,
     quantity: Number,
     idx: Number
@@ -318,5 +327,10 @@ export default {
 }
 .modal_container {
   background: white;
+}
+@media screen and (max-width: 600px) {
+  #enroll_btn {
+    width: 40%;
+  }
 }
 </style>

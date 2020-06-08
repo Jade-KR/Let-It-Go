@@ -4,34 +4,39 @@
       <div @click="changeCate('all')" id="all_parts">
         <i class="fas fa-exclamation icon"></i>
         전체 부품
-        <button
-          @click.stop="addParts()"
+        <add-all-parts
+          @addAll="addParts()"
           class="plus"
-          :disabled="partFlag === 'need'"
-          v-if="isLogin === true && isNoParts === false"
+          v-if="isLogin === true && isNoParts === false && partFlag === 'all'"
         >
-          <i class="fas fa-plus"></i>
-        </button>
-        <button
-          @click.stop="minusParts()"
+          <button slot="all_add">
+            <i class="fas fa-plus"></i>
+          </button>
+        </add-all-parts>
+        <delete-all-parts
+          @deleteAll="minusParts()"
           class="minus"
-          :disabled="partFlag === 'need'"
-          v-if="isLogin === true && isNoParts === false"
+          v-if="isLogin === true && isNoParts === false && partFlag === 'all'"
         >
-          <i class="fas fa-minus"></i>
-        </button>
+          <button slot="all_del">
+            <i class="fas fa-minus"></i>
+          </button>
+        </delete-all-parts>
       </div>
       <div @click="changeCate('need')" id="need_parts">
         <i class="fas fa-question icon"></i>
         필요한 부품
-        <button
-          @click.stop="addParts()"
+        <add-need-parts
+          @addNeed="addParts()"
           class="plus"
-          :disabled="partFlag === 'all'"
-          v-if="isLogin === true && isNeedNothing === false"
+          v-if="
+            isLogin === true && isNeedNothing === false && partFlag === 'need'
+          "
         >
-          <i class="fas fa-plus"></i>
-        </button>
+          <button slot="need_add">
+            <i class="fas fa-plus"></i>
+          </button>
+        </add-need-parts>
       </div>
     </div>
     <hr id="dived_line" />
@@ -54,7 +59,34 @@
           v-if="part[1] === ''"
         />
         <img v-else :src="part[1]" :alt="part[0]" class="lego_part" />
-        <div class="part_info">
+        <modify-part
+          :partId="part[0]"
+          :colorId="part[5]"
+          :quantity="part[3]"
+          :rgb="part[2]"
+          :idx="i"
+          @update="changed()"
+          v-if="isLogin === true"
+        >
+          <div class="part_info" slot="click">
+            <div class="part_id">
+              <div style="margin-bottom: 5px;">
+                {{ part[0] }}
+              </div>
+              <div style="display: flex;">
+                <div
+                  :style="
+                    `width: 50px; height: 20px; background-color: #${part[2]}; border-radius: 20px; margin-right: 10px;`
+                  "
+                ></div>
+                <div style="font-size: 18px; transform: translateY(-3px);">
+                  <b>{{ part[3] }}</b>
+                </div>
+              </div>
+            </div>
+          </div>
+        </modify-part>
+        <div class="part_info cursor_default" v-else>
           <div class="part_id">
             <div style="margin-bottom: 5px;">
               {{ part[0] }}
@@ -102,10 +134,20 @@
 </template>
 
 <script>
+import AddAllParts from "./ConfirmModal/AddAllParts.vue";
+import AddNeedParts from "./ConfirmModal/AddNeedParts.vue";
+import DeleteAllParts from "./ConfirmModal/DeleteAllParts.vue";
+import ModifyPart from "./ConfirmModal/ModifyPart.vue";
 import LegoSort from "../../../../jsonData/LegoSort.json";
 import { mapState, mapActions } from "vuex";
 
 export default {
+  components: {
+    AddAllParts,
+    AddNeedParts,
+    DeleteAllParts,
+    ModifyPart
+  },
   props: {
     parts: {
       type: Array
@@ -202,6 +244,7 @@ export default {
       }
     },
     myparts() {
+      this.needParts = [];
       if (this.myparts.length === 0) {
         this.needParts = this.allParts;
         return;
@@ -446,6 +489,10 @@ export default {
       for (let i in partsObj) {
         this.preprocedParts.push(partsObj[i]);
       }
+    },
+    async changed() {
+      await this.getUserPartsAll();
+      alert("내 부품에 추가되었습니다.");
     }
   }
 };
@@ -500,7 +547,7 @@ export default {
   border: 1px black solid;
   margin: 5px;
   position: relative;
-  cursor: default;
+  cursor: pointer;
   background: black;
 }
 .lego_part {
@@ -554,7 +601,7 @@ export default {
   font-size: 18px;
   width: 200px;
   position: absolute;
-  transform: translate(7px, -27px);
+  transform: translate(7px, -55px);
   border: 1px solid black;
   background-color: white;
   padding: 5px;
@@ -577,7 +624,7 @@ export default {
   font-size: 18px;
   width: 220px;
   position: absolute;
-  transform: translate(7px, -27px);
+  transform: translate(7px, -55px);
   border: 1px solid black;
   background-color: white;
   padding: 5px;
@@ -585,5 +632,28 @@ export default {
 }
 .minus:disabled {
   opacity: 0;
+}
+.cursor_default {
+  cursor: default;
+}
+@media screen and (max-width: 600px) {
+  #part_header {
+    transform: translateY(0);
+  }
+  #excel_export {
+    display: none;
+  }
+  .lego_parts_box {
+    margin: 0px;
+    width: 32vw;
+    height: 32vw;
+    border: 0.2px solid gray;
+  }
+  .plus {
+    display: none;
+  }
+  .minus {
+    display: none;
+  }
 }
 </style>

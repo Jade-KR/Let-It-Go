@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="nav">
+    <div class="nav" v-if="isMobile === false">
       <div class="nav_left">
         <div class="logo_box" @click="goHome()">
           <img src="@/assets/logo.png" alt id="logo_box_img" />
@@ -13,20 +13,87 @@
         <button class="button" id="nav_pop" @click="onHomeCate(2)">
           <span data-title="인기도순!">POP!</span>
         </button>
-        <button class="button" id="nav_you" @click="onHomeCate(3)">
+        <button
+          class="button"
+          id="nav_you"
+          @click="onHomeCate(3)"
+          v-if="checkLogin === true"
+        >
           <span data-title="추천순!">YOU!</span>
         </button>
       </div>
       <div class="nav_right">
         <div class="icons_box">
           <i class="fas fa-search right_icon" @click="goSearch"></i>
-          <i class="fas fa-plus right_icon" @click="goWrite"></i>
+          <i
+            class="fas fa-plus right_icon"
+            @click="goWrite"
+            v-if="checkLogin === true"
+          ></i>
           <div class="mypage" @click="goMyPage" v-show="checkLogin">
-            <img :src="profilePic" alt="noImage" class="picture" id="right_img" />
+            <img
+              :src="profilePic"
+              alt="noImage"
+              class="picture"
+              id="right_img"
+            />
           </div>
-          <span class="login_btn logRegi" v-if="checkLogin === false" @click="goLogin()">로그인</span>
-          <span class="register_btn logRegi" v-if="checkLogin === false" @click="goRegister()">회원가입</span>
-          <!-- <i class="fas fa-user-alt" @click="goMyPage"></i> -->
+          <span
+            class="login_btn logRegi"
+            v-if="checkLogin === false"
+            @click="goLogin()"
+            >로그인</span
+          >
+          <span
+            class="register_btn logRegi"
+            v-if="checkLogin === false"
+            @click="goRegister()"
+            >회원가입</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <div v-else>
+      <div id="nav_mobile_top">
+        <div class="logo_box" @click="goHome()">
+          <img src="@/assets/logo.png" alt id="logo_box_img" />
+        </div>
+        <button class="button" id="nav_new" @click="onHomeCate(1)">
+          <span data-title="새로운">NEW!</span>
+        </button>
+        <button class="button" id="nav_pop" @click="onHomeCate(2)">
+          <span data-title="인기도">POP!</span>
+        </button>
+        <button
+          class="button"
+          id="nav_you"
+          @click="onHomeCate(3)"
+          v-if="checkLogin === true"
+        >
+          <span data-title="추천">YOU!</span>
+        </button>
+      </div>
+      <div class="nav">
+        <div class="nav_right">
+          <div class="icons_box">
+            <i class="fas fa-home" @click="goHome"></i>
+            <i class="fas fa-search right_icon" @click="goSearch"></i>
+            <div class="mypage" @click="goMyPage" v-show="checkLogin">
+              <img
+                :src="profilePic"
+                alt="noImage"
+                class="picture"
+                id="right_img"
+              />
+            </div>
+            <span
+              class="login_btn logRegi"
+              v-if="checkLogin === false"
+              @click="goLogin()"
+              >로그인</span
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -44,7 +111,8 @@ export default {
         localStorage.getItem("image") != "null" || ""
           ? localStorage.getItem("image")
           : require("@/../public/images/user.png"),
-      checkLogin: localStorage.getItem("token") != null ? true : false
+      checkLogin: localStorage.getItem("token") != null ? true : false,
+      isMobile: false
     };
   },
   computed: {
@@ -66,10 +134,22 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener("scroll", this.scrollEvent);
+    window.removeEventListener("resize", this.onResponsiveInverted);
+  },
+  mounted() {
+    this.onResponsiveInverted();
+    window.addEventListener("resize", this.onResponsiveInverted);
   },
   methods: {
     ...mapActions("auth", ["isTokenVerify", "logout", "login", "register"]),
     ...mapMutations("home", ["setHomeCate"]),
+    onResponsiveInverted() {
+      if (window.outerWidth <= 600) {
+        this.isMobile = true;
+      } else {
+        this.isMobile = false;
+      }
+    },
     async goMyPage() {
       window.scrollTo(0, 0);
       const isVerify = await this.isTokenVerify();
@@ -127,38 +207,40 @@ export default {
       }
     },
     scrollEvent() {
-      if (document.documentElement.scrollTop >= 100) {
-        document.getElementById("logo_box_img").style.width = "100px";
-        document.getElementById("right_img").style.width = "25px";
-        document.getElementById("right_img").style.height = "25px";
-        const icons = document.getElementsByClassName("right_icon");
-        icons.forEach(e => {
-          e.style.fontSize = "18px";
-        });
-        const button = document.getElementsByClassName("button");
-        button.forEach(e => {
-          e.style.fontSize = "18px";
+      if (window.outerWidth >= 600) {
+        if (document.documentElement.scrollTop >= 100) {
+          document.getElementById("logo_box_img").style.width = "100px";
+          document.getElementById("right_img").style.width = "25px";
+          document.getElementById("right_img").style.height = "25px";
+          const icons = document.getElementsByClassName("right_icon");
+          icons.forEach(e => {
+            e.style.fontSize = "18px";
+          });
+          const button = document.getElementsByClassName("button");
+          button.forEach(e => {
+            e.style.fontSize = "18px";
+            const logRegi = document.getElementsByClassName("logRegi");
+            logRegi.forEach(e => {
+              e.style.fontSize = "12px";
+            });
+          });
+        } else if (document.documentElement.scrollTop === 0) {
+          document.getElementById("logo_box_img").style.width = "230px";
+          document.getElementById("right_img").style.width = "33px";
+          document.getElementById("right_img").style.height = "33px";
+          const icons = document.getElementsByClassName("right_icon");
+          icons.forEach(e => {
+            e.style.fontSize = "30px";
+          });
+          const button = document.getElementsByClassName("button");
+          button.forEach(e => {
+            e.style.fontSize = "30px";
+          });
           const logRegi = document.getElementsByClassName("logRegi");
           logRegi.forEach(e => {
-            e.style.fontSize = "12px";
+            e.style.fontSize = "16px";
           });
-        });
-      } else if (document.documentElement.scrollTop === 0) {
-        document.getElementById("logo_box_img").style.width = "230px";
-        document.getElementById("right_img").style.width = "33px";
-        document.getElementById("right_img").style.height = "33px";
-        const icons = document.getElementsByClassName("right_icon");
-        icons.forEach(e => {
-          e.style.fontSize = "30px";
-        });
-        const button = document.getElementsByClassName("button");
-        button.forEach(e => {
-          e.style.fontSize = "30px";
-        });
-        const logRegi = document.getElementsByClassName("logRegi");
-        logRegi.forEach(e => {
-          e.style.fontSize = "16px";
-        });
+        }
       }
     }
   }
@@ -293,5 +375,62 @@ export default {
   height: 100%;
   border-radius: 50%;
   transition: 0.3s ease-in-out all;
+}
+
+@media screen and (max-width: 600px) {
+  #nav_mobile_top {
+    position: fixed;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    width: 100%;
+    background-color: white;
+    justify-content: space-between;
+    box-shadow: 0 2px 2px gray;
+  }
+  .nav {
+    position: fixed;
+    bottom: 0;
+    padding: 0px;
+    box-shadow: 0 -2px 2px gray;
+    border-bottom: none;
+  }
+  .logo_box {
+    transform: translateY(4px);
+    padding-left: 10px;
+    margin-right: 10px;
+  }
+  .logo_box > img {
+    width: 100px;
+  }
+  .nav_right {
+    display: block;
+  }
+  .icons_box {
+    display: flex;
+    justify-content: space-between;
+    transform: unset;
+    padding: 10px 30px;
+  }
+  .icons_box > i {
+    font-size: 30px;
+  }
+  .login_btn {
+    transform: translateY(0px);
+    font-size: 20px;
+    width: 100px;
+    border-radius: 15px;
+    margin-right: 0px;
+  }
+
+  .button {
+    width: 100%;
+    font-size: 20px;
+    padding: 2px;
+  }
+  .mypage {
+    width: 30px;
+    height: 30px;
+  }
 }
 </style>
