@@ -126,6 +126,9 @@ export default {
 </script>
 
 <style scoped>
+.right_body_box {
+  width: 100%;
+}
 .header {
   width: fit-content;
   margin: auto;
@@ -133,7 +136,7 @@ export default {
   margin-bottom: 20px;
 }
 .classified_list {
-  width: 90%;
+  width: 100%;
   margin: auto;
   height: 380px;
   overflow-y: scroll;
