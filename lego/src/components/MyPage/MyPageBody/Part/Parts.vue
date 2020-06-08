@@ -5,10 +5,6 @@
     infinite-scroll-distance="10"
   >
     <div class="container" v-if="userParts.length !== 0">
-      <div style="margin-left: 40px;">
-        총 <b style="color:green; font-size: 24px;">{{ userAllParts.length }}</b
-        >개의 부품을 가지고 있습니다.
-      </div>
       <div class="part_box">
         <div class="search_box">
           <div id="search_bar">
@@ -161,6 +157,15 @@ export default {
     })
   },
   async mounted() {
+    await this.getAllParts();
+    this.userAllParts.forEach(e => {
+      this.parts.push({
+        id: `${e.part_id}_${e.color_id}`,
+        name: e.part_id,
+        color: e.rgb
+      });
+      this.searchObj[`${e.part_id}_${e.color_id}`] = e;
+    });
     const params = {
       page: 1,
       append: false,
@@ -171,15 +176,6 @@ export default {
     if (this.stopScroll === true) {
       return;
     }
-    await this.getAllParts();
-    this.userAllParts.forEach(e => {
-      this.parts.push({
-        id: `${e.part_id}_${e.color_id}`,
-        name: e.part_id,
-        color: e.rgb
-      });
-      this.searchObj[`${e.part_id}_${e.color_id}`] = e;
-    });
     this.loading = false;
   },
   methods: {
@@ -277,9 +273,6 @@ export default {
       };
       await this.resetStop();
       await this.getParts(params);
-      if (this.stopScroll === true) {
-        return;
-      }
       this.isSearch = false;
       this.loading = false;
       this.searchWords = "";
@@ -291,11 +284,11 @@ export default {
 <style scoped>
 .whole_box {
   height: 100%;
-  width: 100%;
+  width: 95%;
   display: flex;
   flex-flow: row wrap;
   margin: auto;
-  justify-content: center;
+  /* justify-content: center; */
 }
 .item {
   width: 110px;
@@ -414,5 +407,39 @@ export default {
 .part_box {
   display: flex;
   margin-bottom: 20px;
+}
+@media screen and (max-width: 600px) {
+  .container {
+    padding: 5px;
+  }
+  .whole_box {
+    margin: 0;
+    width: 100%;
+    margin-top: 10px;
+  }
+  .item {
+    width: 32vw;
+    margin: 0;
+  }
+  .control_box {
+    display: none;
+  }
+  .part_box {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 0;
+  }
+  .search_box {
+    margin: 0px;
+  }
+  #search_bar {
+    width: 60%;
+  }
+  #search_bar_btn {
+    width: 20%;
+  }
+  #search_bar_btn_reset {
+    width: 20%;
+  }
 }
 </style>

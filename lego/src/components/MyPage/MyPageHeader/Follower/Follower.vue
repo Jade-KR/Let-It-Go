@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="follower" width="30vw">
+    <v-dialog v-model="follower" :width="isMobile === false ? '400px' : '95vw'">
       <template v-slot:activator="{ on }">
         <div v-on="on"><slot name="follower" /></div>
       </template>
@@ -45,7 +45,8 @@ export default {
     return {
       follower: false,
       followFlag: false,
-      isEmpty: false
+      isEmpty: false,
+      isMobile: false
     };
   },
   computed: {
@@ -73,10 +74,24 @@ export default {
       }
     }
   },
+  mounted() {
+    this.onResponsiveInverted();
+    window.addEventListener("resize", this.onResponsiveInverted);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResponsiveInverted);
+  },
   methods: {
     ...mapActions("mypage", ["onFollowInModal"]),
     close() {
       this.follower = false;
+    },
+    onResponsiveInverted() {
+      if (window.outerWidth < 600) {
+        this.isMobile = true;
+      } else {
+        this.isMobile = false;
+      }
     }
   }
 };
@@ -105,33 +120,5 @@ export default {
 .empty {
   text-align: center;
   padding: 40px 0;
-}
-.follow_card {
-  display: flex;
-  margin-bottom: 5px;
-}
-.follow_card_img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-right: 5px;
-  cursor: pointer;
-}
-.follow_card_nickname {
-  padding: 13px 0;
-  flex: 1;
-  cursor: pointer;
-}
-.follow_card_btn {
-  padding: 13px 0;
-  background-color: gold;
-  font-weight: 600;
-  width: 100px;
-  text-align: center;
-  line-height: 12px;
-  height: 40px;
-  margin-top: 7px;
-  border-radius: 10px;
-  cursor: pointer;
 }
 </style>

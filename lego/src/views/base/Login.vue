@@ -170,4 +170,9 @@ export default {
   background-color: skyblue;
   color: white;
 }
+@media screen and (max-width: 600px) {
+  #login-body {
+    width: 100%;
+  }
+}
 </style>

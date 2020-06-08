@@ -145,13 +145,6 @@ class ThemeViewSet(viewsets.ModelViewSet):
     pagination_class = SmallPagination
 
 class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
-    '''
-    GET params
-    name
-    tag
-    theme
-    
-    '''
     serializer_class = serializers.LegoSetSerializer2
     pagination_class = SmallPagination
 
@@ -182,6 +175,9 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
         return LegoSet.objects.all().order_by("-id")
 
     def list(self, request):
+        '''
+        요청이 들어오면 설계도 리스트를 반환합니다.
+        '''
         queryset = self.get_queryset()
         page = self.paginate_queryset(queryset)
 
@@ -214,6 +210,9 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
+        '''
+        요청이 들어오면 pk에 해당하는 설계도 정보를 반환합니다.
+        '''
         user_id = request.user.id
         legoset = get_object_or_404(LegoSet, id=pk)
         serializer_data = serializers.LegoSetSerializer2(legoset).data
@@ -231,6 +230,9 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
         return Response(serializer_data)
 
     def destroy(self, request, pk=None):
+        '''
+        요청이 들어오면 권한이 있을 경우 pk에 해당하는 설계도를 삭제합니다.
+        '''
         legoset = get_object_or_404(LegoSet, pk=pk)
         if request.user.is_staff or (request.user.is_authenticated and legoset.user.id == request.user.id):
             legoset.delete()
@@ -248,6 +250,9 @@ class UserPartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = UserPart.objects.all()
 
     def list(self, request):
+        '''
+        요청이 들어오면 요청한 유저가 가지고 있는 부품 리스트를 반환합니다.
+        '''
         if request.user.is_authenticated:
             queryset = UserPart.objects.filter(user=request.user)
             page = self.paginate_queryset(queryset)
@@ -267,6 +272,9 @@ class UserSetViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = UserPart.objects.all()
 
     def list(self, request):
+        '''
+        요청이 들어오면 요청을 한 유저가 작성한 설계도 리스트를 반환합니다.
+        '''
         user = request.user
         if user.is_authenticated:
             queryset = UserSet.objects.filter(user=user)
@@ -286,6 +294,9 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = SetPart.objects.all()
 
     def retrieve(self, request, pk=None):
+        '''
+        요청이 들어오면 pk에 해당하는 설계도의 부품 리스트를 반환합니다.
+        '''
         queryset = SetPart.objects.filter(lego_set_id=pk)
         if queryset:
             serializer_data = serializers.SetPartSerializer(queryset, many=True).data
@@ -299,6 +310,9 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 @api_view(['POST'])
 def set_user_category(self):
+    '''
+    요청이 들어오면 요청을 보낸 유저의 카테고리 정보를 입력합니다.
+    '''
     categories = self.data.get("categories")
     user = CustomUser.objects.get(id=self.user.id)
     user.categories = categories
@@ -329,6 +343,9 @@ class ReviewViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Updat
     queryset = Review.objects.all().order_by('-id')
 
     def list(self, request):
+        '''
+        요청이 들어오면 권한이 있을 경우 전체 리뷰 리스트를 반환합니다.
+        '''
         if request.user.is_staff:
             queryset = self.get_queryset()
             page = self.paginate_queryset(queryset)
@@ -343,6 +360,9 @@ class ReviewViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Updat
             return Response("스태프 권한이 필요합니다.")
 
     def create(self, request):
+        '''
+        요청이 들어오면 권한이 있을 경우 입력한 정보를 바탕으로 리뷰를 작성합니다.
+        '''
         if request.user.is_authenticated:
             data = request.data
             user = get_object_or_404(get_user_model(), id=request.user.id)
@@ -356,6 +376,9 @@ class ReviewViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Updat
         return Response("리뷰 작성 완료")
 
     def update(self, request, pk=None):
+        '''
+        요청이 들어오면 권한이 있을 경우 pk에 해당하는 리뷰를 수정합니다.
+        '''
         review = get_object_or_404(Review, pk=pk)
         user_id = request.user.id
         if request.user.is_authenticated and review.user_id == user_id:
@@ -367,6 +390,9 @@ class ReviewViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Updat
         return Response("수정 실패")
 
     def destroy(self, request, pk=None):
+        '''
+        요청이 들어오면 권한이 있을 경우 pk에 해당하는 리뷰를 삭제합니다.
+        '''
         review = get_object_or_404(Review, pk=pk)
         if request.user.is_staff or (request.user.is_authenticated and review.user.id == request.user.id):
             user = get_object_or_404(get_user_model(), id=request.user.id)
@@ -386,6 +412,9 @@ class FollowUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = CustomUser.objects.all()
 
     def retrieve(self, request, pk=None):
+        '''
+        요청이 들어오면 pk에 해당하는 유저를 팔로우 한 유저들을 반환합니다.
+        '''
         user = get_object_or_404(get_user_model(), pk=pk)
         followers = user.followers.all()
         page = self.paginate_queryset(followers)
@@ -403,6 +432,9 @@ class FollowingUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = CustomUser.objects.all()
 
     def retrieve(self, request, pk=None):
+        '''
+        요청이 들어오면 pk에 해당하는 유저가 팔로우 한 유저 목록을 반환합니다.
+        '''
         user = get_object_or_404(get_user_model(), pk=pk)
         followings = user.followings.all()
         page = self.paginate_queryset(followings)
@@ -420,6 +452,9 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
     queryset = CustomUser.objects.all().order_by("-date_joined")
 
     def list(self, request):
+        '''
+        요청이 들어오면 권한이 있을 경우 유저 리스트를 반환합니다.
+        '''
         if request.user.is_staff:
             queryset = self.filter_queryset(self.get_queryset())
 
@@ -435,11 +470,18 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
             return Response("접근 실패")
 
     def retrieve(self, request, pk=None):
+        '''
+        요청이 들어오면 pk에 해당하는 유저의 정보를 반환합니다.
+        '''
         user = get_object_or_404(get_user_model(), id=pk)
         serializer = serializers.UserDetailSerializer(user)
         return Response(serializer.data)
 
     def update(self, request, pk=None):
+        '''
+        요청이 들어오면 권한이 있을 경우
+        pk에 해당하는 유저의 정보를 변경합니다.
+        '''
         user = get_object_or_404(get_user_model(), id=pk)
         emailaddress = get_object_or_404(EmailAddress, user_id=pk)
         if request.user.is_authenticated and request.user == user:
@@ -467,6 +509,11 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
             return Response("접근 실패")
 
     def destroy(self, request, pk=None):
+        '''
+        요청이 들어오면 권한이 있을 경우
+        요청한 pk에 해당하는 유저의 상태를 변경합니다.
+        블럭, 블럭해제 등
+        '''
         user = get_object_or_404(get_user_model(), id=pk)
         if request.user.is_authenticated and request.user == user:
             user.is_active = False
@@ -488,6 +535,9 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
 
 @api_view(['PUT'])
 def UpdateUserProfile(self):
+    '''
+    요청이 들어오면 해당 유저의 프로필 정보를 변경합니다.
+    '''
     user = self.user
     if user.is_authenticated:
         user.image = self.data["profile_url"]
@@ -499,11 +549,15 @@ class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
     pagination_class = SmallPagination
     queryset = LegoSet.objects.all()
-
+    
     def retrieve(self, request, pk=None):
+        '''
+        요청이 들어오면 요청을 보낸 유저가 입력한 설계도를 반환합니다.
+        '''
         user = request.user
         if user.is_authenticated:
-            queryset = LegoSet.objects.filter(user_id=pk)
+            queryset = LegoSet.objects.filter(user_id=pk).order_by('-created_at')
+            print(queryset)
             page = self.paginate_queryset(queryset)
             serializer_data = serializers.LegoSetSerializer(page, many=True).data
             for legoset in serializer_data:
@@ -521,6 +575,9 @@ class UserLikeLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet)
     queryset = LegoSet.objects.all()
 
     def retrieve(self, request, pk=None):
+        '''
+        요청이 들어오면 pk에 해당하는 유저가 좋아요 한 설계도를 반환합니다.
+        '''
         user = get_object_or_404(get_user_model(), id=pk)
         queryset = user.like_sets.all().order_by('-created_at')
         page = self.paginate_queryset(queryset)
@@ -540,6 +597,9 @@ class LegoSetRankingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     pagination_class = SmallPagination
 
     def list(self, request):
+        '''
+        요청이 들어오면 좋아요 수가 가장 많은 레고 순으로 설계도를 반환합니다.
+        '''
         queryset = LegoSet.objects.all().order_by("-like_count")
         page = self.paginate_queryset(queryset)
         user = request.user
@@ -591,7 +651,7 @@ class ItemBasedRecommendViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewS
                         break
                 i = 0
                 qeuryset = queryset[:recommend_num]
-                while len(queryset) <= recommend_num:
+                while len(queryset) < recommend_num:
                     if all_legoset_calculated[i].id != pk:
                         queryset.append(all_legoset_calculated[i])
                     i += 1
@@ -646,7 +706,7 @@ class UserBasedRecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 user_legoset_set = set()
                 for legoset in user.legoset_set.all():
                     user_legoset_set.add(legoset.id)
-                for legoset in LegoSet.objects.filter(review_count__gte=10):
+                for legoset in LegoSet.objects.filter(review_count__gte=min_review):
                     if legoset.id not in user_legoset_set:
                         queryset.append(legoset)
                 predictions = [[knn_user_based.predict(user.id, legoset_id).est, legoset_id] for legoset_id in queryset]
@@ -685,18 +745,6 @@ def UpdateUserPart(self):
             }
         ]
     }
-    ---
-    parameters:
-    - name: username
-      description: Foobar long description goes here
-      required: true
-      type: string
-      paramType: form
-    - name: password
-      paramType: form
-      required: true
-      type: string
-
     '''
     user = self.user
     # user = CustomUser.objects.get(id=self.user)
@@ -813,7 +861,7 @@ def CreateLegoSet(self):
     return Response("등록 완료")
 
 def go_to_myhome(request):
-    return redirect("http://127.0.0.1:8000/api/swagger/")
+    return redirect("https://k02d1081.p.ssafy.io")
 
 @api_view(['POST'])
 def like_set(self):
@@ -1030,8 +1078,8 @@ def reset_user_based_k_means(self):
     유저 기반 추천에 사용될 k-means 모델을 재학습시킵니다.
     '''
     global centroid, cluster_list
-    user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender", "categories"))
-
+    user_df = pd.DataFrame(CustomUser.objects.all().values("id", "age", "gender", "categories", "review_count"))
+    user_df = user_df[user_df["review_count"] >= min_review]
     # None값을 ""로 변경
     user_df["categories"] = user_df["categories"].fillna("")
     # 각 태그가 존재하면 exist_value, 없으면 nonexist_value
@@ -1050,13 +1098,17 @@ def reset_user_based_k_means(self):
 
     # kmeans 학습
     kmeans = KMeans(n_clusters=cluster_num, init='k-means++', max_iter=300, random_state=0)
+
     kmeans.fit(user_df[["age", "gender", "건축물", "장난감", "공상과학", "레이싱", "클래식", "창작품", "게임", "히어로", "공룡"]])
 
     # kmeans.labels_ : 몇번 클러스터인지 라벨링 붙이고 분리했었던 id col을 붙임
     user_df['cluster'] = kmeans.labels_
     review_df = pd.DataFrame(Review.objects.all().values("user_id", "score", "lego_set_id"))
     user_df = user_df[user_df['id'].isin(set(review_df['user_id']))]
-
+    # a = [0]*10
+    # for val in user_df['cluster']:
+    #     a[val] += 1
+    # print(a)
     user_df = user_df.set_index('id')
     # 리뷰 테이블에 유저 클러스터정보를 조인해서 합쳐준다.
     temp_df = pd.merge(user_df["cluster"], review_df, left_index=True, right_on="user_id")
@@ -1071,7 +1123,7 @@ def reset_user_based_k_means(self):
         cluster_list[i] = cluster_list[i][cluster_list[i]['count']>=5]
 
         # 각 클러스터별 평균평점을 계산한다.
-        a = sum(cluster_list[i]['sum']) / sum(cluster_list[i]['count'])
+        a = sum(cluster_list[i]['sum']) / sum(cluster_list[i]['count']) if sum(cluster_list[i]['count']) else 0.0
 
         # calc 칼럼을 추가하고 거기에 인기도 점수 계산한 값을 넣어준다.
         cluster_list[i]['calc'] = cluster_list[i].apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/x['count']+min_review))*a, axis=1)
@@ -1173,17 +1225,38 @@ def update_user_set_inventory(self):
                         userset.save()
                     else:
                         userset.delete()
+                    setpart_dict = dict()
                     for setpart in get_object_or_404(LegoSet, id=legoset_id).setpart_set.all():
-                        # 유저가 보유하고 있는 아이템이라면
-                        if inventory_dict.get(setpart.part_id) and inventory_dict[setpart.part_id].get(setpart.color_id):
-                            # 갱신리스트에 추가
-                            tmp = inventory_dict[setpart.part_id][setpart.color_id]
-                            tmp.quantity += setpart.quantity
-                            u.append(tmp)
-                        # 보유하고 있지 않은 아이템이라면
+                        if setpart_dict.get(setpart.part_id):
+                            if setpart_dict[setpart.part_id].get(setpart.color_id):
+                                setpart_dict[setpart.part_id][setpart.color_id] += setpart.quantity
+                            else:
+                                setpart_dict[setpart.part_id][setpart.color_id] = setpart.quantity
                         else:
-                            # 생성리스트에 추가
-                            c.append(UserPart(user=user, part_id=setpart.part_id, color_id=setpart.color_id, quantity=setpart.quantity))
+                            setpart_dict[setpart.part_id] = {setpart.color_id: setpart.quantity}
+                    for part_id, color_dict in setpart_dict.items():
+                        for color_id, quantity in  color_dict.items():
+                            if inventory_dict.get(part_id) and inventory_dict[part_id].get(color_id):
+                                tmp = inventory_dict[part_id][color_id]
+                                tmp.quantity += setpart.quantity
+                                u.append(tmp)
+                            else:
+                                c.append(UserPart(user=user, part_id=part_id, color_id=color_id, quantity=quantity))
+
+
+
+                    # for setpart in get_object_or_404(LegoSet, id=legoset_id).setpart_set.all():
+                    #     # 유저가 보유하고 있는 아이템이라면
+                    #     if inventory_dict.get(setpart.part_id) and inventory_dict[setpart.part_id].get(setpart.color_id):
+                    #         # 갱신리스트에 추가
+                    #         tmp = inventory_dict[setpart.part_id][setpart.color_id]
+                    #         tmp.quantity += setpart.quantity
+                    #         u.append(tmp)
+                    #     # 보유하고 있지 않은 아이템이라면
+                    #     else:
+                    #         # 생성리스트에 추가
+                    #         c.append(UserPart(user=user, part_id=setpart.part_id, color_id=setpart.color_id, quantity=setpart.quantity))
+
                     # 생성할 것들 생성
                     UserPart.objects.bulk_create(c)
                     # 갱신할 것들 갱신

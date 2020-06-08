@@ -192,4 +192,16 @@ export default {
 #search_card {
   display: inline-block;
 }
+@media screen and (max-width: 600px) {
+  #search_box {
+    width: 100%;
+  }
+  #search_bar {
+    padding: 5px;
+    top: 38px;
+  }
+  #search_card_box {
+    margin-bottom: 40px;
+  }
+}
 </style>

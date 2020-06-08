@@ -12,9 +12,9 @@
       <div class="slide">
         <div class="content">
           <h2>김평강</h2>
-          <p>Back End (REST API, 배포, 알고리즘 최적화, SVDPP)</p>
-          <p>특징 (프로젝트 총괄, 스마트팩토리 관심많음)</p>
-          <p>기타 (취직하고싶다..)</p>
+          <p>Back End (추천, AI, IoT, RESTful API, 배포)</p>
+          <p>특징 (프로젝트 총괄, AI, Big Data, IoT 관심많음)</p>
+          <p>기타 (어디로 가야하나..)</p>
         </div>
       </div>
       <div class="slide">
@@ -48,7 +48,7 @@
           <h2>이지훈</h2>
           <p>
             Front-End (Home, Search, Write, Detail, Login, Register, Admin,
-            BugFix)
+            BugFix, Mobile)
           </p>
           <p>특징 (확진짜아주확찐자매우확찐자)</p>
           <p>기타 (코로나Out)</p>

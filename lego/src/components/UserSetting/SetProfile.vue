@@ -171,6 +171,7 @@ export default {
 <style scoped>
 .right_body_box {
   border-style: none;
+  width: 100%;
 }
 .all_box {
   width: 100%;
@@ -188,18 +189,19 @@ export default {
   margin-bottom: 30px;
 }
 .label_box {
-  width: 30%;
+  width: 40%;
   text-align: right;
   padding-right: 32px;
   display: flex;
   justify-content: flex-end;
   font-weight: bold;
+  padding-left: 24px;
 }
 .label_name {
   padding-top: 7px;
 }
 .input_box {
-  width: 70%;
+  width: 100%;
   display: flex;
   justify-content: left;
 }
@@ -300,5 +302,24 @@ textarea {
 }
 #ex_file2 {
   display: none;
+}
+@media screen and (max-width: 600px) {
+  .label_box {
+    width: 30%;
+    padding-left: 0;
+  }
+  .input_box {
+    width: 100%;
+  }
+  input,
+  textarea {
+    width: 100%;
+  }
+  .value_box {
+    width: 140%;
+  }
+  .value_box_textarea {
+    width: 91%;
+  }
 }
 </style>
