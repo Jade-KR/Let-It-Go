@@ -65,9 +65,15 @@
           <span :class="`dot${idx} dotdot`" @click="currentSlide(i + 1)"></span>
         </div>
       </div>
-      <div :style="styleFlag ? matrixStyle[2] : instaStyle[2]">
+      <div
+        :style="styleFlag ? matrixStyle[2] : instaStyle[2]"
+        v-if="isMobile === false"
+      >
         <div class="home_card_footer_director">Director. {{ nickname }}</div>
-        <div class="home_card_footer_btns" data-test="123">
+        <div
+          class="home_card_footer_btns"
+          :data-test="`${likeCnt}명이 좋아합니다.`"
+        >
           <button v-if="like" class="home_card_like" @click="pushLike()">
             <i class="fas fa-heart" />
           </button>
@@ -75,6 +81,22 @@
             <i class="far fa-heart" />
           </button>
         </div>
+      </div>
+
+      <div :style="styleFlag ? matrixStyle[2] : instaStyle[2]" v-else>
+        <div class="home_card_footer_btns">
+          <button v-if="like" class="home_card_like" @click="pushLike()">
+            <i class="fas fa-heart" />
+          </button>
+          <button v-else class="home_card_like" @click="pushLike()">
+            <i class="far fa-heart" />
+          </button>
+          <div v-if="isMobile" class="home_card_like_cnt">
+            {{ likeCnt }}명이 좋아합니다.
+          </div>
+        </div>
+        <hr style="border: 0.2px solid gold" />
+        <div class="home_card_footer_director">Director. {{ nickname }}</div>
       </div>
     </div>
   </div>
@@ -113,6 +135,10 @@ export default {
     isLike: {
       type: Number,
       default: -1
+    },
+    likeCount: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -122,6 +148,7 @@ export default {
       slideIndex: 1,
       imageList: ["images/icons/no_img.jpg"],
       imageLength: 0,
+      likeCnt: 0,
       matrixStyle: [
         {
           display: "block"
@@ -169,15 +196,26 @@ export default {
           right: "50%",
           transform: "translateX(50%)"
         }
-      ]
+      ],
+      isMobile: false
     };
   },
   watch: {
     imageList() {
       this.imageLength = this.imageList.length;
+    },
+    isMobile() {
+      this.onResizeHeight();
+      if (this.isMobile === false) {
+        this.instaStyle[2]["display"] = "flex";
+      } else {
+        this.instaStyle[2]["display"] = "block";
+      }
     }
   },
   async mounted() {
+    this.onResponsiveInverted();
+    window.addEventListener("resize", this.onResponsiveInverted);
     if (this.isLike === 0) {
       this.like = false;
     } else {
@@ -186,42 +224,61 @@ export default {
     if (this.images) {
       this.imageList = await this.images.split("|");
     }
+    this.likeCnt = this.likeCount;
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResponsiveInverted);
   },
   methods: {
     ...mapActions("home", ["onLike"]),
+    onResponsiveInverted() {
+      if (window.outerWidth < 600) {
+        this.isMobile = true;
+      } else {
+        this.isMobile = false;
+      }
+    },
     imgError() {
       this.imgFlag = false;
     },
     onResizeHeight() {
-      if (this.styleFlag == true) {
+      if (this.isMobile === false) {
+        if (this.styleFlag == true) {
+          for (let i = 0; i < this.imageList.length; ++i) {
+            document.getElementById(`slideImg-${i}-${this.idx}`).style.height =
+              "250px";
+          }
+          return;
+        }
+        var maxHeight = 0;
+        // var minHeight = 614;
+        for (let i = 0; i < this.imageList.length; ++i) {
+          var naturalHeight = document.getElementById(
+            `slideImg-${i}-${this.idx}`
+          ).naturalHeight; // img 높이
+          if (maxHeight < naturalHeight) {
+            maxHeight = naturalHeight;
+          }
+          // if (minHeight > naturalHeight) {
+          //   minHeight = naturalHeight;
+          // }
+        }
+        if (maxHeight > 614) {
+          maxHeight = 614;
+        }
+        // if (minHeight < 200) {
+        //   minHeight = 300;
+        // }
         for (let i = 0; i < this.imageList.length; ++i) {
           document.getElementById(`slideImg-${i}-${this.idx}`).style.height =
-            "250px";
+            String(maxHeight) + "px";
+          // String(minHeight) + "px";
         }
-        return;
-      }
-      var maxHeight = 0;
-      // var minHeight = 614;
-      for (let i = 0; i < this.imageList.length; ++i) {
-        var naturalHeight = document.getElementById(`slideImg-${i}-${this.idx}`)
-          .naturalHeight; // img 높이
-        if (maxHeight < naturalHeight) {
-          maxHeight = naturalHeight;
+      } else {
+        for (let i = 0; i < this.imageList.length; ++i) {
+          document.getElementById(`slideImg-${i}-${this.idx}`).style.height =
+            "365px";
         }
-        // if (minHeight > naturalHeight) {
-        //   minHeight = naturalHeight;
-        // }
-      }
-      if (maxHeight > 614) {
-        maxHeight = 614;
-      }
-      // if (minHeight < 200) {
-      //   minHeight = 300;
-      // }
-      for (let i = 0; i < this.imageList.length; ++i) {
-        document.getElementById(`slideImg-${i}-${this.idx}`).style.height =
-          String(maxHeight) + "px";
-        // String(minHeight) + "px";
       }
     },
     goDetail() {
@@ -235,8 +292,10 @@ export default {
       const result = await this.onLike(params);
       if (result === "좋아요") {
         this.like = true;
+        this.likeCnt += 1;
       } else if (result === "좋아요 취소") {
         this.like = false;
+        this.likeCnt -= 1;
       }
     },
     plusSlides(n) {
@@ -294,9 +353,15 @@ export default {
   white-space: nowrap;
   text-align: start;
 }
-/* .home_card_footer_btns:after {
-  content: ;
-} */
+.home_card_footer_btns:hover::after {
+  content: attr(data-test);
+  position: absolute;
+  transform: translate(30px, 2px);
+  font-size: 20px;
+  background-color: white;
+  border: 1px solid gold;
+  padding: 5px 10px;
+}
 .home_card_like {
   color: red;
   font-size: 25px;
@@ -392,6 +457,30 @@ img {
   .next,
   .text {
     font-size: 11px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .home_card_footer_director {
+    display: block;
+    flex: unset;
+    padding-bottom: 0px;
+  }
+  .home_card_footer_btns {
+    height: 35px;
+  }
+  .home_card_footer_btns:hover::after {
+    display: none;
+  }
+  .home_card_like {
+    float: none;
+    display: inline-block;
+    height: 100%;
+  }
+  .home_card_like_cnt {
+    display: inline-block;
+    font-size: 14px;
+    transform: translate(5px, -3px);
   }
 }
 </style>

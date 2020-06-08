@@ -95,25 +95,6 @@ export default {
 </script>
 
 <style scoped>
-.follow_header {
-  text-align: center;
-  font-size: 20px;
-  padding: 10px;
-  font-weight: 600;
-  color: gray;
-  border-bottom: 1px solid gold;
-  position: sticky;
-  top: 0px;
-  background-color: white;
-}
-.follow_header_close {
-  float: right;
-  cursor: pointer;
-  font-size: 24px;
-}
-.follow_body {
-  padding: 10px;
-}
 .follow_card {
   display: flex;
   margin-bottom: 5px;
@@ -141,5 +122,25 @@ export default {
   margin-top: 7px;
   border-radius: 10px;
   cursor: pointer;
+}
+@media screen and (max-width: 600px) {
+  .follow_card {
+  }
+  .follow_card_img {
+    width: 40px;
+    height: 40px;
+  }
+  .follow_card_nickname {
+    padding: 10px 0;
+    font-size: 14px;
+  }
+  .follow_card_btn {
+    height: 20px;
+    padding: 4.5px 0;
+    margin: 0px;
+    margin-top: 10px;
+    font-weight: 500;
+    font-size: 14px;
+  }
 }
 </style>

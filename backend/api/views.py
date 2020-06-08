@@ -380,11 +380,12 @@ class ReviewViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Updat
         요청이 들어오면 권한이 있을 경우 pk에 해당하는 리뷰를 수정합니다.
         '''
         review = get_object_or_404(Review, pk=pk)
-        user_id = request.user_id
+        user_id = request.user.id
         if request.user.is_authenticated and review.user_id == user_id:
             data = request.data
             review.content = data["content"]
             review.score = data["score"]
+            review.save()
             return Response("수정 완료")
         return Response("수정 실패")
 
@@ -485,13 +486,16 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
         emailaddress = get_object_or_404(EmailAddress, user_id=pk)
         if request.user.is_authenticated and request.user == user:
             data = request.data
-            user.nickname = data["nickname"]
-            user.comment = data["comment"]
-            user.email = data["email"]
-            emailaddress.email = data["email"]
-            user.save()
-            emailaddress.save()
-            return Response("수정 완료")
+            if EmailAddress.objects.filter(email=data["email"]) and EmailAddress.objects.get(email=data["email"]).user_id != user.id:
+                return Response("이미 존재하는 이메일입니다.")
+            else:
+                user.nickname = data["nickname"]
+                user.comment = data["comment"]
+                user.email = data["email"]
+                emailaddress.email = data["email"]
+                user.save()
+                emailaddress.save()
+                return Response("수정 완료")
         elif request.user.is_staff and request.user != user:
             if user.is_staff:
                 user.is_staff = False
@@ -541,7 +545,7 @@ class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
     pagination_class = SmallPagination
     queryset = LegoSet.objects.all()
-
+    
     def retrieve(self, request, pk=None):
         '''
         요청이 들어오면 요청을 보낸 유저가 입력한 설계도를 반환합니다.

@@ -1,46 +1,54 @@
 <template>
   <div>
-    <section>
+    <div v-if="isSkip === false" id="intro_box">
+      <div id="intro_skip" @click="skip()">
+        SKIP
+      </div>
+      <video autoplay controls width="80%">
+        <source src="../../assets/Intro.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <section v-else>
       <div class="slide">
         <div class="content">
           <h2>김평강</h2>
-          <p>Back End (REST API, 배포, 알고리즘 최적화, SVDPP)</p>
-          <p>특징 (프로젝트 총괄, 스마트팩토리 관심많음)</p>
-          <p>기타 (취직하고싶다..)</p>
+          <p>Back End (추천, AI, IoT, RESTful API, 배포)</p>
+          <p>특징 (프로젝트 총괄, AI, Big Data, IoT 관심많음)</p>
+          <p>기타 (어디로 가야하나..)</p>
         </div>
       </div>
       <div class="slide">
         <div class="content">
           <h2>김사덕</h2>
-          <p>
-            Back End (추천 시스템, 보고서 컨텐츠 기획 및 데이터 분석, K-Means,
-            KNN)
-          </p>
-          <p>특징 (싸피 출근하고 싶어함)</p>
-          <p>기타 (데이터 분석 하고 싶음)</p>
+          <p>Back-End (추천, Recognition, 발표)</p>
+          <p>특징 (원래확찐자)</p>
+          <p>기타 (싸피 마무리 잘하자)</p>
         </div>
       </div>
       <div class="slide">
         <div class="content">
           <h2>김정덕</h2>
-          <p>Front End (SearchPage, StoreDetail, Location Based, Word Cloud)</p>
-          <p>특징(프론트 총괄, UCC, 글로벌 글로벌, 타이완 넘버 원)</p>
-          <p>기타(지훈이형.. 2달은 우습지 ㅎㅎ)</p>
+          <p>Front-End (MyPage, UserSetting, LegoRail, UCC)</p>
+          <p>특징 (새로운 보금자리 찾는 중)</p>
+          <p>기타 (1년 빠르구나..)</p>
         </div>
       </div>
       <div class="slide">
         <div class="content">
           <h2>윤명훈</h2>
-          <p>Back End(인증 및 권한, 보고서 컨텐츠 기획 및 데이터 분석)</p>
-          <p>특징(young함)</p>
-          <p>기타(형들 말 잘들음)</p>
+          <p>Back-End (DB모델링, 인증 및 권한 관련 API)</p>
+          <p>IoT (컨베이어 벨트 제작 및 보완)</p>
+          <p>AI (Object Detection, 학습이미지 생성)</p>
+          <p>특징 (여름 싫어함)</p>
+          <p>기타 (코로나 조심합시다..ㅠ)</p>
         </div>
       </div>
       <div class="slide">
         <div class="content">
           <h2>이지훈</h2>
           <p>
-            Front-End (Home, Search, Write, Detail, Login, Register, Admin)
+            Front-End (Home, Search, Write, Detail, Login, Register, Admin,
+            BugFix, Mobile)
           </p>
           <p>특징 (확진짜아주확찐자매우확찐자)</p>
           <p>기타 (코로나Out)</p>
@@ -72,10 +80,15 @@ import router from "../../router";
 
 export default {
   data() {
-    return {};
+    return {
+      isSkip: false
+    };
   },
   async mounted() {
     this.setAuthFlag(true);
+    setTimeout(() => {
+      this.isSkip = true;
+    }, 43200);
   },
   destroyed() {
     this.setAuthFlag(false);
@@ -85,15 +98,30 @@ export default {
     goHome() {
       this.setAuthFlag(false);
       router.push("/");
+    },
+    skip() {
+      this.isSkip = true;
     }
-    // goAdmin() {
-    //   this.admin = true
-    // }
   }
 };
 </script>
 
 <style scoped>
+#intro_box {
+  text-align: center;
+  background-color: black;
+  padding: 40px;
+}
+#intro_skip {
+  position: absolute;
+  color: white;
+  border: 3px solid white;
+  width: 100px;
+  padding: 10px;
+  right: 50px;
+  top: 40px;
+  cursor: pointer;
+}
 #goAdmin {
   cursor: pointer;
   text-decoration: none;

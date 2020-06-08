@@ -41,7 +41,8 @@ const actions = {
   },
   async updateInfo({ commit }, params) {
     commit;
-    await api.updateUserInfo(params);
+    const resp = await api.updateUserInfo(params).then(res => res.data);
+    return resp;
   },
   async deleteImg({ commit }, params) {
     const imgUrl = null;

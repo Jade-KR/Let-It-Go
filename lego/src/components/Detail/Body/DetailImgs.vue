@@ -177,4 +177,20 @@ img {
 .demo:hover {
   opacity: 1;
 }
+@media screen and (max-width: 600px) {
+  .mySlides {
+    height: 100vw;
+  }
+  .row {
+    width: 100%;
+    margin: 5px 0;
+  }
+  .column {
+    height: 100%;
+  }
+  .demo {
+    width: 16.6vw;
+    height: 16.6vw;
+  }
+}
 </style>

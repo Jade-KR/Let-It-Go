@@ -1,11 +1,18 @@
 <template>
   <div class="right_body_box">
     <h1 class="header">레고레일 분류 현황</h1>
+    <button class="reset_btn" @click="resetData()">
+      <i class="fas fa-retweet"></i>&nbsp; 데이터 갱신
+    </button>
     <button class="send_btn" @click="onSubmit()">
       <i class="fas fa-share-square"></i>&nbsp; 내 부품에 추가
     </button>
     <div class="classified_list">
-      <div v-for="(item, idx) in realList" :key="`item${idx}`" class="delete_item_box">
+      <div
+        v-for="(item, idx) in realList"
+        :key="`item${idx}`"
+        class="delete_item_box"
+      >
         <div class="delete_box">
           <img
             src="../../assets/icons/delete.png"
@@ -30,10 +37,13 @@
               />
             </div>
             <div class="part_info">
-              <p class="lego_id">{{item.part_id}}</p>
+              <p class="lego_id">{{ item.part_id }}</p>
               <div class="lego_color_cnt">
-                <div class="lego_color" :style="`background-color: #${item.rgb}`"></div>
-                <span class="lego_cnt">* {{item.quantity}}</span>
+                <div
+                  class="lego_color"
+                  :style="`background-color: #${item.rgb}`"
+                ></div>
+                <span class="lego_cnt">* {{ item.quantity }}</span>
               </div>
             </div>
           </div>
@@ -113,12 +123,30 @@ export default {
     },
     deleteItem(idx) {
       this.realList.splice(idx, 1);
+    },
+    async resetData() {
+      let realList = [];
+      let partsInLegoRail = await this.getPartsFromLegoRail();
+      partsInLegoRail.forEach(item => {
+        let tmp = {
+          part_id: item.part_id,
+          color_id: item.color_id,
+          quantity: item.quantity,
+          part_img: LegoSort.parts[item.part_id][1],
+          rgb: LegoSort.colors[item.color_id]
+        };
+        realList.push(tmp);
+      });
+      this.realList = realList;
     }
   }
 };
 </script>
 
 <style scoped>
+.right_body_box {
+  width: 100%;
+}
 .header {
   width: fit-content;
   margin: auto;
@@ -126,7 +154,7 @@ export default {
   margin-bottom: 20px;
 }
 .classified_list {
-  width: 90%;
+  width: 100%;
   margin: auto;
   height: 380px;
   overflow-y: scroll;
@@ -226,5 +254,36 @@ export default {
 }
 .delete_item_box {
   position: relative;
+}
+.reset_btn {
+  background: rgb(180, 226, 169);
+  color: white;
+  width: 180px;
+  height: 40px;
+  border-radius: 5%;
+  margin-bottom: 10px;
+  transition: ease-in-out 0.3s;
+}
+.reset_btn:hover {
+  background: rgb(101, 221, 101);
+}
+@media screen and (max-width: 600px) {
+  .header {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .classified_list {
+    width: 100%;
+    height: 100%;
+  }
+  .items_container {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+  }
+  .delete_item_box {
+    position: relative;
+    width: 33.3%;
+  }
 }
 </style>

@@ -209,4 +209,28 @@ export default {
   color: white;
   margin-right: 20px;
 }
+@media screen and (max-width: 600px) {
+  .main {
+    justify-content: start;
+    width: 100%;
+    height: 100%;
+  }
+  .whole_box {
+    width: 100%;
+    height: 100%;
+  }
+  .item {
+    width: 33.3vw;
+    height: 33.3vw;
+    margin: 0px;
+    display: inline-block;
+  }
+  .body_img_box > img {
+    width: 33.3vw;
+    height: 33.3vw;
+  }
+  .body_img_hover {
+    display: none;
+  }
+}
 </style>

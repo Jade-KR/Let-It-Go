@@ -96,7 +96,8 @@ export default {
         }
       ],
       themes: [],
-      scrollFlag: false
+      scrollFlag: false,
+      isMobile: false
     };
   },
   computed: {
@@ -115,8 +116,11 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener("scroll", this.scrollEvent);
+    window.removeEventListener("resize", this.onResponsiveInverted);
   },
   mounted() {
+    this.onResponsiveInverted();
+    window.addEventListener("resize", this.onResponsiveInverted);
     this.themesRows.forEach(e => {
       this.themes.push({
         id: e[0],
@@ -125,6 +129,13 @@ export default {
     });
   },
   methods: {
+    onResponsiveInverted() {
+      if (window.outerWidth < 600) {
+        this.isMobile = true;
+      } else {
+        this.isMobile = false;
+      }
+    },
     setCate(value) {
       if (value === 0) {
         this.selectedCate = 0;
@@ -145,7 +156,11 @@ export default {
         document.getElementById("serch_bar_main").style.width = "100%";
       } else if (document.documentElement.scrollTop === 0) {
         this.scrollFlag = false;
-        document.getElementById("serch_bar_main").style.width = "70%";
+        if (this.isMobile === false) {
+          document.getElementById("serch_bar_main").style.width = "70%";
+        } else {
+          document.getElementById("serch_bar_main").style.width = "90%";
+        }
       }
     }
   }
@@ -209,5 +224,23 @@ export default {
   /* width: 500px; */
   width: 85%;
   font-size: 20px;
+}
+@media screen and (max-width: 600px) {
+  #search_bar_model,
+  #search_bar_tag,
+  #search_bar_theme {
+    margin: 0px;
+    padding: 2px;
+    min-width: 100px;
+  }
+  #search_bar_divied_line {
+    display: none;
+  }
+  #serch_bar_main {
+    width: 90%;
+  }
+  #search_bar_btn:hover {
+    background-color: gold;
+  }
 }
 </style>

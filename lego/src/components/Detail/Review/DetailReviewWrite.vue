@@ -27,6 +27,13 @@
         :style="params.score <= 4 ? ratingStyle[1] : ratingStyle[0]"
       ></i>
     </div>
+    <input
+      type="submit"
+      @click="onSubmit()"
+      id="detail_review_submit"
+      v-if="isMobile === true"
+      value="작성!"
+    />
     <textarea
       cols="75"
       rows="2"
@@ -36,7 +43,13 @@
       v-model="params.content"
       placeholder=" 리뷰를 작성해 보세요."
     ></textarea>
-    <input type="submit" @click="onSubmit()" id="detail_review_submit" />
+    <input
+      type="submit"
+      @click="onSubmit()"
+      id="detail_review_submit"
+      v-if="isMobile === false"
+      value="작성!"
+    />
   </div>
 </template>
 
@@ -64,7 +77,8 @@ export default {
         {
           color: "black"
         }
-      ]
+      ],
+      isMobile: false
     };
   },
   async mounted() {
@@ -72,10 +86,22 @@ export default {
     if (token !== null) {
       this.isLogin = true;
     }
+    this.onResponsiveInverted();
+    window.addEventListener("resize", this.onResponsiveInverted);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResponsiveInverted);
   },
   methods: {
     ...mapActions("detail", ["reviewWrite"]),
     ...mapActions("auth", ["isTokenVerify"]),
+    onResponsiveInverted() {
+      if (window.outerWidth < 600) {
+        this.isMobile = true;
+      } else {
+        this.isMobile = false;
+      }
+    },
     textareaResize() {
       const target = document.getElementById("detail_review_textarea");
       target.style.height = "20px";
@@ -118,27 +144,17 @@ export default {
   display: flex;
   margin-bottom: 20px;
 }
-#detail_review_score {
-  font-size: 40px;
-  text-align: center;
-  width: 70px;
-  height: 70px;
-  border: 1px solid black;
-  margin-right: 10px;
-  cursor: pointer;
-}
 #detail_review_textarea {
   resize: vertical;
   overflow: visible;
   border: 1px solid black;
-  margin-right: 10px;
 }
 #detail_review_submit {
   font-size: 24px;
   text-align: center;
-  width: 70px;
+  width: 100px;
   height: 70px;
-  border: 1px solid black;
+  background-color: gold;
 }
 .rating {
   font-size: 30px;
@@ -146,5 +162,25 @@ export default {
 }
 .fas {
   margin-top: 15px;
+}
+@media screen and (max-width: 600px) {
+  #detail_review_write {
+    display: block;
+  }
+  #detail_review_textarea {
+    width: 100%;
+  }
+  #detail_review_submit {
+    display: inline-block;
+    float: right;
+    height: 35px;
+    transform: translateY(5px);
+  }
+  .rating {
+    display: inline-block;
+  }
+  .fas {
+    margin-top: 0;
+  }
 }
 </style>

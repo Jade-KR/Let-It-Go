@@ -9,11 +9,6 @@
             v-if="image == null || image == '' || image == 'null'"
           />
           <img :src="`${image}`" alt="user_image" v-else />
-          <!-- <img
-            src="https://images.unsplash.com/photo-1472457974886-0ebcd59440cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-            alt="photo"
-            v-else
-          />-->
         </div>
       </div>
       <div class="my_info">
@@ -245,5 +240,43 @@ export default {
 }
 .cursor {
   cursor: pointer;
+}
+@media screen and (max-width: 600px) {
+  .whole_box {
+    display: block;
+    padding: 5px 10px 0 10px;
+    margin-top: 20px;
+    height: 100%;
+  }
+  .my_photo {
+    height: 70px;
+    width: 70px;
+    display: inline-block;
+    position: absolute;
+    top: 60px;
+    left: 20px;
+  }
+  .photo_box > img {
+    width: 70px;
+    height: 70px;
+  }
+  .my_info {
+    display: inline-block;
+    width: 100%;
+  }
+  .user_id {
+    font-size: 18px;
+  }
+  .info_middle {
+    margin: 30px 0 30px 100px;
+  }
+  .info_bottom {
+    height: 100%;
+  }
+  .user_follow {
+    font-size: 12px;
+    transform: translateY(-3px);
+    padding: 3px 6px;
+  }
 }
 </style>
