@@ -112,6 +112,8 @@ const actions = {
         }
       }
       commit("setUsers", temp);
+    } else {
+      alert("변경에 실패했습니다.");
     }
   },
   async isStaff({ commit }, params) {
@@ -130,6 +132,8 @@ const actions = {
           }
         }
       }
+    } else {
+      alert("변경에 실패했습니다.");
     }
   },
   async getReviews({ commit }, params) {
