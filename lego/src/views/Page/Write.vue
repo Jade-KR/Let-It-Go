@@ -30,7 +30,7 @@
       </div>
     </div>
     <div id="write_desc">
-      당신의 작품을 공유해 보세요
+      당신의 작품을 공유해 보세요!
     </div>
     <hr id="write_divideline" />
     <div id="write_info">

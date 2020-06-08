@@ -1,6 +1,9 @@
 <template>
   <div class="right_body_box">
     <h1 class="header">레고레일 분류 현황</h1>
+    <button class="reset_btn" @click="resetData()">
+      <i class="fas fa-retweet"></i>&nbsp; 데이터 갱신
+    </button>
     <button class="send_btn" @click="onSubmit()">
       <i class="fas fa-share-square"></i>&nbsp; 내 부품에 추가
     </button>
@@ -120,6 +123,21 @@ export default {
     },
     deleteItem(idx) {
       this.realList.splice(idx, 1);
+    },
+    async resetData() {
+      let realList = [];
+      let partsInLegoRail = await this.getPartsFromLegoRail();
+      partsInLegoRail.forEach(item => {
+        let tmp = {
+          part_id: item.part_id,
+          color_id: item.color_id,
+          quantity: item.quantity,
+          part_img: LegoSort.parts[item.part_id][1],
+          rgb: LegoSort.colors[item.color_id]
+        };
+        realList.push(tmp);
+      });
+      this.realList = realList;
     }
   }
 };
@@ -236,6 +254,18 @@ export default {
 }
 .delete_item_box {
   position: relative;
+}
+.reset_btn {
+  background: rgb(180, 226, 169);
+  color: white;
+  width: 180px;
+  height: 40px;
+  border-radius: 5%;
+  margin-bottom: 10px;
+  transition: ease-in-out 0.3s;
+}
+.reset_btn:hover {
+  background: rgb(101, 221, 101);
 }
 @media screen and (max-width: 600px) {
   .header {

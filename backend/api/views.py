@@ -545,14 +545,15 @@ class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer
     pagination_class = SmallPagination
     queryset = LegoSet.objects.all()
-
+    
     def retrieve(self, request, pk=None):
         '''
         요청이 들어오면 요청을 보낸 유저가 입력한 설계도를 반환합니다.
         '''
         user = request.user
         if user.is_authenticated:
-            queryset = LegoSet.objects.filter(user_id=pk).order_by('created_at')
+            queryset = LegoSet.objects.filter(user_id=pk).order_by('-created_at')
+            print(queryset)
             page = self.paginate_queryset(queryset)
             serializer_data = serializers.LegoSetSerializer(page, many=True).data
             for legoset in serializer_data:
@@ -1222,14 +1223,13 @@ def update_user_set_inventory(self):
                         userset.delete()
                     setpart_dict = dict()
                     for setpart in get_object_or_404(LegoSet, id=legoset_id).setpart_set.all():
-                        if setpart_dict.get(setpart.part_id)
+                        if setpart_dict.get(setpart.part_id):
                             if setpart_dict[setpart.part_id].get(setpart.color_id):
-                                inventory_dict[setpart.part_id][setpart.color_id] += setpart.quantity
+                                setpart_dict[setpart.part_id][setpart.color_id] += setpart.quantity
                             else:
-                                inventory_dict[setpart.part_id][setpart.color_id] = setpart.quantity
+                                setpart_dict[setpart.part_id][setpart.color_id] = setpart.quantity
                         else:
-                            inventory_dict[setpart.part_id] = {setpart.color_id: setpart.quantity}
-
+                            setpart_dict[setpart.part_id] = {setpart.color_id: setpart.quantity}
                     for part_id, color_dict in setpart_dict.items():
                         for color_id, quantity in  color_dict.items():
                             if inventory_dict.get(part_id) and inventory_dict[part_id].get(color_id):
@@ -1252,7 +1252,6 @@ def update_user_set_inventory(self):
                     #     else:
                     #         # 생성리스트에 추가
                     #         c.append(UserPart(user=user, part_id=setpart.part_id, color_id=setpart.color_id, quantity=setpart.quantity))
-
 
                     # 생성할 것들 생성
                     UserPart.objects.bulk_create(c)
