@@ -455,6 +455,8 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
                 emailaddress.save()
                 return Response("수정 완료")
         elif request.user.is_staff and request.user != user:
+            if user.is_superuser:
+                return Response("접근 실패")
             if user.is_staff:
                 user.is_staff = False
             else:
@@ -471,6 +473,8 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
             user.save()
             return Response("탈퇴 완료")
         elif request.user.is_staff and request.user != user:
+            if user.is_superuser:
+                return Response("접근 실패")
             if user.is_active:
                 user.is_active = False
                 user.save()
