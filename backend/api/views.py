@@ -1260,6 +1260,5 @@ def update_user_set_inventory(self):
 @api_view(['POST'])
 def update_user_set_inventory2(self):
     user = self.user
-    print(user)
     UserPart2.objects.filter(user=user).delete()
     return Response("초기화 완료")
