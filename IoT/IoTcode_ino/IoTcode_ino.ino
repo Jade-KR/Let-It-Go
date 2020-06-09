@@ -4,9 +4,9 @@
 #define QSize 30
 #define nStep 10
 #define boxNum 10
-#define sensorswitch 700
+#define sensorswitch 600
 
-int box_position[boxNum] = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, };
+int box_position[boxNum] = {0, 0, 200, 380, 560, 745, 745, 1500, 800, 900, };
 Stepper myStepper(2048, 11, 9, 10, 8);
 Stepper myStepper2(2048, 7, 5, 6, 4);
 int cur_status = 0;
@@ -17,12 +17,11 @@ int prev_status = 0;
 int Q_go_to_camera[QSize] = {0, };
 int Q_go_to_camera_front=0;
 int Q_go_to_camera_rear=0;
-int Q_go_to_camera_distance = 4500;
-
+int Q_go_to_camera_distance = 4000;
 int Q_go_to_check[QSize] = {0, };
 int Q_go_to_check_front=0;
 int Q_go_to_check_rear=0;
-int Q_go_to_check_distance = 2000;
+int Q_go_to_check_distance = 1000;
 
 int Q_go_to_confirm[QSize] = {0, };
 int Q_go_to_confirm_front=0;
@@ -67,7 +66,8 @@ void setup() {
   Serial.begin(9600);
   myStepper.setSpeed(10);
   myStepper2.setSpeed(10);
-  myStepper.step(1000);
+  box_status=1;
+ // myStepper2.step(-30);
 //  myStepper2.step(1000);
 }
 

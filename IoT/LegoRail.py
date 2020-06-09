@@ -35,8 +35,6 @@ while 1:
     }
     break
   print("id or password error")
-  data["username"] = input("ID:")
-  data["password"] = hashlib.sha256(getpass("PASSWORD:").encode('utf-8')).hexdigest()
   print(data["username"])
   print(data["password"])
 print("login success")
@@ -50,13 +48,13 @@ def get_classlabel(class_code):
 model = Models.load_model('/home/pi/IoT/my_model.h5')
 
 
-ser = serial.Serial('/dev/ttyACM4', 9600, timeout=1)
+ser = serial.Serial('/dev/ttyACM2', 9600, timeout=1)
 bg_img = cv2.imread("bg_img.bmp")
 print(bg_img.shape)
 bg_b, bg_g, bg_r = cv2.split(bg_img)
 print(bg_g.shape, bg_b.shape, bg_r.shape)
 
-cap_idx = 0
+
 with PiCamera() as camera:
   camera.resolution = (1280, 960)
   camera.framerate = 10
@@ -65,8 +63,7 @@ with PiCamera() as camera:
     if ser.in_waiting:
       print(ser.read(3))
       camera.capture(image, 'bgr')
-      #cv2.imwrite("original_{}.bmp".format(cap_idx), image)
-      #cap_idx += 1
+      cv2.imwrite("original_{}.bmp".format(datetime.now()), image)
       img_b, img_g, img_r = cv2.split(image)
       
       diff_b = cv2.absdiff(bg_b, img_b)
@@ -151,24 +148,26 @@ with PiCamera() as camera:
         img = image[selected_lego[1]:selected_lego[3], selected_lego[0]:selected_lego[2]]
         cv2.imwrite("cropped_img_{}.bmp".format(datetime.now()), img)
         img = np.array([cv2.resize(img,(150,150))])
-        pred_class = get_classlabel(model.predict_classes(img)[0])
+        pred_class = get_classlabel(min(model.predict_classes(img)[0], 4))
         pred_prob = model.predict(img).reshape(6)
         print(part_id[pred_class])
+        print("idx" + str(model.predict_classes(img)[0]))
+        print(pred_class)
         print(pred_prob)
         print(np.mean(img))
         part = {
           "part_id": part_id[pred_class],
           "color_id": 0
         }
-        #requests.post(baseURL + 'UpdateUserPart2', json=part, headers=headers)
+        requests.post(baseURL + 'UpdateUserPart2', json=part, headers=headers)
         ser.write(position_idx[pred_class])
         
       # complete alarm to arduino
       else:
-        tmppppp = int(input("input: "))
-        
-        #ser.write(b'\x00')
-        ser.write(position_idx[conv[tmppppp]])
+        #tmppppp = int(input("input: "))
+        print("error")
+        ser.write(b'\x00')
+        #ser.write(position_idx[conv[tmppppp]])
       '''
         previewImg('selected_lego',img_example[selected_lego[1]:selected_lego[3], selected_lego[0]:selected_lego[2]])
       print(object_position)
