@@ -85,7 +85,7 @@ export default {
     this.realList = realList;
   },
   methods: {
-    ...mapActions("Parts", ["updateParts"]),
+    ...mapActions("Parts", ["updateParts", "resetLegoRail"]),
     ...mapActions("user", ["getPartsFromLegoRail"]),
     change(info) {
       this.realList.forEach((item, i) => {
@@ -119,6 +119,7 @@ export default {
       const params = { UpdateList: newBasket };
       await this.updateParts(params);
       alert("부품이 등록되었습니다");
+      await this.resetLegoRail("dd")
       this.$router.push("mypage/" + localStorage.getItem("pk"));
     },
     deleteItem(idx) {
