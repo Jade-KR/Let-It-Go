@@ -4,8 +4,18 @@
       <div>
         <div v-for="(url, i) in imageList" :key="`url-${i}`">
           <div class="mySlides">
-            <img :src="url" class="detail-imgs" v-if="images" @error="imgError" />
-            <img src="../../../assets/icons/no_img.jpg" alt="no_images" class="detail-imgs" v-else />
+            <img
+              :src="url"
+              class="detail-imgs"
+              v-if="images"
+              @error="imgError"
+            />
+            <img
+              src="../../../assets/icons/no_img.jpg"
+              alt="no_images"
+              class="detail-imgs"
+              v-else
+            />
           </div>
         </div>
 
@@ -13,15 +23,28 @@
         <a class="next" @click="plusSlides(1)" v-if="images">❯</a>
       </div>
       <div class="row">
-        <div class="column" v-for="(url, i) in imageList" :key="`thumnail-${i}`">
-          <img class="demo cursor" :src="url" @click="currentSlide(i + 1)" v-if="images" />
+        <div
+          class="column"
+          v-for="(url, i) in imageList"
+          :key="`thumnail-${i}`"
+        >
+          <img
+            class="demo cursor"
+            :src="url"
+            @click="currentSlide(i + 1)"
+            v-if="images"
+          />
         </div>
       </div>
     </div>
 
     <div v-else>
       <div>
-        <img src="../../../assets/icons/no_img.jpg" alt="no_images" class="detail-imgs" />
+        <img
+          src="../../../assets/icons/no_img.jpg"
+          alt="no_images"
+          class="detail-imgs"
+        />
       </div>
     </div>
   </div>
@@ -111,23 +134,27 @@ img {
 .next {
   cursor: pointer;
   position: absolute;
-  top: 50%;
+  top: 40%;
   color: white;
   background-color: grey;
   font-weight: bold;
   transition: 0.6s ease;
-  border-radius: 50%;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
   user-select: none;
   height: 40px;
   width: 40px;
   text-align: center;
   line-height: 33px;
   font-size: 40px;
-  padding: 3px;
+  padding: 3px 5px 3px 1px;
 }
 .next {
   right: 0;
-  border-radius: 50%;
+  border-radius: unset;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  padding: 3px 1px 3px 5px;
 }
 .prev:hover,
 .next:hover {
