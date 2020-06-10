@@ -4,18 +4,8 @@
       <div>
         <div v-for="(url, i) in imageList" :key="`url-${i}`">
           <div class="mySlides">
-            <img
-              :src="url"
-              class="detail-imgs"
-              v-if="images"
-              @error="imgError"
-            />
-            <img
-              src="../../../assets/icons/no_img.jpg"
-              alt="no_images"
-              class="detail-imgs"
-              v-else
-            />
+            <img :src="url" class="detail-imgs" v-if="images" @error="imgError" />
+            <img src="../../../assets/icons/no_img.jpg" alt="no_images" class="detail-imgs" v-else />
           </div>
         </div>
 
@@ -23,28 +13,15 @@
         <a class="next" @click="plusSlides(1)" v-if="images">❯</a>
       </div>
       <div class="row">
-        <div
-          class="column"
-          v-for="(url, i) in imageList"
-          :key="`thumnail-${i}`"
-        >
-          <img
-            class="demo cursor"
-            :src="url"
-            @click="currentSlide(i + 1)"
-            v-if="images"
-          />
+        <div class="column" v-for="(url, i) in imageList" :key="`thumnail-${i}`">
+          <img class="demo cursor" :src="url" @click="currentSlide(i + 1)" v-if="images" />
         </div>
       </div>
     </div>
 
     <div v-else>
       <div>
-        <img
-          src="../../../assets/icons/no_img.jpg"
-          alt="no_images"
-          class="detail-imgs"
-        />
+        <img src="../../../assets/icons/no_img.jpg" alt="no_images" class="detail-imgs" />
       </div>
     </div>
   </div>
@@ -134,17 +111,18 @@ img {
 .next {
   cursor: pointer;
   position: absolute;
-  top: 40%;
+  top: 50%;
   color: white;
   background-color: grey;
   font-weight: bold;
   transition: 0.6s ease;
   border-radius: 50%;
   user-select: none;
-  height: 25px;
-  width: 25px;
+  height: 40px;
+  width: 40px;
   text-align: center;
-  font-size: 14px;
+  line-height: 33px;
+  font-size: 40px;
   padding: 3px;
 }
 .next {

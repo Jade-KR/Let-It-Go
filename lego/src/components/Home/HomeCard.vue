@@ -1,19 +1,14 @@
 <template>
   <div class="home_card_body">
-    <div class="home_card_header">
-      {{ name }}
-    </div>
+    <div class="home_card_header">{{ name }}</div>
     <div class="home_card_imgs" v-if="imgFlag === true">
       <div class="slideshow_container">
         <div
-          class="go_detail_btn"
+          v-for="(url, i) in imageList"
+          :key="`url-${i}`"
           @click="goDetail(id)"
-          :style="styleFlag ? matrixStyle[4] : instaStyle[4]"
+          style="cursor: pointer;"
         >
-          상세보기
-        </div>
-
-        <div v-for="(url, i) in imageList" :key="`url-${i}`">
           <div :class="`mySlides${idx} fade`" :id="`mySlide-${i}`">
             <img
               src="../../assets/icons/no_img.jpg"
@@ -23,7 +18,7 @@
             />
             <img
               :src="url"
-              alt=""
+              alt
               :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
               :id="`slideImg-${i}-${idx}`"
               v-else
@@ -43,19 +38,14 @@
           class="go_detail_btn"
           @click="goDetail(id)"
           :style="styleFlag ? matrixStyle[4] : instaStyle[4]"
-        >
-          상세보기
-        </div>
+        >상세보기</div>
         <img
           src="../../assets/icons/no_img.jpg"
           :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
         />
       </div>
     </div>
-    <div
-      class="home_card_footer"
-      :style="styleFlag ? matrixStyle[1] : instaStyle[1]"
-    >
+    <div class="home_card_footer" :style="styleFlag ? matrixStyle[1] : instaStyle[1]">
       <div :style="styleFlag ? matrixStyle[0] : instaStyle[5]">
         <div
           :style="styleFlag ? matrixStyle[5] : instaStyle[0]"
@@ -65,15 +55,9 @@
           <span :class="`dot${idx} dotdot`" @click="currentSlide(i + 1)"></span>
         </div>
       </div>
-      <div
-        :style="styleFlag ? matrixStyle[2] : instaStyle[2]"
-        v-if="isMobile === false"
-      >
+      <div :style="styleFlag ? matrixStyle[2] : instaStyle[2]" v-if="isMobile === false">
         <div class="home_card_footer_director">Director. {{ nickname }}</div>
-        <div
-          class="home_card_footer_btns"
-          :data-test="`${likeCnt}명이 좋아합니다.`"
-        >
+        <div class="home_card_footer_btns" :data-test="`${likeCnt}명이 좋아합니다.`">
           <button v-if="like" class="home_card_like" @click="pushLike()">
             <i class="fas fa-heart" />
           </button>
@@ -91,9 +75,7 @@
           <button v-else class="home_card_like" @click="pushLike()">
             <i class="far fa-heart" />
           </button>
-          <div v-if="isMobile" class="home_card_like_cnt">
-            {{ likeCnt }}명이 좋아합니다.
-          </div>
+          <div v-if="isMobile" class="home_card_like_cnt">{{ likeCnt }}명이 좋아합니다.</div>
         </div>
         <hr style="border: 0.2px solid gold" />
         <div class="home_card_footer_director">Director. {{ nickname }}</div>
@@ -402,10 +384,11 @@ img {
   transition: 0.6s ease;
   border-radius: 50%;
   user-select: none;
-  height: 25px;
-  width: 25px;
+  height: 40px;
+  width: 40px;
   text-align: center;
-  font-size: 14px;
+  line-height: 33px;
+  font-size: 40px;
   padding: 3px;
 }
 .next {
