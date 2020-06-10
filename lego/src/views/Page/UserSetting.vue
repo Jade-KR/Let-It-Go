@@ -39,7 +39,7 @@ export default {
   },
   data() {
     return {
-      menus: ["프로필 편집", "비밀번호 변경", "레고레일"],
+      menus: ["프로필 편집", "비밀번호 변경", "레고 마스터"],
       currentState: 0,
       btnFlag: "프로필 편집",
       btnStyle: [

@@ -1,19 +1,14 @@
 <template>
   <div class="home_card_body">
-    <div class="home_card_header">
-      {{ name }}
-    </div>
+    <div class="home_card_header">{{ name }}</div>
     <div class="home_card_imgs" v-if="imgFlag === true">
       <div class="slideshow_container">
         <div
-          class="go_detail_btn"
+          v-for="(url, i) in imageList"
+          :key="`url-${i}`"
           @click="goDetail(id)"
-          :style="styleFlag ? matrixStyle[4] : instaStyle[4]"
+          style="cursor: pointer;"
         >
-          상세보기
-        </div>
-
-        <div v-for="(url, i) in imageList" :key="`url-${i}`">
           <div :class="`mySlides${idx} fade`" :id="`mySlide-${i}`">
             <img
               src="../../assets/icons/no_img.jpg"
@@ -23,7 +18,7 @@
             />
             <img
               :src="url"
-              alt=""
+              alt
               :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
               :id="`slideImg-${i}-${idx}`"
               v-else
@@ -400,17 +395,22 @@ img {
   background-color: grey;
   font-weight: bold;
   transition: 0.6s ease;
-  border-radius: 50%;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
   user-select: none;
-  height: 25px;
-  width: 25px;
+  height: 40px;
+  width: 40px;
   text-align: center;
-  font-size: 14px;
-  padding: 3px;
+  line-height: 33px;
+  font-size: 40px;
+  padding: 3px 5px 3px 1px;
 }
 .next {
   right: 0;
-  border-radius: 50%;
+  border-radius: unset;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  padding: 3px 1px 3px 5px;
 }
 .prev:hover,
 .next:hover {
