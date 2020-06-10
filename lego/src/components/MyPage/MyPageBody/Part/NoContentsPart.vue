@@ -5,7 +5,7 @@
       <br />
       <div class="no_content_body" v-if="check === true">
         <div class="no_content_body_left">
-          <p class="no_content_contents">레고레일에서</p>
+          <p class="no_content_contents">레고 마스터에서</p>
           <p class="no_content_contents">분류된 부품들 추가하기</p>
           <i class="fas fa-angle-double-down no_content_icons"></i>
           <button class="no_content_btn" @click.prevent="goLegoRail()">

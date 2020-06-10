@@ -8,7 +8,7 @@
       </div>
       <div class="nav_middle">
         <button class="button" id="nav_new" @click="onHomeCate(1)">
-          <span data-title="새로운거!">NEW!</span>
+          <span data-title="최신순!">NEW!</span>
         </button>
         <button class="button" id="nav_pop" @click="onHomeCate(2)">
           <span data-title="인기도순!">POP!</span>
