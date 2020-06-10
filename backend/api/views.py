@@ -273,7 +273,7 @@ class UserSetViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request):
         '''
-        요청이 들어오면 요청을 한 유저가 작성한 설계도 리스트를 반환합니다.
+        요청이 들어오면 요청을 한 유저가 보유한 설계도 정보를 반환합니다.
         '''
         user = request.user
         if user.is_authenticated:
@@ -295,7 +295,7 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, pk=None):
         '''
-        요청이 들어오면 pk에 해당하는 설계도의 부품 리스트를 반환합니다.
+        요청이 들어오면 id에 해당하는 설계도의 부품 리스트를 반환합니다.
         '''
         queryset = SetPart.objects.filter(lego_set_id=pk)
         if queryset:
@@ -311,7 +311,7 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 @api_view(['POST'])
 def set_user_category(self):
     '''
-    요청이 들어오면 요청을 보낸 유저의 카테고리 정보를 입력합니다.
+    요청이 들어오면 요청을 보낸 유저의 |로 구분된 카테고리를 입력합니다.
     '''
     categories = self.data.get("categories")
     user = CustomUser.objects.get(id=self.user.id)
@@ -413,7 +413,7 @@ class FollowUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, pk=None):
         '''
-        요청이 들어오면 pk에 해당하는 유저를 팔로우 한 유저들을 반환합니다.
+        요청이 들어오면 id에 해당하는 유저를 팔로우 한 유저들을 반환합니다.
         '''
         user = get_object_or_404(get_user_model(), pk=pk)
         followers = user.followers.all()
@@ -433,7 +433,7 @@ class FollowingUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, pk=None):
         '''
-        요청이 들어오면 pk에 해당하는 유저가 팔로우 한 유저 목록을 반환합니다.
+        요청이 들어오면 id에 해당하는 유저가 팔로우 한 유저 목록을 반환합니다.
         '''
         user = get_object_or_404(get_user_model(), pk=pk)
         followings = user.followings.all()
@@ -471,7 +471,7 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
 
     def retrieve(self, request, pk=None):
         '''
-        요청이 들어오면 pk에 해당하는 유저의 정보를 반환합니다.
+        요청이 들어오면 id에 해당하는 유저의 정보를 반환합니다.
         '''
         user = get_object_or_404(get_user_model(), id=pk)
         serializer = serializers.UserDetailSerializer(user)
@@ -479,8 +479,7 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
 
     def update(self, request, pk=None):
         '''
-        요청이 들어오면 권한이 있을 경우
-        pk에 해당하는 유저의 정보를 변경합니다.
+        요청이 들어오면 권한이 있을 경우 id에 해당하는 유저의 정보를 변경합니다.
         '''
         user = get_object_or_404(get_user_model(), id=pk)
         emailaddress = get_object_or_404(EmailAddress, user_id=pk)
@@ -510,8 +509,7 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
 
     def destroy(self, request, pk=None):
         '''
-        요청이 들어오면 권한이 있을 경우
-        요청한 pk에 해당하는 유저의 상태를 변경합니다.
+        요청이 들어오면 권한이 있을 경우 요청한 id에 해당하는 유저의 상태를 변경합니다.
         블럭, 블럭해제 등
         '''
         user = get_object_or_404(get_user_model(), id=pk)
@@ -575,7 +573,7 @@ class UserLikeLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet)
 
     def retrieve(self, request, pk=None):
         '''
-        요청이 들어오면 pk에 해당하는 유저가 좋아요 한 설계도를 반환합니다.
+        요청이 들어오면 id에 해당하는 유저가 좋아요 한 설계도를 반환합니다.
         '''
         user = get_object_or_404(get_user_model(), id=pk)
         queryset = user.like_sets.all().order_by('-created_at')
@@ -594,7 +592,7 @@ class UserLikeLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet)
 class LegoSetRankingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer2
     pagination_class = SmallPagination
-
+    queryset = LegoSet.objects.all().order_by("-like_count")
     def list(self, request):
         '''
         요청이 들어오면 좋아요 수가 가장 많은 레고 순으로 설계도를 반환합니다.

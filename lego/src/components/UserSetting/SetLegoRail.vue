@@ -1,6 +1,6 @@
 <template>
   <div class="right_body_box">
-    <h1 class="header">레고레일 분류 현황</h1>
+    <h1 class="header">레고 마스터 분류 현황</h1>
     <button class="reset_btn" @click="resetData()">
       <i class="fas fa-retweet"></i>&nbsp; 데이터 갱신
     </button>
