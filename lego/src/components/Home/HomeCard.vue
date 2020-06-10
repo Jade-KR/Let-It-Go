@@ -38,14 +38,19 @@
           class="go_detail_btn"
           @click="goDetail(id)"
           :style="styleFlag ? matrixStyle[4] : instaStyle[4]"
-        >상세보기</div>
+        >
+          상세보기
+        </div>
         <img
           src="../../assets/icons/no_img.jpg"
           :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
         />
       </div>
     </div>
-    <div class="home_card_footer" :style="styleFlag ? matrixStyle[1] : instaStyle[1]">
+    <div
+      class="home_card_footer"
+      :style="styleFlag ? matrixStyle[1] : instaStyle[1]"
+    >
       <div :style="styleFlag ? matrixStyle[0] : instaStyle[5]">
         <div
           :style="styleFlag ? matrixStyle[5] : instaStyle[0]"
@@ -55,9 +60,15 @@
           <span :class="`dot${idx} dotdot`" @click="currentSlide(i + 1)"></span>
         </div>
       </div>
-      <div :style="styleFlag ? matrixStyle[2] : instaStyle[2]" v-if="isMobile === false">
+      <div
+        :style="styleFlag ? matrixStyle[2] : instaStyle[2]"
+        v-if="isMobile === false"
+      >
         <div class="home_card_footer_director">Director. {{ nickname }}</div>
-        <div class="home_card_footer_btns" :data-test="`${likeCnt}명이 좋아합니다.`">
+        <div
+          class="home_card_footer_btns"
+          :data-test="`${likeCnt}명이 좋아합니다.`"
+        >
           <button v-if="like" class="home_card_like" @click="pushLike()">
             <i class="fas fa-heart" />
           </button>
@@ -75,7 +86,9 @@
           <button v-else class="home_card_like" @click="pushLike()">
             <i class="far fa-heart" />
           </button>
-          <div v-if="isMobile" class="home_card_like_cnt">{{ likeCnt }}명이 좋아합니다.</div>
+          <div v-if="isMobile" class="home_card_like_cnt">
+            {{ likeCnt }}명이 좋아합니다.
+          </div>
         </div>
         <hr style="border: 0.2px solid gold" />
         <div class="home_card_footer_director">Director. {{ nickname }}</div>
@@ -382,18 +395,22 @@ img {
   background-color: grey;
   font-weight: bold;
   transition: 0.6s ease;
-  border-radius: 50%;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
   user-select: none;
   height: 40px;
   width: 40px;
   text-align: center;
   line-height: 33px;
   font-size: 40px;
-  padding: 3px;
+  padding: 3px 5px 3px 1px;
 }
 .next {
   right: 0;
-  border-radius: 50%;
+  border-radius: unset;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  padding: 3px 1px 3px 5px;
 }
 .prev:hover,
 .next:hover {
