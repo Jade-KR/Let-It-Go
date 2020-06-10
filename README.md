@@ -46,6 +46,10 @@ Let It Go는 사용자의 레고 보유 현황을 관리하고 다른 사용자�
 
 ![ERD](images/ERD.png)
 
+## 서비스 개요도
+
+![서비스개요도](C:\Users\multicampus\s02p31d108\images/서비스개요도.png)
+
 ## Getting Started
 
 ### 로컬 환경
