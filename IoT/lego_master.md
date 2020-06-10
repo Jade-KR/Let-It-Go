@@ -61,4 +61,4 @@ Lego Master는 AI와 IoT를 활용하여 레고를 자동으로 분류해 내 �
 
 ### 레고 식별기 동작원리
 
-[레고 식별기 동작원리]()
+[레고 식별기 동작원리](object_recognition/object_recognition.md) 보러가기
