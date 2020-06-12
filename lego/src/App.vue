@@ -77,6 +77,9 @@ export default {
 </script>
 
 <style>
+#app {
+  font-family: "Poor Story", cursive;
+}
 input,
 button,
 textarea:focus {
