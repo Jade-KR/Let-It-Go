@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, UserPart2, SetPart, UserLikeLegoSet, UserSet
+from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, UserPart2, SetPart, UserLikeLegoSet, UserSet, SubSet
 from api import models, serializers
 from allauth.account.models import EmailAddress
 from rest_framework import viewsets, mixins
@@ -172,7 +172,7 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
         elif self.request.query_params.get("theme"):
             queryset = LegoSet.objects.filter(theme_id=self.request.query_params["theme"]).order_by("-id")
             return queryset
-        return LegoSet.objects.all().order_by("-id")
+        return LegoSet.objects.all().filter(is_product=1).order_by("-id")
 
     def list(self, request):
         '''
@@ -826,35 +826,60 @@ def CreateLegoSet(self):
                 "color_id": Integer,
                 "quantity": String
             }
-        ]
+        ],
+        "sub_sets": [
+            sub_set_id,
+        ],
+        "is_product": Integer(0/1)
     }
     '''
     user = self.user
     if user.is_authenticated:
         data = self.data
         cur_id = LegoSet.objects.all().order_by('-id')[0].id + 1
-        lego_set = LegoSet.objects.create(
-            id=cur_id,
-            user=user,
-            theme_id=data["theme_id"],
-            name=data["set_name"],
-            num_parts=len(data["parts"]),
-            images=data["set_images"],
-            description=data["description"],
-            tags=data["tags"],
-            references=data["reference"],
+        with transaction.atomic():
+            lego_set = LegoSet.objects.create(
+                id=cur_id,
+                user=user,
+                theme_id=data["theme_id"],
+                name=data["set_name"],
+                num_parts=len(data["parts"]),
+                images=data["set_images"],
+                description=data["description"],
+                tags=data["tags"],
+                references=data["reference"],
+                is_product=data["is_product"]
             )
-        create_part_list = [
-            SetPart(
-                lego_set=lego_set,
-                part_id=part["part_id"],
-                color_id=part["color_id"],
-                quantity=part["quantity"]
-            )
-            for part in data["parts"]
-        ]
-        SetPart.objects.bulk_create(create_part_list)
-
+            create_part_dict = dict()
+            for part in data["parts"]:
+                if create_part_dict.get(part["part_id"]):
+                    if create_part_dict[part["part_id"]].get(part["color_id"]):
+                        create_part_dict[part["part_id"]][part["color_id"]] += part["quantity"]
+                    else:
+                        create_part_dict[part["part_id"]][part["color_id"]] = part["quantity"]
+                else:
+                    create_part_dict[part["part_id"]] = {part["color_id"]: part["quantity"]}
+            for sub_set_id in data["sub_sets"]:
+                sub_set = get_object_or_404(LegoSet, pk=sub_set_id)
+                SubSet.objects.create(legoset=lego_set, subset=sub_set)
+                for set_part in sub_set.setpart_set.all():
+                    if create_part_dict.get(set_part.part_id):
+                        if create_part_dict[set_part.part_id].get(set_part.color_id):
+                            create_part_dict[set_part.part_id][set_part.color_id] += set_part.quantity
+                        else:
+                            create_part_dict[set_part.part_id][set_part.color_id] = set_part.quantity
+                    else:
+                        create_part_dict[set_part.part_id] = {set_part.color_id: set_part.quantity}
+            create_part_list = []
+            for part_id, color_dict in create_part_dict.items():
+                for color_id, quantity in color_dict.items():
+                    create_part_list.append(SetPart(
+                        lego_set_id=lego_set.id,
+                        part_id=part_id,
+                        color_id=color_id,
+                        quantity=quantity
+                    ))
+            SetPart.objects.bulk_create(create_part_list)
     return Response("등록 완료")
 
 def go_to_myhome(request):
