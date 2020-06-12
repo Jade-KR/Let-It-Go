@@ -20,40 +20,24 @@
             :key="`first${idx}`"
             :style="btnFlag === menu.title ? btnStyle[0] : btnStyle[1]"
           >
-            <i :class="menu.icon"></i>&nbsp;{{ menu.title }}
+            <i :class="menu.icon">&nbsp;{{ menu.title }}</i>
           </button>
           <hr id="divied_line" v-if="currentState === 2" />
           <div v-if="currentState === 2" class="sub_menu">
             <div
-              class="sub_menu_tab"
+              class="fas fa-scroll sub_menu_tab"
               @click="setSubState(1)"
               :style="subState === 1 ? btnStyle[0] : btnStyle[1]"
-            >
-              <i class="fas fa-scroll" style="display: inline-block;"></i>
-              &nbsp;
-              <div style="display: inline-block;">
-                설계도
-              </div>
-            </div>
+            >설계도</div>
             <div
-              class="sub_menu_tab2"
+              class="fas fa-cubes sub_menu_tab2"
               @click="setSubState(2)"
               :style="subState === 2 ? btnStyle[0] : btnStyle[1]"
-            >
-              <i class="fas fa-cubes" style="display: inline-block;"></i>
-              &nbsp;
-              <div style="display: inline-block;">
-                부품
-              </div>
-            </div>
+            >부품</div>
           </div>
         </div>
         <div v-else>
-          <button
-            class="menu"
-            @click.prevent="menuState(`설계도`, 0)"
-            :style="btnStyle[0]"
-          >
+          <button class="menu" @click.prevent="menuState(`설계도`, 0)" :style="btnStyle[0]">
             <i class="fas fa-scroll">&nbsp;설계도</i>
           </button>
         </div>
