@@ -20,10 +20,7 @@
           </div>
           <div class="input_box">
             <ValidationProvider name="비밀번호" rules="required">
-              <div
-                slot-scope="{ errors }"
-                style="margin-bottom: 20px; position:relative"
-              >
+              <div slot-scope="{ errors }" style="margin-bottom: 20px; position:relative">
                 <div class="value_box">
                   <input type="password" v-model="currentPw" />
                 </div>
@@ -43,10 +40,7 @@
               vid="pwd_confirmation"
               rules="required|password|min:8|max:100"
             >
-              <div
-                slot-scope="{ errors }"
-                style="margin-bottom: 20px; position:relative"
-              >
+              <div slot-scope="{ errors }" style="margin-bottom: 20px; position:relative">
                 <div class="value_box">
                   <input type="password" v-model="newPw" />
                 </div>
@@ -61,10 +55,7 @@
             <p class="label_name">새 비밀번호 확인</p>
           </div>
           <div class="input_box">
-            <ValidationProvider
-              name="비밀번호 확인"
-              rules="required|confirmed:pwd_confirmation"
-            >
+            <ValidationProvider name="비밀번호 확인" rules="required|confirmed:pwd_confirmation">
               <div
                 slot-scope="{ errors }"
                 style="margin-bottom: 20px; height:20px; position:relative"
@@ -81,13 +72,7 @@
         <div class="form_box">
           <div class="label_box"></div>
           <div class="input_box">
-            <button
-              class="submit_btn"
-              @click="onSubmit()"
-              :disabled="invalid || !validated"
-            >
-              비밀번호 변경
-            </button>
+            <button class="submit_btn" @click="onSubmit()" :disabled="invalid || !validated">비밀번호 변경</button>
           </div>
         </div>
       </ValidationObserver>
@@ -156,6 +141,7 @@ export default {
 <style scoped>
 .right_body_box {
   border-style: none;
+  width: 100%;
 }
 .all_box {
   width: 100%;

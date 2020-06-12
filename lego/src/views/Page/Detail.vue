@@ -26,15 +26,9 @@
         <detail-desc :description="model.description"></detail-desc>
       </div>
       <div id="detail_recommend">
-        <div id="detail_recommend_header">
-          이런 설계도는 어떠세요?
-        </div>
+        <div id="detail_recommend_header">이런 설계도는 어떠세요?</div>
         <div id="detail_rec_cards">
-          <div
-            v-for="(v, i) in pickedList"
-            :key="`recc-${i}`"
-            class="detail_rec_card"
-          >
+          <div v-for="(v, i) in pickedList" :key="`recc-${i}`" class="detail_rec_card">
             <detail-rec-card
               :id="recommendList[v].id"
               :name="recommendList[v].name"
@@ -55,9 +49,7 @@
           @click="onReviews()"
         >
           <i class="fas fa-scroll"></i>&nbsp; 댓글
-          <div style="display: inline-block; transform: translateY(-2px);">
-            ({{ reviews.length }})
-          </div>
+          <div style="display: inline-block; transform: translateY(-2px);">({{ reviews.length }})</div>
         </div>
         <div
           class="detail_btn"
@@ -70,11 +62,7 @@
       <div id="detail_reviews">
         <div v-if="btnFlag == 'reviews'">
           <detail-review-write :id="model.id"></detail-review-write>
-          <div
-            v-for="(review, i) in slicedReviews"
-            :key="`review-${i}`"
-            id="test"
-          >
+          <div v-for="(review, i) in slicedReviews" :key="`review-${i}`" id="test">
             <detail-review
               :content="review.content"
               :nickname="review.nickname"
@@ -89,25 +77,31 @@
           <v-layout justify-center>
             <v-flex xs8>
               <v-card-text>
-                <v-pagination
-                  :length="pageLength"
-                  v-model="page"
-                  color="rgb(255, 215, 0)"
-                ></v-pagination>
+                <v-pagination :length="pageLength" v-model="page" color="rgb(255, 215, 0)"></v-pagination>
               </v-card-text>
             </v-flex>
           </v-layout>
         </div>
-        <detail-part
-          v-if="btnFlag == 'parts'"
-          :parts="model.parts"
-          :setName="model.name"
-        ></detail-part>
+        <detail-part v-if="btnFlag == 'parts'" :parts="model.parts" :setName="model.name"></detail-part>
       </div>
     </div>
     <div v-else>
       <div id="loading">
-        <i class="fa fa-spinner fa-spin"></i>
+        <!-- <i class="fa fa-spinner fa-spin"></i> -->
+        <div class="loadingio-spinner-bean-eater-rstzjzfll3r">
+          <div class="ldio-upeca3v4hi">
+            <div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
