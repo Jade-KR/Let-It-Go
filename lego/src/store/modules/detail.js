@@ -14,7 +14,8 @@ const state = {
     user_id: 0,
     created_at: "",
     updated_at: "",
-    parts: []
+    parts: [],
+    sub_sets: []
   },
   reviews: [],
   myparts: [],

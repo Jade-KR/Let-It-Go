@@ -70,6 +70,7 @@ class LegoSetSerializer(serializers.ModelSerializer):
 
 class LegoSetSerializer2(serializers.ModelSerializer):
     reviews = ReviewSerializer(source="review_set", many=True)
+    sub_sets = serializers.SerializerMethodField()
     nickname = serializers.SerializerMethodField()
     parts = serializers.SerializerMethodField()
     class Meta:
@@ -87,7 +88,13 @@ class LegoSetSerializer2(serializers.ModelSerializer):
             "theme",
             "review_count",
             "like_count",
+            "sub_sets",
         ]
+    def get_sub_sets(self, obj):
+        queryset = []
+        for subset in obj.sub_set.all():
+            queryset.append(subset.subset)
+        return LegoSetSerializer(queryset, many=True).data
     def get_nickname(self, obj):
         return obj.user.nickname if obj.user else "Official Set"
     def get_image(self, obj):

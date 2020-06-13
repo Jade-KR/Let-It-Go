@@ -34,16 +34,18 @@
     </div>
     <div class="home_card_imgs" v-else>
       <div class="slideshow_container">
-        <div
+        <!-- <div
           class="go_detail_btn"
           @click="goDetail(id)"
           :style="styleFlag ? matrixStyle[4] : instaStyle[4]"
         >
           상세보기
-        </div>
+        </div> -->
         <img
           src="../../assets/icons/no_img.jpg"
           :style="styleFlag ? matrixStyle[3] : instaStyle[3]"
+          @click="goDetail(id)"
+          class="no_img"
         />
       </div>
     </div>
@@ -381,6 +383,9 @@ export default {
 }
 img {
   vertical-align: middle;
+}
+.no_img {
+  cursor: pointer;
 }
 .slideshow_container {
   position: relative;

@@ -26,9 +26,7 @@
         <detail-desc :description="model.description"></detail-desc>
       </div>
       <div id="detail_recommend">
-        <div id="detail_recommend_header">
-          이런 설계도는 어떠세요?
-        </div>
+        <div id="detail_recommend_header">이런 설계도는 어떠세요?</div>
         <div id="detail_rec_cards">
           <div
             v-for="(v, i) in pickedList"
@@ -54,7 +52,7 @@
           :style="btnFlag == 'reviews' ? btnStyle[0] : btnStyle[1]"
           @click="onReviews()"
         >
-          <i class="fas fa-scroll"></i>&nbsp; 댓글
+          <i class="fas fa-font"></i>&nbsp; 댓글
           <div style="display: inline-block; transform: translateY(-2px);">
             ({{ reviews.length }})
           </div>
@@ -65,6 +63,13 @@
           @click="onParts()"
         >
           <i class="fas fa-cubes"></i>&nbsp; 부품
+        </div>
+        <div
+          class="detail_btn"
+          :style="btnFlag == 'Mocs' ? btnStyle[0] : btnStyle[1]"
+          @click="onMocs()"
+        >
+          <i class="fas fa-scroll"></i>&nbsp; 하위
         </div>
       </div>
       <div id="detail_reviews">
@@ -103,11 +108,29 @@
           :parts="model.parts"
           :setName="model.name"
         ></detail-part>
+        <sub-set-card
+          v-if="btnFlag === 'Mocs'"
+          :subSets="model.sub_sets"
+        ></sub-set-card>
       </div>
     </div>
     <div v-else>
       <div id="loading">
-        <i class="fa fa-spinner fa-spin"></i>
+        <!-- <i class="fa fa-spinner fa-spin"></i> -->
+        <div class="loadingio-spinner-bean-eater-rstzjzfll3r">
+          <div class="ldio-upeca3v4hi">
+            <div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -121,6 +144,7 @@ import DetailReviewWrite from "../../components/Detail/Review/DetailReviewWrite.
 import DetailReview from "../../components/Detail/Review/DetailReview.vue";
 import DetailPart from "../../components/Detail/Part/DetailPart.vue";
 import DetailRecCard from "../../components/Detail/Recommend/DetailRecCard.vue";
+import SubSetCard from "../../components/Detail/SubSet/SubSetCard.vue";
 import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
@@ -131,7 +155,8 @@ export default {
     DetailReviewWrite,
     DetailReview,
     DetailPart,
-    DetailRecCard
+    DetailRecCard,
+    SubSetCard
   },
   data() {
     return {
@@ -232,6 +257,9 @@ export default {
     },
     onParts() {
       this.btnFlag = "parts";
+    },
+    onMocs() {
+      this.btnFlag = "Mocs";
     }
   }
 };
@@ -294,7 +322,7 @@ export default {
   padding: 10px;
   color: grey;
   cursor: pointer;
-  margin: 0 150px;
+  margin: 0 100px;
   transition: 0.5s;
   line-height: 40px;
 }

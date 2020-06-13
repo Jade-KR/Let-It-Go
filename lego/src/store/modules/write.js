@@ -13,8 +13,10 @@ const state = {
     set_name: "",
     description: "",
     tags: [],
-    reference: "",
-    parts: []
+    sub_sets: [],
+    parts: [],
+    is_product: 0,
+    reference: ""
   },
   step: 1,
   currentStep: 1,
@@ -26,7 +28,7 @@ const state = {
     theme_id: null,
     tags: "",
     description: "",
-    reference: ""
+    sub_sets: []
   },
   partList: LegoParts.rows.map((e, i) => {
     return {
@@ -50,34 +52,24 @@ const state = {
   pickStep: 0,
   pickedParts: [],
   pickedPartByImg: [],
-  pickedReset: false
+  pickedReset: false,
+  imgUrl: []
 };
 
 const actions = {
   next({ commit }, params) {
     if (params.step === 1) {
-      // commit("setImage", state.modelImgs);
       var modelImgUrls = [];
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
 
-      for (let i = 0; i < state.modelImgs.length; ++i) {
+      for (let i = 0; i < state.imgUrl.length; ++i) {
         var formdata = new FormData();
-        formdata.append("image", state.modelImgs[i].slice(22));
-        var requestOptions = {
-          method: "POST",
-          headers: myHeaders,
-          body: formdata,
-          redirect: "follow"
-        };
-
-        fetch("https://api.imgur.com/3/image", requestOptions)
-          .then(response => response.text())
-          .then(result => {
-            const test = JSON.parse(result);
-            modelImgUrls.push(test.data.link);
+        formdata.append("image", state.imgUrl[i]);
+        api.uploadImage(formdata)
+          .then(response => {
+            console.log(response)
+            modelImgUrls.push(response.data);
             commit("setImage", modelImgUrls);
-          });
+          })
       }
     } else if (params.step === 2) {
       commit("setDesc", params.descParams);
@@ -181,6 +173,7 @@ const actions = {
   },
   async onWriteSubmit({ commit }) {
     const imgUrlList = state.model.set_images;
+
     var imgUrlString = "";
     imgUrlList.forEach((e, i) => {
       if (i === imgUrlList.length - 1) {
@@ -201,7 +194,9 @@ const actions = {
       tagString += String(e) + "|";
     });
     commit("setTags", tagString);
+
     commit("setParts");
+
     await api
       .writeSubmit(state.model)
       .then(res => {
@@ -236,10 +231,13 @@ const mutations = {
     state.model.theme_id = info.theme_id;
     state.model.tags = info.tags;
     state.model.description = info.description;
-    state.model.reference = info.reference;
+    state.model.sub_sets = info.sub_set;
   },
   setTags(state, tagString) {
     state.model.tags = tagString;
+  },
+  setSubset(state, subSetList) {
+    state.model.sub_sets = subSetList;
   },
   setParts(state) {
     state.enrolledPart.forEach(e => {
@@ -265,6 +263,9 @@ const mutations = {
   },
   resetOnlyPickedPartByImg(state) {
     state.pickedPartByImg = [];
+  },
+  setIsProduct(state, value) {
+    state.model.is_product = value;
   }
 };
 

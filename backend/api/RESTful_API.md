@@ -678,7 +678,10 @@ knn 알고리즘을 적용한 추천을 하고
             "color_id": Integer,
             "quantity": String
         }
-	]
+	],
+	"sub_sets": [
+        
+    ]
 }
 ```
 
