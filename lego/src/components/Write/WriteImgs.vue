@@ -13,8 +13,17 @@
           <a id="next" @click="plusSlides(1)">❯</a>
         </div>
         <div class="row">
-          <div class="column" v-for="(img, i) in modelImgs" :key="`thumbnail-${i}`">
-            <img class="demo cursor" :src="img" @click="currentSlide(i + 1)" :id="`thumbnail-${i}`" />
+          <div
+            class="column"
+            v-for="(img, i) in modelImgs"
+            :key="`thumbnail-${i}`"
+          >
+            <img
+              class="demo cursor"
+              :src="img"
+              @click="currentSlide(i + 1)"
+              :id="`thumbnail-${i}`"
+            />
             <div class="delete_btn" @click="removeImage(i)">삭제</div>
           </div>
         </div>
@@ -32,7 +41,13 @@
     </div>
     <div>
       <button @click="onPrev(step - 1)" class="before_btn">이전</button>
-      <button @click="onNext(step + 1)" :disabled="modelImgs.length === 0" class="after_btn">다음</button>
+      <button
+        @click="onNext(step + 1)"
+        :disabled="modelImgs.length === 0"
+        class="after_btn"
+      >
+        다음
+      </button>
     </div>
   </div>
 </template>
@@ -52,7 +67,8 @@ export default {
       model: state => state.write.model,
       step: state => state.write.step,
       currentStep: state => state.write.currentStep,
-      modelImgs: state => state.write.modelImgs
+      modelImgs: state => state.write.modelImgs,
+      imgUrl: state => state.write.imgUrl
     })
   },
   watch: {
@@ -156,6 +172,7 @@ export default {
           }
         }
         vm.modelImgs.push(e.target.result);
+        vm.imgUrl.push(file);
       };
       reader.readAsDataURL(file);
     },

@@ -121,8 +121,9 @@ export default {
       let file = e.target.files[0];
       let reader = new FileReader();
       reader.onload = async a => {
+        a;
         this.loading = true;
-        await this.updateImg(a.target.result);
+        await this.updateImg(file);
         this.loading = false;
       };
       if (file) {

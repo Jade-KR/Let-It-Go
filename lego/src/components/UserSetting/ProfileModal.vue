@@ -37,9 +37,10 @@ export default {
       let file = e.target.files[0];
       let reader = new FileReader();
       reader.onload = async a => {
+        a;
         that.dialog = false;
         this.$emit("loading");
-        await this.updateImg(a.target.result);
+        await this.updateImg(file);
         this.$emit("stop");
       };
       if (file) {

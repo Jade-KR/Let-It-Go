@@ -1,6 +1,6 @@
 <template>
   <div class="right_body_box">
-    <h1 class="header">레고레일 분류 현황</h1>
+    <h1 class="header">레고 마스터 분류 현황</h1>
     <button class="reset_btn" @click="resetData()">
       <i class="fas fa-retweet"></i>&nbsp; 데이터 갱신
     </button>
@@ -85,7 +85,7 @@ export default {
     this.realList = realList;
   },
   methods: {
-    ...mapActions("Parts", ["updateParts"]),
+    ...mapActions("Parts", ["updateParts", "resetLegoRail"]),
     ...mapActions("user", ["getPartsFromLegoRail"]),
     change(info) {
       this.realList.forEach((item, i) => {
@@ -119,6 +119,7 @@ export default {
       const params = { UpdateList: newBasket };
       await this.updateParts(params);
       alert("부품이 등록되었습니다");
+      await this.resetLegoRail("dd")
       this.$router.push("mypage/" + localStorage.getItem("pk"));
     },
     deleteItem(idx) {

@@ -16,7 +16,18 @@
               @click="goDetail(item)"
             >
               <div class="body_img_box">
-                <img class="body_img" :src="item.images" alt />
+                <img
+                  class="body_img"
+                  :src="item.images"
+                  alt
+                  v-if="item.images.split(':').length >= 2"
+                />
+                <img
+                  class="body_img"
+                  src="../../../../assets/icons/no_img.jpg"
+                  alt="no_img"
+                  v-else
+                />
                 <div class="body_img_hover">
                   <div class="body_img_desc">
                     <div class="body_img_name">

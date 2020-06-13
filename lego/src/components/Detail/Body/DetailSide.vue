@@ -30,9 +30,9 @@
         <div id="detail_side_themes">
           <div id="detail_side_theme">Theme</div>
           <div id="detail_side_theme_name">
-            <b class="fontColor_green" @click="searchTheme(theme)">{{
-              themeName
-            }}</b>
+            <b class="fontColor_green" @click="searchTheme(theme)">
+              {{ themeName }}
+            </b>
           </div>
         </div>
         <div id="detail_side_tags">
@@ -47,36 +47,32 @@
             </div>
           </div>
         </div>
+        <div id="detail_side_bricks">
+          <div id="detail_side_brick">Own Key</div>
+          <div id="detail_side_part" @click="pkCopy()">
+            <b class="fontColor_green">{{ id }}</b>
+          </div>
+        </div>
       </div>
 
       <hr class="divide_line" />
 
       <div id="detail_side_number">
         <div id="detail_side_scores">
-          <div id="detail_side_score">
-            Score
-          </div>
-          <div id="detail_side_score_num">
-            {{ avgScore }}
-          </div>
+          <div id="detail_side_score">Score</div>
+          <div id="detail_side_score_num">{{ avgScore }}</div>
         </div>
         <div
           id="detail_side_likes"
           @click="pushLike()"
           v-if="likeFlag === false"
         >
-          <div id="detail_side_like">
-            Like
-          </div>
-          <div id="detail_side_like_num">
-            {{ likeCnt }}
-          </div>
+          <div id="detail_side_like">Like</div>
+          <div id="detail_side_like_num">{{ likeCnt }}</div>
         </div>
         <button id="detail_side_onlikes" @click="pushLike()" v-else>
           <i class="fas fa-heart">
-            <div id="detail_side_like_num_on">
-              {{ likeCnt }}
-            </div>
+            <div id="detail_side_like_num_on">{{ likeCnt }}</div>
           </i>
         </button>
       </div>
@@ -97,9 +93,7 @@
           v-if="is100 === true"
           @addInven="addModelToInven()"
         >
-          <div slot="add_inven">
-            보관함에 설계도 추가하기
-          </div>
+          <div slot="add_inven">보관함에 설계도 추가하기</div>
         </add-inven>
 
         <sub-inven
@@ -107,15 +101,13 @@
           v-if="isInven === true"
           @subInven="subModelToInven()"
         >
-          <div slot="sub_inven">
-            보관함에서 설계도 제거하기
-          </div>
+          <div slot="sub_inven">보관함에서 설계도 제거하기</div>
         </sub-inven>
       </div>
     </div>
     <video
       controls
-      autoplay
+      muted
       width="100%"
       style="margin-top: 10px;"
       @click="goFood()"
@@ -421,6 +413,16 @@ export default {
     },
     goFood() {
       window.open("https://i02d106.p.ssafy.io/");
+    },
+    pkCopy() {
+      var tempElem = document.createElement("textarea");
+      tempElem.value = this.id;
+      document.body.appendChild(tempElem);
+
+      tempElem.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempElem);
+      alert("고유번호가 복사 되었습니다.");
     }
   }
 };

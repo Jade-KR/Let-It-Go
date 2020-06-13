@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, UserPart2, SetPart, UserLikeLegoSet, UserSet
+from .models import CustomUser, Theme, LegoSet, OfficialMapping, Category, Review, LegoPart, Color, UserPart, UserPart2, SetPart, UserLikeLegoSet, UserSet, SubSet
 from api import models, serializers
 from allauth.account.models import EmailAddress
 from rest_framework import viewsets, mixins
@@ -16,6 +16,9 @@ import pandas as pd
 import surprise
 import pickle
 from sklearn.cluster import KMeans
+import hashlib
+from datetime import datetime
+import base64
 
 API_key = '08d368a0e1830b9fec088091be154133'
 headers = {
@@ -172,7 +175,7 @@ class LegoSetViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.De
         elif self.request.query_params.get("theme"):
             queryset = LegoSet.objects.filter(theme_id=self.request.query_params["theme"]).order_by("-id")
             return queryset
-        return LegoSet.objects.all().order_by("-id")
+        return LegoSet.objects.all().filter(is_product=1).order_by("-id")
 
     def list(self, request):
         '''
@@ -273,7 +276,7 @@ class UserSetViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request):
         '''
-        요청이 들어오면 요청을 한 유저가 작성한 설계도 리스트를 반환합니다.
+        요청이 들어오면 요청을 한 유저가 보유한 설계도 정보를 반환합니다.
         '''
         user = request.user
         if user.is_authenticated:
@@ -295,7 +298,7 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, pk=None):
         '''
-        요청이 들어오면 pk에 해당하는 설계도의 부품 리스트를 반환합니다.
+        요청이 들어오면 id에 해당하는 설계도의 부품 리스트를 반환합니다.
         '''
         queryset = SetPart.objects.filter(lego_set_id=pk)
         if queryset:
@@ -311,7 +314,7 @@ class SetPartViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 @api_view(['POST'])
 def set_user_category(self):
     '''
-    요청이 들어오면 요청을 보낸 유저의 카테고리 정보를 입력합니다.
+    요청이 들어오면 요청을 보낸 유저의 |로 구분된 카테고리를 입력합니다.
     '''
     categories = self.data.get("categories")
     user = CustomUser.objects.get(id=self.user.id)
@@ -413,7 +416,7 @@ class FollowUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, pk=None):
         '''
-        요청이 들어오면 pk에 해당하는 유저를 팔로우 한 유저들을 반환합니다.
+        요청이 들어오면 id에 해당하는 유저를 팔로우 한 유저들을 반환합니다.
         '''
         user = get_object_or_404(get_user_model(), pk=pk)
         followers = user.followers.all()
@@ -433,7 +436,7 @@ class FollowingUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, pk=None):
         '''
-        요청이 들어오면 pk에 해당하는 유저가 팔로우 한 유저 목록을 반환합니다.
+        요청이 들어오면 id에 해당하는 유저가 팔로우 한 유저 목록을 반환합니다.
         '''
         user = get_object_or_404(get_user_model(), pk=pk)
         followings = user.followings.all()
@@ -471,7 +474,7 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
 
     def retrieve(self, request, pk=None):
         '''
-        요청이 들어오면 pk에 해당하는 유저의 정보를 반환합니다.
+        요청이 들어오면 id에 해당하는 유저의 정보를 반환합니다.
         '''
         user = get_object_or_404(get_user_model(), id=pk)
         serializer = serializers.UserDetailSerializer(user)
@@ -479,8 +482,7 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
 
     def update(self, request, pk=None):
         '''
-        요청이 들어오면 권한이 있을 경우
-        pk에 해당하는 유저의 정보를 변경합니다.
+        요청이 들어오면 권한이 있을 경우 id에 해당하는 유저의 정보를 변경합니다.
         '''
         user = get_object_or_404(get_user_model(), id=pk)
         emailaddress = get_object_or_404(EmailAddress, user_id=pk)
@@ -510,8 +512,7 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
 
     def destroy(self, request, pk=None):
         '''
-        요청이 들어오면 권한이 있을 경우
-        요청한 pk에 해당하는 유저의 상태를 변경합니다.
+        요청이 들어오면 권한이 있을 경우 요청한 id에 해당하는 유저의 상태를 변경합니다.
         블럭, 블럭해제 등
         '''
         user = get_object_or_404(get_user_model(), id=pk)
@@ -557,7 +558,6 @@ class UserLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         user = request.user
         if user.is_authenticated:
             queryset = LegoSet.objects.filter(user_id=pk).order_by('-created_at')
-            print(queryset)
             page = self.paginate_queryset(queryset)
             serializer_data = serializers.LegoSetSerializer(page, many=True).data
             for legoset in serializer_data:
@@ -576,7 +576,7 @@ class UserLikeLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet)
 
     def retrieve(self, request, pk=None):
         '''
-        요청이 들어오면 pk에 해당하는 유저가 좋아요 한 설계도를 반환합니다.
+        요청이 들어오면 id에 해당하는 유저가 좋아요 한 설계도를 반환합니다.
         '''
         user = get_object_or_404(get_user_model(), id=pk)
         queryset = user.like_sets.all().order_by('-created_at')
@@ -595,7 +595,7 @@ class UserLikeLegoSetViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet)
 class LegoSetRankingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LegoSetSerializer2
     pagination_class = SmallPagination
-
+    queryset = LegoSet.objects.all().order_by("-like_count")
     def list(self, request):
         '''
         요청이 들어오면 좋아요 수가 가장 많은 레고 순으로 설계도를 반환합니다.
@@ -829,35 +829,60 @@ def CreateLegoSet(self):
                 "color_id": Integer,
                 "quantity": String
             }
-        ]
+        ],
+        "sub_sets": [
+            sub_set_id,
+        ],
+        "is_product": Integer(0/1)
     }
     '''
     user = self.user
     if user.is_authenticated:
         data = self.data
         cur_id = LegoSet.objects.all().order_by('-id')[0].id + 1
-        lego_set = LegoSet.objects.create(
-            id=cur_id,
-            user=user,
-            theme_id=data["theme_id"],
-            name=data["set_name"],
-            num_parts=len(data["parts"]),
-            images=data["set_images"],
-            description=data["description"],
-            tags=data["tags"],
-            references=data["reference"],
+        with transaction.atomic():
+            lego_set = LegoSet.objects.create(
+                id=cur_id,
+                user=user,
+                theme_id=data["theme_id"],
+                name=data["set_name"],
+                num_parts=len(data["parts"]),
+                images=data["set_images"],
+                description=data["description"],
+                tags=data["tags"],
+                references=data["reference"],
+                is_product=data["is_product"]
             )
-        create_part_list = [
-            SetPart(
-                lego_set=lego_set,
-                part_id=part["part_id"],
-                color_id=part["color_id"],
-                quantity=part["quantity"]
-            )
-            for part in data["parts"]
-        ]
-        SetPart.objects.bulk_create(create_part_list)
-
+            create_part_dict = dict()
+            for part in data["parts"]:
+                if create_part_dict.get(part["part_id"]):
+                    if create_part_dict[part["part_id"]].get(part["color_id"]):
+                        create_part_dict[part["part_id"]][part["color_id"]] += part["quantity"]
+                    else:
+                        create_part_dict[part["part_id"]][part["color_id"]] = part["quantity"]
+                else:
+                    create_part_dict[part["part_id"]] = {part["color_id"]: part["quantity"]}
+            for sub_set_id in data["sub_sets"]:
+                sub_set = get_object_or_404(LegoSet, pk=sub_set_id)
+                SubSet.objects.create(legoset=lego_set, subset=sub_set)
+                for set_part in sub_set.setpart_set.all():
+                    if create_part_dict.get(set_part.part_id):
+                        if create_part_dict[set_part.part_id].get(set_part.color_id):
+                            create_part_dict[set_part.part_id][set_part.color_id] += set_part.quantity
+                        else:
+                            create_part_dict[set_part.part_id][set_part.color_id] = set_part.quantity
+                    else:
+                        create_part_dict[set_part.part_id] = {set_part.color_id: set_part.quantity}
+            create_part_list = []
+            for part_id, color_dict in create_part_dict.items():
+                for color_id, quantity in color_dict.items():
+                    create_part_list.append(SetPart(
+                        lego_set_id=lego_set.id,
+                        part_id=part_id,
+                        color_id=color_id,
+                        quantity=quantity
+                    ))
+            SetPart.objects.bulk_create(create_part_list)
     return Response("등록 완료")
 
 def go_to_myhome(request):
@@ -1219,44 +1244,34 @@ def update_user_set_inventory(self):
             userset_q = user.userset_set.filter(legoset_id=legoset_id)
             if userset_q:
                 userset = userset_q[0]
+                
+                # 설계도의 부품들 중복 합쳐주기
+                setpart_dict = dict()
+                for setpart in get_object_or_404(LegoSet, id=legoset_id).setpart_set.all():
+                    if setpart_dict.get(setpart.part_id):
+                        if setpart_dict[setpart.part_id].get(setpart.color_id):
+                            setpart_dict[setpart.part_id][setpart.color_id] += setpart.quantity
+                        else:
+                            setpart_dict[setpart.part_id][setpart.color_id] = setpart.quantity
+                    else:
+                        setpart_dict[setpart.part_id] = {setpart.color_id: setpart.quantity}
+
                 with transaction.atomic():
                     userset.quantity -= 1
                     if userset.quantity:
                         userset.save()
                     else:
                         userset.delete()
-                    setpart_dict = dict()
-                    for setpart in get_object_or_404(LegoSet, id=legoset_id).setpart_set.all():
-                        if setpart_dict.get(setpart.part_id):
-                            if setpart_dict[setpart.part_id].get(setpart.color_id):
-                                setpart_dict[setpart.part_id][setpart.color_id] += setpart.quantity
-                            else:
-                                setpart_dict[setpart.part_id][setpart.color_id] = setpart.quantity
-                        else:
-                            setpart_dict[setpart.part_id] = {setpart.color_id: setpart.quantity}
                     for part_id, color_dict in setpart_dict.items():
                         for color_id, quantity in  color_dict.items():
+                            # 유저가 보유하고 있는 아이템이라면 갱신리스트에 추가
                             if inventory_dict.get(part_id) and inventory_dict[part_id].get(color_id):
                                 tmp = inventory_dict[part_id][color_id]
                                 tmp.quantity += setpart.quantity
                                 u.append(tmp)
+                            # 아니면 생성리스트에 추가
                             else:
                                 c.append(UserPart(user=user, part_id=part_id, color_id=color_id, quantity=quantity))
-
-
-
-                    # for setpart in get_object_or_404(LegoSet, id=legoset_id).setpart_set.all():
-                    #     # 유저가 보유하고 있는 아이템이라면
-                    #     if inventory_dict.get(setpart.part_id) and inventory_dict[setpart.part_id].get(setpart.color_id):
-                    #         # 갱신리스트에 추가
-                    #         tmp = inventory_dict[setpart.part_id][setpart.color_id]
-                    #         tmp.quantity += setpart.quantity
-                    #         u.append(tmp)
-                    #     # 보유하고 있지 않은 아이템이라면
-                    #     else:
-                    #         # 생성리스트에 추가
-                    #         c.append(UserPart(user=user, part_id=setpart.part_id, color_id=setpart.color_id, quantity=setpart.quantity))
-
                     # 생성할 것들 생성
                     UserPart.objects.bulk_create(c)
                     # 갱신할 것들 갱신
@@ -1267,3 +1282,21 @@ def update_user_set_inventory(self):
         return Response("add_set 혹은 sub_set를 입력하세요")
     else:
         return Response("비 인증 유저")
+
+@api_view(['POST'])
+def update_user_set_inventory2(self):
+    user = self.user
+    UserPart2.objects.filter(user=user).delete()
+    return Response("초기화 완료")
+
+@api_view(['POST'])
+def upload_image(self):
+    m = hashlib.sha256()
+    m.update((str(self.data["image"])+str(datetime.now())).encode('utf-8'))
+    f_base = ".static_root/"
+    f_base2 = "static/"
+    f_name = "images/"+m.hexdigest()+"."+self.data["image"].content_type.split('/')[1]
+
+    with open(f_base+f_name, 'wb') as f:
+        f.write(self.data["image"].read())
+    return Response("https://k02d1081.p.ssafy.io:8009/" + f_base2 + f_name)
