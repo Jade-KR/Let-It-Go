@@ -40,6 +40,7 @@ class LegoSet(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     review_count = models.IntegerField(default=0)
     like_count = models.IntegerField(default=0)
+    is_product = models.IntegerField(default=1)
 
     @property
     def tag_list(self):
@@ -161,3 +162,7 @@ class UserSet(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     legoset = models.ForeignKey(LegoSet, on_delete=models.CASCADE)
     quantity = models.IntegerField()
+
+class SubSet(models.Model):
+    legoset = models.ForeignKey(LegoSet, related_name="sub_set", on_delete=models.CASCADE)
+    subset = models.ForeignKey(LegoSet, on_delete=models.CASCADE)

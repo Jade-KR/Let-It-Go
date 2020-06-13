@@ -10,7 +10,11 @@
 
         <div id="detail_side_designers">
           <div id="detail_side_designer">Designer</div>
-          <div id="detail_side_designer_id" @click="goMypage()" v-if="nickname !== 'Official Set'">
+          <div
+            id="detail_side_designer_id"
+            @click="goMypage()"
+            v-if="nickname !== 'Official Set'"
+          >
             <b class="fontColor_green">{{ nickname }}</b>
           </div>
           <div id="detail_side_designer_id" @click="goOfficial()" v-else>
@@ -27,9 +31,7 @@
           <div id="detail_side_theme">Theme</div>
           <div id="detail_side_theme_name">
             <b class="fontColor_green" @click="searchTheme(theme)">
-              {{
-              themeName
-              }}
+              {{ themeName }}
             </b>
           </div>
         </div>
@@ -45,6 +47,12 @@
             </div>
           </div>
         </div>
+        <div id="detail_side_bricks">
+          <div id="detail_side_brick">Own Key</div>
+          <div id="detail_side_part" @click="pkCopy()">
+            <b class="fontColor_green">{{ id }}</b>
+          </div>
+        </div>
       </div>
 
       <hr class="divide_line" />
@@ -54,7 +62,11 @@
           <div id="detail_side_score">Score</div>
           <div id="detail_side_score_num">{{ avgScore }}</div>
         </div>
-        <div id="detail_side_likes" @click="pushLike()" v-if="likeFlag === false">
+        <div
+          id="detail_side_likes"
+          @click="pushLike()"
+          v-if="likeFlag === false"
+        >
           <div id="detail_side_like">Like</div>
           <div id="detail_side_like_num">{{ likeCnt }}</div>
         </div>
@@ -68,13 +80,19 @@
       <hr class="divide_line" />
 
       <div id="detail_side_similar">
-        <div v-if="isInven" id="detail_side_similar_inven">설계도를 보관중입니다.</div>
+        <div v-if="isInven" id="detail_side_similar_inven">
+          설계도를 보관중입니다.
+        </div>
         <div>
           <div id="detail_side_similar_text">You Can Make</div>
           <div id="detail_side_similar_percent">{{ makePercent }}%</div>
         </div>
 
-        <add-inven id="detail_side_similar_add" v-if="is100 === true" @addInven="addModelToInven()">
+        <add-inven
+          id="detail_side_similar_add"
+          v-if="is100 === true"
+          @addInven="addModelToInven()"
+        >
           <div slot="add_inven">보관함에 설계도 추가하기</div>
         </add-inven>
 
@@ -87,7 +105,14 @@
         </sub-inven>
       </div>
     </div>
-    <video controls autoplay muted width="100%" style="margin-top: 10px;" @click="goFood()">
+    <video
+      controls
+      autoplay
+      muted
+      width="100%"
+      style="margin-top: 10px;"
+      @click="goFood()"
+    >
       <source src="../../../assets/food_curation.mp4" type="video/mp4" />
     </video>
   </div>
@@ -389,6 +414,16 @@ export default {
     },
     goFood() {
       window.open("https://i02d106.p.ssafy.io/");
+    },
+    pkCopy() {
+      var tempElem = document.createElement("textarea");
+      tempElem.value = this.id;
+      document.body.appendChild(tempElem);
+
+      tempElem.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempElem);
+      alert("고유번호가 복사 되었습니다.");
     }
   }
 };

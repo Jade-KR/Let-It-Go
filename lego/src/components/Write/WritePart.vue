@@ -34,7 +34,7 @@
           item-value="partIdx"
           hide-details
           label="부품"
-          placeholder="부품을 골라주세요"
+          placeholder="하위 설계도 외에 필요한 부품을 골라주세요"
           multiple
         />
       </div>
@@ -175,8 +175,12 @@
         >종류, 총 <b style="color: green; font-size: 28px;">{{ partQnt }}</b
         >개의 부품이 등록되었습니다.
       </div>
-      <button @click="onSubmit()" class="after_btn" :disabled="!flag">
-        글작성
+      <button class="after_btn">
+        <confirm-modal>
+          <div slot="add_inven" :disabled="!flag">
+            글작성
+          </div>
+        </confirm-modal>
       </button>
     </div>
   </div>
@@ -186,11 +190,13 @@
 import { mapState, mapActions, mapMutations } from "vuex";
 import PickCategory from "./EnrollByImg/PickCategory.vue";
 import PickPart from "./EnrollByImg/PickPart.vue";
+import ConfirmModal from "./ConfirmModal.vue";
 
 export default {
   components: {
     PickCategory,
-    PickPart
+    PickPart,
+    ConfirmModal
   },
   data() {
     return {
@@ -263,9 +269,9 @@ export default {
     onStep(idx) {
       this.setStep(idx);
     },
-    onSubmit() {
-      this.onWriteSubmit();
-    },
+    // onSubmit() {
+    //   this.onWriteSubmit();
+    // },
     onPrev(idx) {
       const params = {
         idx: idx,
