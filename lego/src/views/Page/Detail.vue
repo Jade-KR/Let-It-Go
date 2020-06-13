@@ -28,7 +28,11 @@
       <div id="detail_recommend">
         <div id="detail_recommend_header">이런 설계도는 어떠세요?</div>
         <div id="detail_rec_cards">
-          <div v-for="(v, i) in pickedList" :key="`recc-${i}`" class="detail_rec_card">
+          <div
+            v-for="(v, i) in pickedList"
+            :key="`recc-${i}`"
+            class="detail_rec_card"
+          >
             <detail-rec-card
               :id="recommendList[v].id"
               :name="recommendList[v].name"
@@ -48,8 +52,10 @@
           :style="btnFlag == 'reviews' ? btnStyle[0] : btnStyle[1]"
           @click="onReviews()"
         >
-          <i class="fas fa-scroll"></i>&nbsp; 댓글
-          <div style="display: inline-block; transform: translateY(-2px);">({{ reviews.length }})</div>
+          <i class="fas fa-font"></i>&nbsp; 댓글
+          <div style="display: inline-block; transform: translateY(-2px);">
+            ({{ reviews.length }})
+          </div>
         </div>
         <div
           class="detail_btn"
@@ -58,11 +64,22 @@
         >
           <i class="fas fa-cubes"></i>&nbsp; 부품
         </div>
+        <div
+          class="detail_btn"
+          :style="btnFlag == 'Mocs' ? btnStyle[0] : btnStyle[1]"
+          @click="onMocs()"
+        >
+          <i class="fas fa-scroll"></i>&nbsp; 하위
+        </div>
       </div>
       <div id="detail_reviews">
         <div v-if="btnFlag == 'reviews'">
           <detail-review-write :id="model.id"></detail-review-write>
-          <div v-for="(review, i) in slicedReviews" :key="`review-${i}`" id="test">
+          <div
+            v-for="(review, i) in slicedReviews"
+            :key="`review-${i}`"
+            id="test"
+          >
             <detail-review
               :content="review.content"
               :nickname="review.nickname"
@@ -77,12 +94,24 @@
           <v-layout justify-center>
             <v-flex xs8>
               <v-card-text>
-                <v-pagination :length="pageLength" v-model="page" color="rgb(255, 215, 0)"></v-pagination>
+                <v-pagination
+                  :length="pageLength"
+                  v-model="page"
+                  color="rgb(255, 215, 0)"
+                ></v-pagination>
               </v-card-text>
             </v-flex>
           </v-layout>
         </div>
-        <detail-part v-if="btnFlag == 'parts'" :parts="model.parts" :setName="model.name"></detail-part>
+        <detail-part
+          v-if="btnFlag == 'parts'"
+          :parts="model.parts"
+          :setName="model.name"
+        ></detail-part>
+        <sub-set-card
+          v-if="btnFlag === 'Mocs'"
+          :subSets="model.sub_sets"
+        ></sub-set-card>
       </div>
     </div>
     <div v-else>
@@ -115,6 +144,7 @@ import DetailReviewWrite from "../../components/Detail/Review/DetailReviewWrite.
 import DetailReview from "../../components/Detail/Review/DetailReview.vue";
 import DetailPart from "../../components/Detail/Part/DetailPart.vue";
 import DetailRecCard from "../../components/Detail/Recommend/DetailRecCard.vue";
+import SubSetCard from "../../components/Detail/SubSet/SubSetCard.vue";
 import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
@@ -125,7 +155,8 @@ export default {
     DetailReviewWrite,
     DetailReview,
     DetailPart,
-    DetailRecCard
+    DetailRecCard,
+    SubSetCard
   },
   data() {
     return {
@@ -226,6 +257,9 @@ export default {
     },
     onParts() {
       this.btnFlag = "parts";
+    },
+    onMocs() {
+      this.btnFlag = "Mocs";
     }
   }
 };
@@ -288,7 +322,7 @@ export default {
   padding: 10px;
   color: grey;
   cursor: pointer;
-  margin: 0 150px;
+  margin: 0 100px;
   transition: 0.5s;
   line-height: 40px;
 }

@@ -50,7 +50,7 @@
           :tags="tags"
           :validation="validation"
           @tags-changed="newTags => (tags = newTags)"
-          placeholder=""
+          placeholder="태그"
           :max-tags="5"
         />
       </div>
@@ -68,12 +68,18 @@
         />
       </div>
       <div id="ref">
-        <v-text-field
-          label="참조"
-          v-model="params.reference"
+        <!-- <v-text-field
+          label="하위설계도"
+          v-model="params.sub_set"
           color="rgba(255, 215, 0, 0.7)"
           outlined
           hide-details
+        /> -->
+        <vue-tags-input
+          v-model="subSet"
+          :subSets="subSets"
+          @tags-changed="newSubSets => (subSets = newSubSets)"
+          placeholder="하위설계도"
         />
       </div>
     </div>
@@ -109,13 +115,10 @@ export default {
   },
   data() {
     return {
+      subSet: "",
+      subSets: [],
       tag: "",
-      tags: [
-        {
-          text: "태그는 최대 5개입니다.",
-          style: "background-color: gold"
-        }
-      ],
+      tags: [],
       validation: [
         {
           classes: "min-length",
@@ -138,7 +141,7 @@ export default {
         theme_id: 0,
         tags: [],
         description: "",
-        reference: ""
+        sub_set: ""
       }
     };
   },
@@ -150,6 +153,14 @@ export default {
       });
       const ta = temp.map(s => s);
       this.params.tags = ta;
+    },
+    subSet() {
+      const temp = [];
+      this.subSets.forEach(e => {
+        temp.push(e["text"]);
+      });
+      const ta = temp.map(s => s);
+      this.params.sub_set = ta;
     }
   },
   computed: {
@@ -185,6 +196,8 @@ export default {
     document.querySelector(
       "#tag > div.vue-tags-input > div > ul"
     ).style.paddingLeft = "0px";
+    document.querySelector("#ref > div > div").style.width = "642px";
+    document.querySelector("#ref > div > div > ul").style.paddingLeft = "0px";
   },
 
   methods: {
@@ -314,6 +327,15 @@ export default {
 #desc,
 #ref {
   margin-bottom: 20px;
+}
+#ref:hover::after {
+  content: "하위 설계도의 고유번호를 입력해 주세요 (작품 상세정보의 Own Key를 참조해 주세요)";
+  position: absolute;
+  background-color: white;
+  border: 1px solid gold;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 5px 10px;
 }
 .star {
   position: absolute;

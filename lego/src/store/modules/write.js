@@ -13,8 +13,9 @@ const state = {
     set_name: "",
     description: "",
     tags: [],
-    reference: "",
-    parts: []
+    sub_set: [],
+    parts: [],
+    is_product: 0
   },
   step: 1,
   currentStep: 1,
@@ -26,7 +27,7 @@ const state = {
     theme_id: null,
     tags: "",
     description: "",
-    reference: ""
+    sub_set: []
   },
   partList: LegoParts.rows.map((e, i) => {
     return {
@@ -201,7 +202,9 @@ const actions = {
       tagString += String(e) + "|";
     });
     commit("setTags", tagString);
+
     commit("setParts");
+
     await api
       .writeSubmit(state.model)
       .then(res => {
@@ -236,10 +239,13 @@ const mutations = {
     state.model.theme_id = info.theme_id;
     state.model.tags = info.tags;
     state.model.description = info.description;
-    state.model.reference = info.reference;
+    state.model.sub_set = info.sub_set;
   },
   setTags(state, tagString) {
     state.model.tags = tagString;
+  },
+  setSubset(state, subSetList) {
+    state.model.sub_set = subSetList;
   },
   setParts(state) {
     state.enrolledPart.forEach(e => {
@@ -265,6 +271,9 @@ const mutations = {
   },
   resetOnlyPickedPartByImg(state) {
     state.pickedPartByImg = [];
+  },
+  setIsProduct(state, value) {
+    state.model.is_product = value;
   }
 };
 
