@@ -199,5 +199,8 @@ export default {
   resetLegoRail() {
     const params = 'null'
     return http.post(`${apiUrl}/update_user_set_inventory2`, params, { headers });
+  },
+  uploadImage(params) {
+    return http.post(`${apiUrl}/upload_image`, params, {headers} )
   }
 };
