@@ -29,17 +29,18 @@ const actions = {
     await api.uploadImage(formdata)
     // await fetch("https://k02d1081.p.ssafy.io:8009/api/upload_image", requestOptions)
     // await fetch("http://127.0.0.1:8000/api/upload_image", requestOptions)
-      .then(response => response.text())
-      .then(async result => {
-        const test = JSON.parse(result);
-        modelImgUrl = test;
+      .then(async response => {
+        modelImgUrl = response.data;
         params = {
-          profile_url: modelImgUrl
+        profile_url: modelImgUrl
         };
         await api.changeProfilePic(params);
         localStorage.setItem("image", modelImgUrl);
         commit("setFlag", state.photoFlag === false ? true : false);
-      });
+        //   response.text()
+        }
+      )
+      
   },
   async updateInfo({ commit }, params) {
     commit;
