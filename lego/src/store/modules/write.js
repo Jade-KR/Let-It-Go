@@ -73,7 +73,7 @@ const actions = {
           redirect: "follow"
         };
 
-        fetch("https://api.imgur.com/3/image", requestOptions)
+        fetch("https://k02d1081.p.ssafy.io:8009/api/upload_image", requestOptions)
           .then(response => response.text())
           .then(result => {
             const test = JSON.parse(result);
