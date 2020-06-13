@@ -59,27 +59,26 @@ const actions = {
   next({ commit }, params) {
     if (params.step === 1) {
       // commit("setImage", state.modelImgs);
-      var modelImgUrls = [];
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
+    //   var modelImgUrls = [];
 
       for (let i = 0; i < state.modelImgs.length; ++i) {
         var formdata = new FormData();
-        formdata.append("image", state.modelImgs[i].slice(22));
+        formdata.append("image", state.modelImgs[i]);
         var requestOptions = {
           method: "POST",
-          headers: myHeaders,
           body: formdata,
           redirect: "follow"
         };
 
-        fetch("https://k02d1081.p.ssafy.io:8009/api/upload_image", requestOptions)
-          .then(response => response.text())
-          .then(result => {
-            const test = JSON.parse(result);
-            modelImgUrls.push(test.data.link);
-            commit("setImage", modelImgUrls);
-          });
+        fetch("http://127.0.0.1:8000/api/upload_image", requestOptions)
+        // fetch("https://k02d1081.p.ssafy.io:8009/api/upload_image", requestOptions)        
+          .then(response => console.log(response))
+        //   .then(result => {
+        //     const test = JSON.parse(result);
+        //     modelImgUrls.push(test.data.link);
+        //     commit("setImage", modelImgUrls);
+        //   });
+        
       }
     } else if (params.step === 2) {
       commit("setDesc", params.descParams);
@@ -182,7 +181,9 @@ const actions = {
     commit("setPickedPartByImg", part);
   },
   async onWriteSubmit({ commit }) {
+    console.log(state.model);
     const imgUrlList = state.model.set_images;
+
     var imgUrlString = "";
     imgUrlList.forEach((e, i) => {
       if (i === imgUrlList.length - 1) {

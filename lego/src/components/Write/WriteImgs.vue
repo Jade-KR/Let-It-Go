@@ -155,7 +155,7 @@ export default {
             return;
           }
         }
-        vm.modelImgs.push(e.target.result);
+        vm.modelImgs.push(file);
       };
       reader.readAsDataURL(file);
     },

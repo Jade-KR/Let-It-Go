@@ -13,15 +13,12 @@ const mutations = {
 const actions = {
   async updateImg({ commit }, params) {
     var modelImgUrl = "";
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
 
     var formdata = new FormData();
     formdata.append("image", params);
 
     var requestOptions = {
       method: "POST",
-      headers: myHeaders,
       body: formdata,
       redirect: "follow"
     };
