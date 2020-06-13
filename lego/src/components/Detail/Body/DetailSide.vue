@@ -107,7 +107,6 @@
     </div>
     <video
       controls
-      autoplay
       muted
       width="100%"
       style="margin-top: 10px;"
