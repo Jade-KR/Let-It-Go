@@ -20,7 +20,10 @@ const actions = {
     var requestOptions = {
       method: "POST",
       body: formdata,
-      redirect: "follow"
+      redirect: "follow",
+      headers: {
+        'access-control-allow-origin': '*'
+      }
     };
     console.log(requestOptions)
     console.log()
