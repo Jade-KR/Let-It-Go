@@ -16,13 +16,15 @@ const actions = {
 
     var formdata = new FormData();
     formdata.append("image", params);
-
+    console.log(params)
     var requestOptions = {
       method: "POST",
       body: formdata,
       redirect: "follow"
     };
-    await fetch("https://k02d1081.p.ssafy.io:8009/api/upload_image", requestOptions)
+    console.log(requestOptions)
+    console.log()
+    await fetch("http://127.0.0.1:8000/api/upload_image", requestOptions)
       .then(response => response.text())
       .then(async result => {
         const test = JSON.parse(result);

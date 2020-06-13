@@ -201,6 +201,9 @@ export default {
     return http.post(`${apiUrl}/update_user_set_inventory2`, params, { headers });
   },
   uploadImage(params) {
+    const headers = {
+        'access-control-allow-origin': '*'
+    }
     return http.post(`${apiUrl}/upload_image`, params, {headers} )
   }
 };
