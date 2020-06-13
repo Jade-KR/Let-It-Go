@@ -16,6 +16,9 @@ import pandas as pd
 import surprise
 import pickle
 from sklearn.cluster import KMeans
+import hashlib
+from datetime import datetime
+import base64
 
 API_key = '08d368a0e1830b9fec088091be154133'
 headers = {
@@ -1285,3 +1288,15 @@ def update_user_set_inventory2(self):
     user = self.user
     UserPart2.objects.filter(user=user).delete()
     return Response("초기화 완료")
+
+@api_view(['POST'])
+def upload_image(self):
+    m = hashlib.sha256()
+    m.update((str(self.data["image"])+str(datetime.now())).encode('utf-8'))
+    f_base = ".static_root/"
+    f_base2 = "static/"
+    f_name = "images/"+m.hexdigest()+"."+self.data["image"].content_type.split('/')[1]
+
+    with open(f_base+f_name, 'wb') as f:
+        f.write(self.data["image"].read())
+    return Response("https://k02d1081.p.ssafy.io:8009/" + f_base2 + f_name)

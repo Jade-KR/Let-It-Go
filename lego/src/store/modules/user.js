@@ -13,24 +13,20 @@ const mutations = {
 const actions = {
   async updateImg({ commit }, params) {
     var modelImgUrl = "";
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
 
     var formdata = new FormData();
-    formdata.append("image", params.slice(22));
+    formdata.append("image", params);
 
     var requestOptions = {
       method: "POST",
-      headers: myHeaders,
       body: formdata,
       redirect: "follow"
     };
-
-    await fetch("https://api.imgur.com/3/image", requestOptions)
+    await fetch("https://k02d1081.p.ssafy.io:8009/api/upload_image", requestOptions)
       .then(response => response.text())
       .then(async result => {
         const test = JSON.parse(result);
-        modelImgUrl = test.data.link;
+        modelImgUrl = test;
         params = {
           profile_url: modelImgUrl
         };

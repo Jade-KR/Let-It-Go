@@ -13,7 +13,7 @@ const state = {
     set_name: "",
     description: "",
     tags: [],
-    sub_set: [],
+    sub_sets: [],
     parts: [],
     is_product: 0,
     reference: ""
@@ -28,7 +28,7 @@ const state = {
     theme_id: null,
     tags: "",
     description: "",
-    sub_set: []
+    sub_sets: []
   },
   partList: LegoParts.rows.map((e, i) => {
     return {
@@ -52,32 +52,29 @@ const state = {
   pickStep: 0,
   pickedParts: [],
   pickedPartByImg: [],
-  pickedReset: false
+  pickedReset: false,
+  imgUrl: []
 };
 
 const actions = {
   next({ commit }, params) {
     if (params.step === 1) {
-      // commit("setImage", state.modelImgs);
       var modelImgUrls = [];
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", "Client-ID 4d07ea22717fbd0");
 
-      for (let i = 0; i < state.modelImgs.length; ++i) {
+      for (let i = 0; i < state.imgUrl.length; ++i) {
         var formdata = new FormData();
-        formdata.append("image", state.modelImgs[i].slice(22));
+        formdata.append("image", state.imgUrl[i]);
         var requestOptions = {
           method: "POST",
-          headers: myHeaders,
           body: formdata,
           redirect: "follow"
         };
 
-        fetch("https://api.imgur.com/3/image", requestOptions)
+        fetch("http://127.0.0.1:8000/api/upload_image", requestOptions)
           .then(response => response.text())
           .then(result => {
             const test = JSON.parse(result);
-            modelImgUrls.push(test.data.link);
+            modelImgUrls.push(test);
             commit("setImage", modelImgUrls);
           });
       }
@@ -183,6 +180,7 @@ const actions = {
   },
   async onWriteSubmit({ commit }) {
     const imgUrlList = state.model.set_images;
+
     var imgUrlString = "";
     imgUrlList.forEach((e, i) => {
       if (i === imgUrlList.length - 1) {
@@ -240,13 +238,13 @@ const mutations = {
     state.model.theme_id = info.theme_id;
     state.model.tags = info.tags;
     state.model.description = info.description;
-    state.model.sub_set = info.sub_set;
+    state.model.sub_sets = info.sub_set;
   },
   setTags(state, tagString) {
     state.model.tags = tagString;
   },
   setSubset(state, subSetList) {
-    state.model.sub_set = subSetList;
+    state.model.sub_sets = subSetList;
   },
   setParts(state) {
     state.enrolledPart.forEach(e => {

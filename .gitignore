@@ -441,3 +441,7 @@ dmypy.json
 
 # test data
 backend/*.csv
+
+# backend static files
+backend/.static_root
+backend/static
