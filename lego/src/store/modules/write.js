@@ -13,7 +13,7 @@ const state = {
     set_name: "",
     description: "",
     tags: [],
-    sub_set: [],
+    sub_sets: [],
     parts: [],
     is_product: 0,
     reference: ""
@@ -28,7 +28,7 @@ const state = {
     theme_id: null,
     tags: "",
     description: "",
-    sub_set: []
+    sub_sets: []
   },
   partList: LegoParts.rows.map((e, i) => {
     return {
@@ -52,18 +52,18 @@ const state = {
   pickStep: 0,
   pickedParts: [],
   pickedPartByImg: [],
-  pickedReset: false
+  pickedReset: false,
+  imgUrl: []
 };
 
 const actions = {
   next({ commit }, params) {
     if (params.step === 1) {
-      // commit("setImage", state.modelImgs);
-    //   var modelImgUrls = [];
+      var modelImgUrls = [];
 
-      for (let i = 0; i < state.modelImgs.length; ++i) {
+      for (let i = 0; i < state.imgUrl.length; ++i) {
         var formdata = new FormData();
-        formdata.append("image", state.modelImgs[i]);
+        formdata.append("image", state.imgUrl[i]);
         var requestOptions = {
           method: "POST",
           body: formdata,
@@ -71,14 +71,12 @@ const actions = {
         };
 
         fetch("http://127.0.0.1:8000/api/upload_image", requestOptions)
-        // fetch("https://k02d1081.p.ssafy.io:8009/api/upload_image", requestOptions)        
-          .then(response => console.log(response))
-        //   .then(result => {
-        //     const test = JSON.parse(result);
-        //     modelImgUrls.push(test.data.link);
-        //     commit("setImage", modelImgUrls);
-        //   });
-        
+          .then(response => response.text())
+          .then(result => {
+            const test = JSON.parse(result);
+            modelImgUrls.push(test);
+            commit("setImage", modelImgUrls);
+          });
       }
     } else if (params.step === 2) {
       commit("setDesc", params.descParams);
@@ -181,7 +179,6 @@ const actions = {
     commit("setPickedPartByImg", part);
   },
   async onWriteSubmit({ commit }) {
-    console.log(state.model);
     const imgUrlList = state.model.set_images;
 
     var imgUrlString = "";
@@ -241,13 +238,13 @@ const mutations = {
     state.model.theme_id = info.theme_id;
     state.model.tags = info.tags;
     state.model.description = info.description;
-    state.model.sub_set = info.sub_set;
+    state.model.sub_sets = info.sub_set;
   },
   setTags(state, tagString) {
     state.model.tags = tagString;
   },
   setSubset(state, subSetList) {
-    state.model.sub_set = subSetList;
+    state.model.sub_sets = subSetList;
   },
   setParts(state) {
     state.enrolledPart.forEach(e => {
