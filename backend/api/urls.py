@@ -17,7 +17,7 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="pyeonggangkim@gmail.com"),
         license=openapi.License(name="SSAFY License"), 
     ),
-    # "https://k02d1081.p.ssafy.io:8009/api/"
+    "https://k02d1081.p.ssafy.io:8009/api/"
 )
 
 router = DefaultRouter(trailing_slash=False)
@@ -66,6 +66,7 @@ urlpatterns = [
     path('reset_item_based_k_means', views.reset_item_based_k_means, name="reset_item_based_k_means"),
     path('update_user_set_inventory', views.update_user_set_inventory, name="update_user_set_inventory"),
     path('update_user_set_inventory2', views.update_user_set_inventory2, name="update_user_set_inventory2"),
+    path('upload_image', views.upload_image, name="upload_image")
 
     # path('create_review', views.create_review, name='create_review')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
