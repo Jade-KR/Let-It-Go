@@ -201,8 +201,11 @@ export default {
     return http.post(`${apiUrl}/update_user_set_inventory2`, params, { headers });
   },
   uploadImage(params) {
+    // const headers = {
+    //   Authorization: token !== null ? "jwt " + token : null
+    // };
     const headers = {
-        'access-control-allow-origin': '*'
+      'Content-Type': 'multipart/form-data'
     }
     return http.post(`${apiUrl}/upload_image`, params, {headers} )
   }
