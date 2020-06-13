@@ -22,7 +22,7 @@ const actions = {
       body: formdata,
       redirect: "follow"
     };
-    await api.uploadImage(requestOptions)
+    await fetch("https://k02d1081.p.ssafy.io:8009/api/upload_image", requestOptions)
       .then(response => response.text())
       .then(async result => {
         const test = JSON.parse(result);
