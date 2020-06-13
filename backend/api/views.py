@@ -1293,7 +1293,7 @@ def update_user_set_inventory2(self):
 def upload_image(self):
     m = hashlib.sha256()
     m.update((str(self.data["image"])+str(datetime.now())).encode('utf-8'))
-    f_name = "static/images/"+m.hexdigest()+"."+self.data["image"].content_type.split('/')[1]
+    f_name = ".static_root/images/"+m.hexdigest()+"."+self.data["image"].content_type.split('/')[1]
     with open(f_name, 'wb') as f:
         f.write(self.data["image"].read())
-    return Response("https://k02d1081.p.ssafy.io/" + f_name)
+    return Response("https://k02d1081.p.ssafy.io:8009/" + f_name)
