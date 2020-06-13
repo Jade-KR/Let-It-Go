@@ -64,13 +64,7 @@ const actions = {
       for (let i = 0; i < state.imgUrl.length; ++i) {
         var formdata = new FormData();
         formdata.append("image", state.imgUrl[i]);
-        // var requestOptions = {
-        //   method: "POST",
-        //   body: formdata,
-        //   redirect: "follow"
-        // };
         api.uploadImage(formdata)
-        // fetch("https://k02d1081.p.ssafy.io:8009/api/upload_image", requestOptions)
           .then(response => {
             console.log(response)
             modelImgUrls.push(response.data);

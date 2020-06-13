@@ -1291,9 +1291,6 @@ def update_user_set_inventory2(self):
 
 @api_view(['POST'])
 def upload_image(self):
-    print(dir(self))
-    print(self.query_params)
-    print(self.data)
     m = hashlib.sha256()
     m.update((str(self.data["image"])+str(datetime.now())).encode('utf-8'))
     f_base = ".static_root/"
