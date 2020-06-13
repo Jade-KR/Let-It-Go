@@ -15,7 +15,8 @@ const state = {
     tags: [],
     sub_set: [],
     parts: [],
-    is_product: 0
+    is_product: 0,
+    reference: ""
   },
   step: 1,
   currentStep: 1,
