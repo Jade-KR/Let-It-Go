@@ -128,10 +128,10 @@ const actions = {
     });
     commit("resetBasket");
   },
-  async resetLegoRail({commit}, params) {
-      commit;
-      params;
-      await api.resetLegoRail()
+  async resetLegoRail({ commit }, params) {
+    commit;
+    params;
+    await api.resetLegoRail();
   },
   async getUserParts({ commit }, page) {
     const resp = await api.getUserParts(page);

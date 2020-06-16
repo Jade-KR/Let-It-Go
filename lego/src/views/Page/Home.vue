@@ -11,10 +11,18 @@
           <span slot="userCategory" id="userCategory" />
         </user-category>
       </div>
-      <div @click="styleCheck()" v-if="styleFlag === false" class="home_show_btn">모아보기</div>
+      <div
+        @click="styleCheck()"
+        v-if="styleFlag === false"
+        class="home_show_btn"
+      >
+        모아보기
+      </div>
       <div v-else @click="styleCheck()" class="home_show_btn">크게보기</div>
     </div>
-    <div v-if="!isCate && homeCate === 3" id="home_no_show">선호 카테고리를 선택해 주세요</div>
+    <div v-if="!isCate && homeCate === 3" id="home_no_show">
+      선호 카테고리를 선택해 주세요
+    </div>
     <div :style="styleFlag ? matrixWidth : instaWidth" v-else>
       <div
         class="home_card"

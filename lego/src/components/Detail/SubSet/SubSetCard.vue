@@ -97,7 +97,6 @@ export default {
 .body_img_box > img {
   width: 100%;
   height: 100%;
-  /* border-radius: 180%; */
 }
 .body_img_hover {
   transition: 0.5s ease;
@@ -107,7 +106,6 @@ export default {
   transform: translate(-50%, -90%);
   width: 100%;
   height: 100%;
-  /* display: flex; */
   display: table;
   align-items: center;
 }
@@ -141,7 +139,6 @@ export default {
 .body_img_info {
   width: 100%;
   text-align: center;
-  /* position: absolute; */
   display: flex;
   justify-content: center;
   align-items: baseline;

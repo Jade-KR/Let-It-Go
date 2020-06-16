@@ -500,7 +500,6 @@ export default {
 
 <style scoped>
 #part_header {
-  /* margin-bottom: 10px; */
   text-align: center;
   transform: translateY(-15px);
   font-size: 16px;
@@ -529,7 +528,6 @@ export default {
   background-color: green;
   color: white;
   cursor: pointer;
-  /* border-radius: 10px; */
 }
 .lego_parts_container {
   width: 100%;

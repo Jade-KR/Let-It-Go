@@ -309,74 +309,8 @@ export default {
   cursor: default;
 }
 @media screen and (max-width: 600px) {
-  .detail_review_card {
-    /* display: flex;
-    padding: 10px;
-    border: 1px solid gold; */
-  }
-  .detail_review_show {
-    /* flex: 1; */
-  }
-  .detail_review_img {
-    /* width: 100px;
-    height: 100px;
-    margin-right: 10px;
-    border-radius: 50%; */
-  }
-  .detail_review_desc {
-    /* flex: 9;
-    overflow: hidden; */
-  }
-  .detail_review_info {
-    /* display: block;
-    margin-bottom: 5px; */
-  }
-  .detail_review_id {
-    /* display: inline-block;
-    font-size: 20px;
-    margin-right: 10px;
-    cursor: pointer; */
-  }
-  .detail_review_date {
-    /* display: inline-block;
-    color: rgba(128, 128, 128, 0.7);
-    margin-right: 10px; */
-  }
-  .detail_review_content {
-    /* display: inline-block; */
-  }
-  .gold_star {
-    /* color: gold; */
-  }
-  .gray_star {
-    /* color: gray; */
-  }
-  .review_update,
-  .review_delete {
-    /* cursor: pointer;
-    display: inline-block;
-    margin-right: 10px; */
-  }
   .detail_review_modi {
     width: 100%;
-    /* border: 1px solid black; */
-  }
-  .update_btn {
-    /* float: right;
-    margin-right: 18px; */
-  }
-  .update_on,
-  .update_cancle {
-    /* display: inline-block;
-    padding: 5px 10px;
-    margin: 0 5px;
-    background-color: gold;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer; */
-  }
-  .cursor_default {
-    /* cursor: default; */
   }
 }
 </style>

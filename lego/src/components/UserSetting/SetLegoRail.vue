@@ -119,7 +119,7 @@ export default {
       const params = { UpdateList: newBasket };
       await this.updateParts(params);
       alert("부품이 등록되었습니다");
-      await this.resetLegoRail("dd")
+      await this.resetLegoRail("dd");
       this.$router.push("mypage/" + localStorage.getItem("pk"));
     },
     deleteItem(idx) {
@@ -178,14 +178,6 @@ export default {
 .items_container:hover {
   border: rgb(166, 166, 184) 3px solid;
 }
-.items {
-  /* display: inline-block;
-  margin: 4px;
-  width: 110px;
-  height: 150px;
-  cursor: pointer;
-  border: rgb(205, 205, 228) 3px solid; */
-}
 .items:hover {
   border: rgb(166, 166, 184) 3px solid;
 }
@@ -228,15 +220,6 @@ export default {
 .send_btn:hover {
   background: rgb(101, 193, 221);
 }
-/* .delete_all_btn {
-  background: red;
-  color: white;
-  width: 130px;
-  height: 30px;
-  border-radius: 5%;
-  margin-bottom: 20px;
-  margin-left: 10px;
-} */
 .delete_box {
   width: 20px;
   height: 20px;

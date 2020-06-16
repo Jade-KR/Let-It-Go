@@ -3,7 +3,10 @@
     <div class="nav">
       <Nav v-if="!authFlag"></Nav>
     </div>
-    <route-view :key="$route.fullPath" :style="!authFlag ? viewStyle[0] : viewStyle[1]" />
+    <route-view
+      :key="$route.fullPath"
+      :style="!authFlag ? viewStyle[0] : viewStyle[1]"
+    />
     <go-top :style="isMobile ? topSytle[0] : topSytle[1]" />
   </v-app>
 </template>

@@ -22,7 +22,12 @@
                   alt
                   v-if="item.images.split(':').length >= 2"
                 />
-                <img class="body_img" src="../../../../assets/icons/no_img.jpg" alt="no_img" v-else />
+                <img
+                  class="body_img"
+                  src="../../../../assets/icons/no_img.jpg"
+                  alt="no_img"
+                  v-else
+                />
                 <div class="body_img_hover">
                   <div class="body_img_desc">
                     <div class="body_img_name">
@@ -199,7 +204,6 @@ export default {
 .body_img_info {
   width: 100%;
   text-align: center;
-  /* position: absolute; */
   display: flex;
   justify-content: center;
   align-items: baseline;

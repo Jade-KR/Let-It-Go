@@ -157,7 +157,9 @@ export default {
   },
   changeUserStaff(params) {
     return http.put(
-      `${apiUrl}/User/${params}`, {}, {
+      `${apiUrl}/User/${params}`,
+      {},
+      {
         headers
       }
     );
@@ -201,7 +203,7 @@ export default {
     });
   },
   resetLegoRail() {
-    const params = 'null'
+    const params = "null";
     return http.post(`${apiUrl}/update_user_set_inventory2`, params, {
       headers
     });
@@ -209,6 +211,6 @@ export default {
   uploadImage(params) {
     return http.post(`${apiUrl}/upload_image`, params, {
       headers
-    })
+    });
   }
 };

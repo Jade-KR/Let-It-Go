@@ -46,7 +46,8 @@ export default {
       selectedCate: 0,
       selectedTheme: 0,
       searchedWordByDetail: "",
-      searchedCateByDetail: 0
+      searchedCateByDetail: 0,
+      searchedWordHold: ""
     };
   },
   computed: {
@@ -118,6 +119,7 @@ export default {
       this.resetEndPoint();
       this.resetModelList();
       this.selectedTheme = words;
+      this.searchedWordHold = words;
       const params = {
         append: false,
         page: 1
@@ -144,15 +146,14 @@ export default {
       if (this.models.length === 0) {
         return;
       }
-      const setName = this.models[this.models.length - 1]["name"];
       const params = {
-        page: this.page,
-        append: true
+        append: true,
+        page: this.page
       };
       if (this.selectedCate === 0) {
-        params["name"] = setName;
+        params["name"] = this.searchedWordHold;
       } else if (this.selectedCate === 1) {
-        params["tag"] = setName;
+        params["tag"] = this.searchedWordHold;
       } else if (this.selectedCate === 2) {
         params["theme"] = this.selectedTheme;
       }

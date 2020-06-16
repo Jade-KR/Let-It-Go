@@ -92,7 +92,6 @@ export default {
     const params = {
       page: 1,
       append: false
-      // id: this.$route.params.user_id
     };
     await this.userModelInven(params);
     if (this.stopScroll === true) {
@@ -114,7 +113,6 @@ export default {
       const params = {
         page: this.page,
         append: true
-        // id: this.$route.params.user_id
       };
       await this.userModelInven(params);
       if (this.stopScroll === true) {
