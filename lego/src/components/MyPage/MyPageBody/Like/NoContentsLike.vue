@@ -51,7 +51,6 @@ export default {
   border-bottom: rgb(255, 194, 80) 2px dotted;
 }
 .no_content_body {
-  /* border-top: solid rgb(255, 209, 124) 1px; */
   width: 90%;
   margin: auto;
   display: flex;

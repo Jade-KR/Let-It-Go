@@ -16,18 +16,15 @@ const actions = {
 
     var formdata = new FormData();
     formdata.append("image", params);
-    await api.uploadImage(formdata)
-      .then(async response => {
-        modelImgUrl = response.data;
-        params = {
+    await api.uploadImage(formdata).then(async response => {
+      modelImgUrl = response.data;
+      params = {
         profile_url: modelImgUrl
-        };
-        await api.changeProfilePic(params);
-        localStorage.setItem("image", modelImgUrl);
-        commit("setFlag", state.photoFlag === false ? true : false);
-        }
-      )
-      
+      };
+      await api.changeProfilePic(params);
+      localStorage.setItem("image", modelImgUrl);
+      commit("setFlag", state.photoFlag === false ? true : false);
+    });
   },
   async updateInfo({ commit }, params) {
     commit;

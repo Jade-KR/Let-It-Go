@@ -269,9 +269,6 @@ export default {
     onStep(idx) {
       this.setStep(idx);
     },
-    // onSubmit() {
-    //   this.onWriteSubmit();
-    // },
     onPrev(idx) {
       const params = {
         idx: idx,
@@ -355,7 +352,6 @@ export default {
 
 <style scoped>
 #part_header {
-  /* display: flex; */
   text-align: center;
   margin-bottom: 20px;
 }

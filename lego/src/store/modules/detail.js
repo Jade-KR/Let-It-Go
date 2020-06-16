@@ -1,5 +1,4 @@
 import api from "../../api";
-// import router from "../../router";
 
 const state = {
   model: {
@@ -23,19 +22,15 @@ const state = {
 };
 
 const actions = {
-  async getModelDetail({
-    commit
-  }, params) {
+  async getModelDetail({ commit }, params) {
     let resp = await api.getModelDetail(params).then(res => res.data);
     resp.sub_sets.map(sub => {
-      sub.images = sub.images.split('|')[0]
-    })
+      sub.images = sub.images.split("|")[0];
+    });
     commit("setModel", resp);
     commit("setReviews", resp.reviews);
   },
-  async onLike({
-    commit
-  }, params) {
+  async onLike({ commit }, params) {
     commit;
     const resp = await api
       .setLike(params)
@@ -43,9 +38,7 @@ const actions = {
       .catch(err => err);
     return resp;
   },
-  async reviewWrite({
-    commit
-  }, params) {
+  async reviewWrite({ commit }, params) {
     await api.reviewWrite(params).then(res => {
       res;
       commit("resetReviews");
@@ -54,9 +47,7 @@ const actions = {
       });
     });
   },
-  async reviewUpdate({
-    commit
-  }, params) {
+  async reviewUpdate({ commit }, params) {
     commit;
     api.reviewUpdate(params).then(res => {
       res;
@@ -66,9 +57,7 @@ const actions = {
       });
     });
   },
-  async reviewDelete({
-    commit
-  }, params) {
+  async reviewDelete({ commit }, params) {
     api.reviewDelete(params.id).then(res => {
       res;
       commit("resetReviews");
@@ -77,18 +66,14 @@ const actions = {
       });
     });
   },
-  async getUserPartsAll({
-    commit
-  }) {
+  async getUserPartsAll({ commit }) {
     const resp = await api
       .getUserPartsAll()
       .then(res => res.data.results)
       .catch(err => err);
     commit("setMyParts", resp);
   },
-  async addMyParts({
-    commit
-  }, params) {
+  async addMyParts({ commit }, params) {
     commit;
     const resp = await api
       .addUserParts(params)
@@ -96,18 +81,14 @@ const actions = {
       .catch(err => err.response);
     return resp;
   },
-  async getModelsByItemBased({
-    commit
-  }, params) {
+  async getModelsByItemBased({ commit }, params) {
     const resp = await api
       .getModelsByItemBased(params)
       .then(res => res.data)
       .catch(err => err.response);
     commit("setRecommendList", resp);
   },
-  async addInven({
-    commit
-  }, params) {
+  async addInven({ commit }, params) {
     commit;
     const resp = await api
       .setModelToInventory(params)
@@ -115,9 +96,7 @@ const actions = {
       .catch(err => err.response);
     return resp;
   },
-  async subInven({
-    commit
-  }, params) {
+  async subInven({ commit }, params) {
     commit;
     const resp = await api
       .setModelToInventory(params)
@@ -125,9 +104,7 @@ const actions = {
       .catch(err => err.response);
     return resp;
   },
-  async deleteModel({
-    commit
-  }, params) {
+  async deleteModel({ commit }, params) {
     commit;
     await api.deleteModel(params);
   }

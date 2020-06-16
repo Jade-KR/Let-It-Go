@@ -26,9 +26,7 @@ const state = {
 };
 
 const actions = {
-  async getModels({
-    commit
-  }, params) {
+  async getModels({ commit }, params) {
     const append = params.append;
     const resp = await api.searchModels(params).then(res => res.data);
     if (resp.count === 0) {
@@ -36,8 +34,8 @@ const actions = {
     }
     const models = resp.results.map(e => e);
     models.map(model => {
-      model.images = model.images.split('|')[0]
-    })
+      model.images = model.images.split("|")[0];
+    });
     if (append) {
       commit("addModelList", models);
     } else {
@@ -45,9 +43,7 @@ const actions = {
     }
     await commit("setModelPage", resp.next);
   },
-  searchByDetail({
-    commit
-  }, params) {
+  searchByDetail({ commit }, params) {
     commit("setSearchWordByDetail", params["word"]);
     commit("setSearchCateByDetail", params["type"]);
     commit("setSearchByDetailFlag");

@@ -16,7 +16,7 @@
           <label for="modal_ex_file2">현재 사진 삭제</label>
           <input type="button" id="modal_ex_file2" @click="cleanImg()" />
         </div>
-        <div class="profile_modal_menus3" @click="dialog=false">취소</div>
+        <div class="profile_modal_menus3" @click="dialog = false">취소</div>
       </v-card>
     </v-dialog>
   </div>

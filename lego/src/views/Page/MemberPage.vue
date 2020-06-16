@@ -203,14 +203,12 @@ section .slide .content {
   visibility: hidden;
   opacity: 0;
   transition: 0.5s;
-  /* transform: translateY(50px); */
 }
 section .slide:hover .content {
   visibility: visible;
   opacity: 1;
   transition: 0.5s;
   transition-delay: 0.5s;
-  /* transform: translateY(50px); */
 }
 section .slide .content h2 {
   margin-bottom: 10px;

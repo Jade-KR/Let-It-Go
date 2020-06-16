@@ -11,14 +11,16 @@
         <div class="delete_border">
           <h2 class="delete_title">모두 삭제 하겠습니까?</h2>
 
-          <v-card-text class="delete_body">현재 페이지에 보이는 모든 부품들을 삭제합니다.</v-card-text>
+          <v-card-text class="delete_body"
+            >현재 페이지에 보이는 모든 부품들을 삭제합니다.</v-card-text
+          >
 
           <v-card-actions>
             <v-spacer></v-spacer>
 
             <button class="delete_btn" @click="deleteAll()">삭제</button>
 
-            <button class="cancle_btn" @click="dialog=false">취소</button>
+            <button class="cancle_btn" @click="dialog = false">취소</button>
           </v-card-actions>
         </div>
       </v-card>

@@ -170,7 +170,6 @@ export default {
 .body_img_info {
   width: 100%;
   text-align: center;
-  /* position: absolute; */
   display: flex;
   justify-content: center;
   align-items: baseline;

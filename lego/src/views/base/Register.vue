@@ -444,15 +444,6 @@ export default {
   #regi-random-nick {
     font-size: 16px;
     transform: translateY(-3.5px);
-    /* cursor: pointer;
-    display: inline-block;
-    background-color: rgba(255, 215, 0, 0.7);
-    color: white;
-    line-height: 40px;
-    font-size: 25px;
-    text-align: center;
-    width: 20%;
-    border: 1px solid gold; */
   }
 }
 </style>

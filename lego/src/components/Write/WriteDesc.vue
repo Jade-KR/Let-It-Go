@@ -68,13 +68,6 @@
         />
       </div>
       <div id="ref">
-        <!-- <v-text-field
-          label="하위설계도"
-          v-model="params.sub_set"
-          color="rgba(255, 215, 0, 0.7)"
-          outlined
-          hide-details
-        /> -->
         <vue-tags-input
           v-model="subSet"
           :subSets="subSets"

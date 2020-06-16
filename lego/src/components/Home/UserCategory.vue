@@ -176,7 +176,6 @@ export default {
   line-height: 50px;
   font-size: 24px;
   font-weight: 600;
-  /* background-color: gold; */
   border: 1px solid gold;
   text-align: center;
   cursor: pointer;

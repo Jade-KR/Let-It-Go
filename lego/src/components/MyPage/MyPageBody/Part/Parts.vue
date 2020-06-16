@@ -288,7 +288,6 @@ export default {
   display: flex;
   flex-flow: row wrap;
   margin: auto;
-  /* justify-content: center; */
 }
 .item {
   width: 110px;
@@ -314,7 +313,6 @@ export default {
   height: 90%;
   margin: 0;
   padding: 0;
-  /* border-radius: 180%; */
 }
 .part_info {
   width: 100%;
@@ -322,7 +320,6 @@ export default {
   background: rgb(248, 248, 248);
   margin: 0;
   padding-bottom: 10px;
-  /* transform: translateY(-10px); */
 }
 .part_id {
   margin: 0;

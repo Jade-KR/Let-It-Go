@@ -28,16 +28,24 @@
               class="fas fa-scroll sub_menu_tab"
               @click="setSubState(1)"
               :style="subState === 1 ? btnStyle[0] : btnStyle[1]"
-            >설계도</div>
+            >
+              설계도
+            </div>
             <div
               class="fas fa-cubes sub_menu_tab2"
               @click="setSubState(2)"
               :style="subState === 2 ? btnStyle[0] : btnStyle[1]"
-            >부품</div>
+            >
+              부품
+            </div>
           </div>
         </div>
         <div v-else>
-          <button class="menu" @click.prevent="menuState(`설계도`, 0)" :style="btnStyle[0]">
+          <button
+            class="menu"
+            @click.prevent="menuState(`설계도`, 0)"
+            :style="btnStyle[0]"
+          >
             <i class="fas fa-scroll">&nbsp;설계도</i>
           </button>
         </div>
@@ -74,7 +82,6 @@ export default {
       menus: [
         { title: "설계도", icon: "fas fa-scroll" },
         { title: "좋아요", icon: "fas fa-heart" },
-        // { title: "부품", icon: "fas fa-cubes" },
         { title: "보관함", icon: "fas fa-archive" }
       ],
       currentState: 0,
@@ -140,7 +147,6 @@ export default {
 </script>
 
 <style scoped>
-/* 큰 레이아웃 */
 .whole_box {
   border-style: none;
   align-items: center;
